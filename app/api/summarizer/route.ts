@@ -1,9 +1,9 @@
-import type { Database } from "@/supabase/database.types";
+import { createSupabaseServerClient } from "@/supabase/client/server";
+import { supabaseOption } from "@/supabase/config";
 import { deepseek } from "@ai-sdk/deepseek";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import type { PostgrestError } from "@supabase/supabase-js";
 import { type Message, generateText } from "ai";
 import { StructuredOutputParser } from "langchain/output_parsers";
-import { cookies } from "next/headers";
 import { ollama } from "ollama-ai-provider";
 import { z } from "zod";
 
@@ -55,10 +55,7 @@ export async function POST(req: Request) {
         const client = getAIClient();
 
         // Get the authenticated user if available
-        const cookieStore = cookies();
-        const supabase = createServerComponentClient<Database>({
-            cookies: () => cookieStore,
-        });
+        const supabase = await createSupabaseServerClient(supabaseOption);
         const {
             data: { session },
         } = await supabase.auth.getSession();
@@ -93,17 +90,36 @@ export async function POST(req: Request) {
                 // Store the result in Supabase
                 const summaryData = {
                     ...structuredOutput,
-                    original_content: content,
                     user_id: userId,
                 };
 
                 // Only save to database if user is authenticated
                 if (userId) {
-                    const { error } = await supabase
+                    // Check if the user already has a summary
+                    const { data: existingSummary } = await supabase
                         .from("resume_summaries")
-                        .insert(summaryData)
                         .select()
-                        .single();
+                        .eq("user_id", userId)
+                        .maybeSingle();
+
+                    let error: PostgrestError | null = null;
+
+                    if (existingSummary) {
+                        // Update existing summary
+                        const { error: updateError } = await supabase
+                            .from("resume_summaries")
+                            .update(summaryData)
+                            .eq("user_id", userId);
+
+                        error = updateError;
+                    } else {
+                        // Insert new summary
+                        const { error: insertError } = await supabase
+                            .from("resume_summaries")
+                            .insert(summaryData);
+
+                        error = insertError;
+                    }
 
                     if (error) {
                         console.error("Supabase error:", error);

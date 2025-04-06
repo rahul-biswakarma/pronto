@@ -7,7 +7,6 @@ CREATE TABLE resume_summaries (
   skills TEXT[] NOT NULL,
   persona TEXT NOT NULL,
   personality TEXT[] NOT NULL,
-  original_content TEXT
 );
 
 -- Add row-level security policies

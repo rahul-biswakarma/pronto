@@ -1,9 +1,6 @@
 import { createSupabaseServerClient } from "@/supabase/client/server";
 import { supabaseOption } from "@/supabase/config";
-import type { Database } from "@/supabase/database.types";
 import { verifyAuthUser } from "@/supabase/utils";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
 
 export const runtime = "edge";
 
@@ -13,13 +10,9 @@ export async function GET() {
         await verifyAuthUser({ supabase });
 
         // Get the authenticated user
-        const cookieStore = cookies();
-        const authClient = createServerComponentClient<Database>({
-            cookies: () => cookieStore,
-        });
         const {
             data: { session },
-        } = await authClient.auth.getSession();
+        } = await supabase.auth.getSession();
         const userId = session?.user?.id;
 
         if (!userId) {
