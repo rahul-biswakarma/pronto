@@ -16,7 +16,7 @@ export const useAISummary = () => {
             setIsSummarizing(true);
             setSummaryError(null);
 
-            const response = await fetch("/api/ai", {
+            const response = await fetch("/api/summarizer", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
