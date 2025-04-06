@@ -35,8 +35,10 @@
     },
     "cSpell.words": [
         "codemirror",
+        "deepseek",
         "Keymap",
         "lowlight",
+        "Ollama",
         "ratelimit",
         "Sandpack",
         "supabase",
