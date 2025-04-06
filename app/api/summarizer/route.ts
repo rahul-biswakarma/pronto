@@ -1,6 +1,9 @@
+import type { Database } from "@/supabase/database.types";
 import { deepseek } from "@ai-sdk/deepseek";
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { type Message, generateText } from "ai";
 import { StructuredOutputParser } from "langchain/output_parsers";
+import { cookies } from "next/headers";
 import { ollama } from "ollama-ai-provider";
 import { z } from "zod";
 
@@ -51,6 +54,16 @@ export async function POST(req: Request) {
 
         const client = getAIClient();
 
+        // Get the authenticated user if available
+        const cookieStore = cookies();
+        const supabase = createServerComponentClient<Database>({
+            cookies: () => cookieStore,
+        });
+        const {
+            data: { session },
+        } = await supabase.auth.getSession();
+        const userId = session?.user?.id;
+
         // If content is provided (PDF text), create a prompt for structured output
         const promptMessages: Message[] = content
             ? [
@@ -76,6 +89,28 @@ export async function POST(req: Request) {
             try {
                 // Use LangChain parser to parse the AI response
                 const structuredOutput = await outputParser.parse(text);
+
+                // Store the result in Supabase
+                const summaryData = {
+                    ...structuredOutput,
+                    original_content: content,
+                    user_id: userId,
+                };
+
+                // Only save to database if user is authenticated
+                if (userId) {
+                    const { error } = await supabase
+                        .from("resume_summaries")
+                        .insert(summaryData)
+                        .select()
+                        .single();
+
+                    if (error) {
+                        console.error("Supabase error:", error);
+                        // Continue with the response even if storage fails
+                    }
+                }
+
                 return new Response(JSON.stringify(structuredOutput), {
                     headers: { "Content-Type": "application/json" },
                 });

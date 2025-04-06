@@ -49,10 +49,12 @@ export default function Home() {
     };
 
     return (
-        <div className="flex flex-col justify-center items-center w-full min-h-screen p-4 bg-black text-white">
-            <h1 className="text-2xl font-bold mb-6">
-                PDF Text Extractor & Summarizer
-            </h1>
+        <div>
+            <div className="w-full max-w-[700px] flex justify-between items-center mb-6">
+                <h1 className="text-2xl font-bold">
+                    PDF Text Extractor & Summarizer
+                </h1>
+            </div>
 
             <div className="max-w-[700px] w-full mb-4">
                 <Dropzone

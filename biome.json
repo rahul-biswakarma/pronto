@@ -6,8 +6,18 @@
         "useIgnoreFile": false
     },
     "files": {
-        "ignoreUnknown": false,
-        "ignore": []
+        "maxSize": 1048576,
+        "ignore": [
+            "**/node_modules/**",
+            "**/dist/**",
+            "**/.next/**",
+            "**/build/**",
+            "**/.turbo/**",
+            "**/coverage/**",
+            "**/.cache/**",
+            "**/public/**",
+            "**/.vercel/**"
+        ]
     },
     "formatter": {
         "enabled": true,
