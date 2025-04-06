@@ -1,5 +1,4 @@
-import { createSupabaseServerClient } from "@/supabase/client/server";
-import { supabaseOption } from "@/supabase/config";
+import { checkAuthentication } from "@/utils/auth";
 import { deepseek } from "@ai-sdk/deepseek";
 import type { PostgrestError } from "@supabase/supabase-js";
 import { type Message, generateText } from "ai";
@@ -52,23 +51,26 @@ export async function POST(req: Request) {
     try {
         const { messages, content } = await req.json();
 
-        const client = getAIClient();
+        // Check authentication
+        const auth = await checkAuthentication();
+        if (!auth.authenticated) {
+            return auth.errorResponse;
+        }
 
-        // Get the authenticated user if available
-        const supabase = await createSupabaseServerClient(supabaseOption);
-        const {
-            data: { session },
-        } = await supabase.auth.getSession();
-        const userId = session?.user?.id;
+        const client = getAIClient();
+        const supabase = auth.supabase;
+        const userId = auth.userId;
 
         // If content is provided (PDF text), create a prompt for structured output
         const promptMessages: Message[] = content
             ? [
                   {
+                      id: "system-1",
                       role: "system",
                       content: `You are a resume analyzer that extracts key information. ${outputParser.getFormatInstructions()}`,
                   },
                   {
+                      id: "user-1",
                       role: "user",
                       content: `Analyze the following resume content and extract a summary, skills list, professional persona, and personality traits/soft skills that can be inferred from the content:\n\n${content}`,
                   },
