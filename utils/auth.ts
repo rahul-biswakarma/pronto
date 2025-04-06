@@ -24,11 +24,9 @@ type AuthResult =
  */
 export async function checkAuthentication(): Promise<AuthResult> {
     const supabase = await createSupabaseServerClient(supabaseOption);
-    const {
-        data: { session },
-    } = await supabase.auth.getSession();
+    const { data, error } = await supabase.auth.getUser();
 
-    if (!session?.user) {
+    if (error || !data.user) {
         return {
             authenticated: false,
             errorResponse: new Response(
@@ -43,7 +41,7 @@ export async function checkAuthentication(): Promise<AuthResult> {
 
     return {
         authenticated: true,
-        userId: session.user.id,
+        userId: data.user.id,
         supabase: supabase,
     };
 }

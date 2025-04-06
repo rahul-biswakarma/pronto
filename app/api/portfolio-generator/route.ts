@@ -1,7 +1,23 @@
 import { checkAuthentication } from "@/utils/auth";
 import { deepseek } from "@ai-sdk/deepseek";
 import { type Message, generateText } from "ai";
+import { StructuredOutputParser } from "langchain/output_parsers";
 import { ollama } from "ollama-ai-provider";
+import { z } from "zod";
+
+// Define the output schema using Zod
+const portfolioOutputSchema = z.object({
+    html: z
+        .string()
+        .describe(
+            "Complete, valid HTML+CSS code for a professional portfolio website",
+        ),
+});
+
+// Create LangChain output parser
+const outputParser = StructuredOutputParser.fromZodSchema(
+    portfolioOutputSchema,
+);
 
 // Environment-specific configuration
 const isProduction = process.env.NODE_ENV === "production";
@@ -93,7 +109,7 @@ export async function POST(req: Request) {
                 - Clean, readable typography
                 - Sufficient whitespace and visual hierarchy
 
-                Respond ONLY with valid, complete HTML+CSS code, nothing else.`,
+                ${outputParser.getFormatInstructions()}`,
             },
             {
                 id: "user-1",
@@ -105,15 +121,29 @@ export async function POST(req: Request) {
                 Professional Identity: ${resumeData.persona}
                 Key Traits: ${Array.isArray(resumeData.personality) ? resumeData.personality.join(", ") : resumeData.personality}
 
-                Please create a complete, ready-to-use HTML file with embedded CSS. portfolio should look like a professional portfolio website.`,
+                Please create a complete, ready-to-use HTML file with embedded CSS for a professional portfolio website.`,
             },
         ];
 
         // Generate the portfolio HTML
-        const { text: portfolioHTML } = await generateText({
+        const { text } = await generateText({
             model: client,
             messages: promptMessages,
         });
+
+        // Parse the output to get structured HTML
+        let portfolioHTML: string;
+        try {
+            const parsedOutput = await outputParser.parse(text);
+            portfolioHTML = parsedOutput.html;
+        } catch (parseError: unknown) {
+            console.warn(
+                "Failed to parse structured output, using raw text:",
+                parseError,
+            );
+            // Fallback to using the raw response if parsing fails
+            portfolioHTML = text;
+        }
 
         // Save the generated HTML to the database
         const { error: updateError } = await supabase

@@ -102,7 +102,7 @@ export const PortfolioPreview = ({ html }: PortfolioPreviewProps) => {
             </div>
             <iframe
                 ref={iframeRef}
-                className="w-full bg-white rounded-b"
+                className="w-full bg-white rounded-b h-[80vh]"
                 style={{
                     height: isFullscreen ? "calc(100vh - 40px)" : `${height}px`,
                 }}
