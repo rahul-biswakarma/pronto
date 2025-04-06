@@ -7,6 +7,11 @@ CREATE TABLE resume_summaries (
   skills TEXT[] NOT NULL,
   persona TEXT NOT NULL,
   personality TEXT[] NOT NULL,
+  portfolio_html TEXT,
+  portfolio_s3_path TEXT,
+  portfolio_public BOOLEAN DEFAULT FALSE,
+  portfolio_url TEXT,
+  portfolio_updated_at TIMESTAMPTZ
 );
 
 -- Add row-level security policies

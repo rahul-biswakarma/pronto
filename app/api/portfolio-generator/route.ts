@@ -1,4 +1,5 @@
 import { checkAuthentication } from "@/utils/auth";
+import { uploadPortfolio } from "@/utils/supabase-storage";
 import { deepseek } from "@ai-sdk/deepseek";
 import { type Message, generateText } from "ai";
 import { StructuredOutputParser } from "langchain/output_parsers";
@@ -37,7 +38,7 @@ export const runtime = "edge";
 
 export async function POST(req: Request) {
     try {
-        const { userId } = await req.json();
+        const { userId, publish = false } = await req.json();
 
         if (!userId) {
             return new Response(
@@ -137,35 +138,37 @@ export async function POST(req: Request) {
             const parsedOutput = await outputParser.parse(text);
             portfolioHTML = parsedOutput.html;
         } catch (parseError: unknown) {
-            console.warn(
-                "Failed to parse structured output, using raw text:",
-                parseError,
-            );
             // Fallback to using the raw response if parsing fails
             portfolioHTML = text;
         }
 
-        // Save the generated HTML to the database
+        // Save the generated HTML to S3 storage
+        const uploadResult = await uploadPortfolio(
+            userId,
+            portfolioHTML,
+            publish,
+        );
+
+        // Also save a copy in the database for backup and quick retrieval
         const { error: updateError } = await supabase
             .from("resume_summaries")
             .update({ portfolio_html: portfolioHTML })
             .eq("user_id", userId);
 
-        if (updateError) {
-            console.error("Error saving portfolio HTML:", updateError);
-            // Still return the HTML even if saving failed
-        }
-
         return new Response(
             JSON.stringify({
                 html: portfolioHTML,
+                deployUrl: uploadResult.publicUrl || uploadResult.url,
+                isPublic: publish,
+                success: uploadResult.success,
+                message:
+                    uploadResult.error || "Portfolio generated successfully",
             }),
             {
                 headers: { "Content-Type": "application/json" },
             },
         );
     } catch (error: unknown) {
-        console.error("Portfolio generation error:", error);
         const errorMessage =
             error instanceof Error
                 ? error.message
