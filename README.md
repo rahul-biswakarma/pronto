@@ -91,3 +91,21 @@ To learn more about the technologies used in this project:
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Rate Limiting
+
+This application implements rate limiting using Upstash Redis:
+
+- Regular routes are limited to 10 requests per 10 seconds per IP and route
+- API routes are limited to 5 requests per 10 seconds per IP and route
+
+To set up rate limiting:
+
+1. Create an account on [Upstash](https://upstash.com/)
+2. Create a Redis database
+3. Add your Upstash Redis REST URL and token to the `.env` file:
+
+```
+UPSTASH_REDIS_REST_URL=your-upstash-redis-rest-url
+UPSTASH_REDIS_REST_TOKEN=your-upstash-redis-rest-token
+```
