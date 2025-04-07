@@ -2,32 +2,19 @@
 
 import { usePDFWorkflow } from "@/hooks/use-pdf-workflow";
 import { Dropzone } from "@dropzone-ui/react";
-import { Button, Flex, Text } from "@radix-ui/themes";
-import { useRouter } from "next/navigation";
+import { Flex, Text } from "@radix-ui/themes";
 
 export const Uploader = () => {
-    const router = useRouter();
     const {
         files,
         extractedText,
-        summary,
         portfolioHtml,
         stage,
         error,
         isLoading,
         handleFileUpload,
         generatePortfolio,
-        userId,
     } = usePDFWorkflow();
-
-    const handleGenerate = async () => {
-        if (extractedText) {
-            await generatePortfolio();
-            if (portfolioHtml) {
-                router.push("/editor");
-            }
-        }
-    };
 
     return (
         <Flex
@@ -63,27 +50,6 @@ export const Uploader = () => {
                 <Text color="red" size="2">
                     {error.toString()}
                 </Text>
-            )}
-
-            {extractedText && !portfolioHtml && (
-                <Button
-                    onClick={handleGenerate}
-                    disabled={isLoading.processing || !extractedText}
-                    style={{ marginTop: "16px" }}
-                >
-                    {isLoading.processing
-                        ? "Generating..."
-                        : "Generate Portfolio"}
-                </Button>
-            )}
-
-            {stage === "completed" && (
-                <Button
-                    onClick={() => router.push("/editor")}
-                    style={{ marginTop: "16px" }}
-                >
-                    View & Edit Portfolio
-                </Button>
             )}
         </Flex>
     );
