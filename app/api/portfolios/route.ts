@@ -11,7 +11,7 @@ import { uploadPortfolio } from "@/utils/supabase-storage";
  * GET /api/portfolios - Retrieves the user's portfolio
  */
 export const GET = withErrorHandling(
-    async (req: Request, requestId: string) => {
+    async (_req: Request, requestId: string) => {
         // Check authentication
         const auth = await checkAuthentication();
         if (!auth.authenticated) {

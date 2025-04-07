@@ -4,7 +4,11 @@ import { usePDFWorkflow } from "@/hooks/use-pdf-workflow";
 import { Dropzone } from "@dropzone-ui/react";
 import { Flex, Text } from "@radix-ui/themes";
 
-export const Uploader = () => {
+interface FileUploaderProps {
+    className?: string;
+}
+
+export function FileUploader({ className }: FileUploaderProps) {
     const { files, error, isLoading, handleFileUpload } = usePDFWorkflow();
 
     return (
@@ -14,6 +18,7 @@ export const Uploader = () => {
             align="center"
             justify="center"
             style={{ maxWidth: "700px", width: "100%", margin: "0 auto" }}
+            className={className}
         >
             <Dropzone
                 onChange={handleFileUpload}
@@ -22,7 +27,7 @@ export const Uploader = () => {
                 accept="application/pdf"
                 header={false}
                 footer={false}
-                disabled={isLoading.pdfjs || isLoading.processing} // Disable during any processing
+                disabled={isLoading.pdfjs || isLoading.processing}
                 style={{
                     border: "2px dashed #333",
                     background: "#1a1a1a",
@@ -44,4 +49,4 @@ export const Uploader = () => {
             )}
         </Flex>
     );
-};
+}

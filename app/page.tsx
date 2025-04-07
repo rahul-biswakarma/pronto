@@ -1,5 +1,5 @@
-import { DataProvider } from "@/components/context/data.context";
-import { App } from "@/components/main";
+import { AppLayout } from "@/components/layouts/app-layout";
+import { DataProvider } from "@/components/providers/data-provider";
 import { checkAuthentication } from "@/utils/auth";
 import { Flex, Text } from "@radix-ui/themes";
 
@@ -30,8 +30,11 @@ export default async function Home() {
         .single();
 
     return (
-        <DataProvider htmlUrl={summary?.portfolio_url}>
-            <App />
+        <DataProvider
+            initialHtml={summary?.portfolio_html || ""}
+            htmlUrl={summary?.portfolio_url || ""}
+        >
+            <AppLayout />
         </DataProvider>
     );
 }

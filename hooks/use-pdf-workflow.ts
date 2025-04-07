@@ -211,7 +211,7 @@ export const usePDFWorkflow = () => {
                 setStage("error");
             }
         },
-        [extractTextFromPDF, resetSummary],
+        [extractTextFromPDF, resetSummary, setPortfolioHtml],
     );
 
     // Generate portfolio

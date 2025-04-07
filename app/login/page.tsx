@@ -1,9 +1,23 @@
-import { GoogleSignin } from "@/components/auth/signin";
+import { SignInButton } from "@/components/features/auth/sign-in-button";
+import { Card, Flex, Heading, Text } from "@radix-ui/themes";
 
-export default function Login() {
+export default function LoginPage() {
     return (
-        <div className="flex flex-col justify-center items-center h-full p-4">
-            <GoogleSignin />
-        </div>
+        <Flex
+            direction="column"
+            align="center"
+            justify="center"
+            style={{ height: "100vh" }}
+        >
+            <Card size="3" style={{ maxWidth: "400px", width: "100%" }}>
+                <Flex direction="column" align="center" gap="4" p="4">
+                    <Heading size="5">Welcome to Pronto</Heading>
+                    <Text size="2" mb="4" align="center">
+                        Sign in to create and manage your portfolios
+                    </Text>
+                    <SignInButton size="3" />
+                </Flex>
+            </Card>
+        </Flex>
     );
 }

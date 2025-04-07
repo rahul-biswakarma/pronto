@@ -67,6 +67,27 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Component Structure
+
+The application follows a feature-based component architecture:
+
+```
+components/
+├── features/       # Feature-specific components
+│   ├── auth/       # Authentication components
+│   ├── portfolio/  # Portfolio-related components
+│   └── pdf-processor/ # PDF processing components
+├── layouts/        # Layout components
+├── providers/      # Context providers
+```
+
+### Component Naming Conventions
+
+- PascalCase for component names
+- Clear, descriptive names that indicate functionality
+- One component per file
+- Named exports for all components
+
 ## API Structure
 
 The application uses a RESTful API structure:

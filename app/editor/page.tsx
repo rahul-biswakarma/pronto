@@ -106,6 +106,7 @@ export default function PortfolioEditorPage() {
     }, [router, setMessages]);
 
     // Auto-scroll chat to bottom
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         if (chatContainerRef.current) {
             chatContainerRef.current.scrollTop =

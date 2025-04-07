@@ -50,7 +50,7 @@ export async function uploadPortfolio(
         );
 
         // Upload the file
-        const { data, error } = await supabase.storage
+        const { error } = await supabase.storage
             .from(bucket)
             .upload(filename, htmlBuffer, {
                 cacheControl: "3600",
