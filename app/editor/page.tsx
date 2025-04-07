@@ -1,6 +1,6 @@
 "use client";
 
-import { PortfolioPreview } from "@/components/portfolio-preview";
+import { DataProvider } from "@/components/context/data.context";
 import {
     Box,
     Button,
@@ -84,7 +84,9 @@ export default function PortfolioEditorPage() {
                     setFetchError(
                         "No portfolio found. Please generate a portfolio first",
                     );
-                    router.push("/");
+                    setTimeout(() => {
+                        router.push("/");
+                    }, 2000);
                 }
             } catch (error) {
                 setFetchError(
@@ -165,136 +167,163 @@ export default function PortfolioEditorPage() {
     }
 
     return (
-        <Container
-            size="4"
-            p="4"
-            style={{ marginTop: "2rem", marginBottom: "2rem" }}
-        >
-            <Heading size="5" mb="6">
-                Portfolio Editor
-            </Heading>
+        <DataProvider htmlUrl="">
+            <Container
+                size="4"
+                p="4"
+                style={{ marginTop: "2rem", marginBottom: "2rem" }}
+            >
+                <Heading size="5" mb="6">
+                    Portfolio Editor
+                </Heading>
 
-            <Flex gap="6" direction={{ initial: "column", md: "row" }}>
-                {/* Left side: Chat UI */}
-                <Card
-                    style={{
-                        flex: 1,
-                        height: "80vh",
-                        display: "flex",
-                        flexDirection: "column",
-                    }}
-                >
-                    <Box
-                        p="3"
-                        style={{ borderBottom: "1px solid var(--gray-6)" }}
+                <Flex gap="6" direction={{ initial: "column", md: "row" }}>
+                    {/* Left side: Chat UI */}
+                    <Card
+                        style={{
+                            flex: 1,
+                            height: "80vh",
+                            display: "flex",
+                            flexDirection: "column",
+                        }}
                     >
-                        <Text weight="bold">
-                            Chat with AI to edit your portfolio
-                        </Text>
-                    </Box>
-
-                    <ScrollArea
-                        ref={chatContainerRef}
-                        style={{ flex: 1, padding: "16px" }}
-                        scrollbars="vertical"
-                    >
-                        <Flex direction="column" gap="4">
-                            {messages.slice(1).map((message) => (
-                                <Box
-                                    key={message.id}
-                                    p="3"
-                                    style={{
-                                        borderRadius: "8px",
-                                        background:
-                                            message.role === "user"
-                                                ? "var(--blue-3)"
-                                                : "var(--gray-3)",
-                                        marginLeft:
-                                            message.role === "user"
-                                                ? "auto"
-                                                : "0",
-                                        maxWidth: "80%",
-                                    }}
-                                >
-                                    <Text weight="bold" size="2" mb="1">
-                                        {message.role === "user"
-                                            ? "You"
-                                            : "AI Assistant"}
-                                    </Text>
-                                    <Text style={{ whiteSpace: "pre-wrap" }}>
-                                        {message.content.replace(
-                                            /```html[\s\S]*?```/g,
-                                            "[HTML code updated in preview]",
-                                        )}
-                                    </Text>
-                                </Box>
-                            ))}
-
-                            {isChatLoading && (
-                                <Box
-                                    p="3"
-                                    style={{
-                                        borderRadius: "8px",
-                                        background: "var(--gray-3)",
-                                        maxWidth: "80%",
-                                    }}
-                                >
-                                    <Text weight="bold" size="2" mb="1">
-                                        AI Assistant
-                                    </Text>
-                                    <Text>Thinking...</Text>
-                                </Box>
-                            )}
-                        </Flex>
-                    </ScrollArea>
-
-                    <Box p="3" style={{ borderTop: "1px solid var(--gray-6)" }}>
-                        <form onSubmit={handleSubmit}>
-                            <Flex gap="2">
-                                <input
-                                    type="text"
-                                    placeholder="Ask AI to edit your portfolio..."
-                                    value={input}
-                                    onChange={handleInputChange}
-                                    disabled={isChatLoading}
-                                    style={{
-                                        flex: 1,
-                                        padding: "8px 12px",
-                                        fontSize: "14px",
-                                        border: "1px solid var(--gray-6)",
-                                        borderRadius: "4px",
-                                        background: "var(--color-panel)",
-                                        color: "var(--gray-12)",
-                                    }}
-                                />
-                                <Button
-                                    type="submit"
-                                    disabled={isChatLoading || !input.trim()}
-                                >
-                                    Send
-                                </Button>
-                            </Flex>
-                        </form>
-                    </Box>
-                </Card>
-
-                {/* Right side: Preview and Save */}
-                <Flex direction="column" style={{ flex: 1, height: "80vh" }}>
-                    <Box style={{ flex: 1, overflow: "hidden" }}>
-                        <PortfolioPreview html={portfolioHtml} />
-                    </Box>
-
-                    <Box mt="4">
-                        <Button
-                            onClick={handleSave}
-                            disabled={isSaving}
-                            style={{ width: "100%" }}
+                        <Box
+                            p="3"
+                            style={{ borderBottom: "1px solid var(--gray-6)" }}
                         >
-                            {isSaving ? "Saving..." : "Save Changes"}
-                        </Button>
-                    </Box>
+                            <Text weight="bold">
+                                Chat with AI to edit your portfolio
+                            </Text>
+                        </Box>
+
+                        <ScrollArea
+                            ref={chatContainerRef}
+                            style={{ flex: 1, padding: "16px" }}
+                            scrollbars="vertical"
+                        >
+                            <Flex direction="column" gap="4">
+                                {messages.slice(1).map((message) => (
+                                    <Box
+                                        key={message.id}
+                                        p="3"
+                                        style={{
+                                            borderRadius: "8px",
+                                            background:
+                                                message.role === "user"
+                                                    ? "var(--blue-3)"
+                                                    : "var(--gray-3)",
+                                            marginLeft:
+                                                message.role === "user"
+                                                    ? "auto"
+                                                    : "0",
+                                            maxWidth: "80%",
+                                        }}
+                                    >
+                                        <Text weight="bold" size="2" mb="1">
+                                            {message.role === "user"
+                                                ? "You"
+                                                : "AI Assistant"}
+                                        </Text>
+                                        <Text
+                                            style={{ whiteSpace: "pre-wrap" }}
+                                        >
+                                            {message.content.replace(
+                                                /```html[\s\S]*?```/g,
+                                                "[HTML code updated in preview]",
+                                            )}
+                                        </Text>
+                                    </Box>
+                                ))}
+
+                                {isChatLoading && (
+                                    <Box
+                                        p="3"
+                                        style={{
+                                            borderRadius: "8px",
+                                            background: "var(--gray-3)",
+                                            maxWidth: "80%",
+                                        }}
+                                    >
+                                        <Text weight="bold" size="2" mb="1">
+                                            AI Assistant
+                                        </Text>
+                                        <Text>Thinking...</Text>
+                                    </Box>
+                                )}
+                            </Flex>
+                        </ScrollArea>
+
+                        <Box
+                            p="3"
+                            style={{ borderTop: "1px solid var(--gray-6)" }}
+                        >
+                            <form onSubmit={handleSubmit}>
+                                <Flex gap="2">
+                                    <input
+                                        value={input}
+                                        onChange={handleInputChange}
+                                        placeholder="Type a message..."
+                                        style={{
+                                            padding: "8px 12px",
+                                            borderRadius: "4px",
+                                            border: "1px solid var(--gray-6)",
+                                            flex: 1,
+                                        }}
+                                    />
+                                    <Button
+                                        type="submit"
+                                        disabled={
+                                            isChatLoading || !input.trim()
+                                        }
+                                    >
+                                        Send
+                                    </Button>
+                                </Flex>
+                            </form>
+                        </Box>
+                    </Card>
+
+                    {/* Right side: Preview */}
+                    <Flex
+                        direction="column"
+                        style={{ flex: 1, height: "80vh" }}
+                    >
+                        <Box
+                            style={{
+                                flex: 1,
+                                border: "1px solid var(--gray-6)",
+                                borderRadius: "6px",
+                                overflow: "hidden",
+                                position: "relative",
+                            }}
+                        >
+                            {portfolioHtml && (
+                                <iframe
+                                    srcDoc={portfolioHtml}
+                                    style={{
+                                        width: "100%",
+                                        height: "100%",
+                                        border: "none",
+                                    }}
+                                    title="Portfolio Preview"
+                                />
+                            )}
+                        </Box>
+
+                        <Flex justify="end" gap="2" mt="3">
+                            <Button
+                                onClick={() => router.push("/")}
+                                variant="outline"
+                            >
+                                Back to Home
+                            </Button>
+                            <Button onClick={handleSave} disabled={isSaving}>
+                                {isSaving ? "Saving..." : "Save Changes"}
+                            </Button>
+                        </Flex>
+                    </Flex>
                 </Flex>
-            </Flex>
-        </Container>
+            </Container>
+        </DataProvider>
     );
 }

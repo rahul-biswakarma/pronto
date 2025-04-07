@@ -1,4 +1,5 @@
 "use client";
+import { useData } from "@/components/context/data.context";
 import { createSupabaseBrowserClient } from "@/supabase/client/browser";
 import { supabaseOption } from "@/supabase/config";
 import type { ExtFile } from "@dropzone-ui/react";
@@ -19,7 +20,6 @@ export interface PDFWorkflowState {
     files: ExtFile[];
     extractedText: string;
     summary: string;
-    portfolioHtml: string;
     stage: WorkflowStage;
     error: Error | string | null;
     userId: string | null;
@@ -30,8 +30,9 @@ export const usePDFWorkflow = () => {
     const [files, setFiles] = useState<ExtFile[]>([]);
     const [extractedText, setExtractedText] = useState<string>("");
 
+    const { setPortfolioHtml, portfolioHtml } = useData();
+
     // Portfolio state
-    const [portfolioHtml, setPortfolioHtml] = useState<string>("");
     const [isGeneratingPortfolio, setIsGeneratingPortfolio] = useState(false);
 
     // Stage tracking
@@ -213,23 +214,25 @@ export const usePDFWorkflow = () => {
         [extractTextFromPDF, resetSummary],
     );
 
-    // Generate portfolio from summary
+    // Generate portfolio
     const generatePortfolio = useCallback(async () => {
-        if (!userId || userId.startsWith("temp-") || !summary) {
-            setError("Cannot generate portfolio: Authentication required");
+        if (!userId || !summary) {
             return;
         }
 
-        try {
-            setIsGeneratingPortfolio(true);
-            setError(null);
+        setIsGeneratingPortfolio(true);
+        setError(null);
 
+        try {
             const response = await fetch("/api/portfolio-generator", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ userId }),
+                body: JSON.stringify({
+                    userId,
+                    publish: false, // Default to private
+                }),
             });
 
             if (!response.ok) {
@@ -240,14 +243,45 @@ export const usePDFWorkflow = () => {
             }
 
             const data = await response.json();
-            setPortfolioHtml(data.html);
-        } catch (err) {
-            console.error("Portfolio generation error:", err);
-            setError(err instanceof Error ? err.message : String(err));
+
+            // Store the HTML in context
+            if (data.html) {
+                setPortfolioHtml(data.html);
+            }
+
+            // Store resume data in database
+            if (userId && !userId.startsWith("temp-")) {
+                try {
+                    const supabase =
+                        createSupabaseBrowserClient(supabaseOption);
+                    await supabase.from("resume_summaries").upsert({
+                        user_id: userId,
+                        portfolio_html: data.html,
+                        portfolio_url: data.deployUrl,
+                        portfolio_public: data.isPublic,
+                        updated_at: new Date().toISOString(),
+                    });
+                } catch (dbError) {
+                    console.error(
+                        "Failed to save portfolio to database:",
+                        dbError,
+                    );
+                }
+            }
+
+            return data;
+        } catch (error) {
+            console.error("Portfolio generation error:", error);
+            setError(
+                error instanceof Error
+                    ? error
+                    : new Error("Failed to generate portfolio"),
+            );
+            return null;
         } finally {
             setIsGeneratingPortfolio(false);
         }
-    }, [userId, summary]);
+    }, [userId, summary, setPortfolioHtml]);
 
     // Reset the entire workflow
     const reset = useCallback(() => {
@@ -257,7 +291,15 @@ export const usePDFWorkflow = () => {
         setPortfolioHtml("");
         setError(null);
         setStage("idle");
-    }, [resetSummary]);
+    }, [resetSummary, setPortfolioHtml]);
+
+    // Loading states
+    const isLoading = {
+        pdfjs: isPDFJSLoading,
+        summarizing: isSummarizing,
+        portfolioGen: isGeneratingPortfolio,
+        processing: isPDFJSLoading || isSummarizing || isGeneratingPortfolio,
+    };
 
     // Export state and methods
     return {
@@ -271,15 +313,7 @@ export const usePDFWorkflow = () => {
         userId,
 
         // Loading states for individual components
-        isLoading: {
-            pdfjs: isPDFJSLoading,
-            summarizing: isSummarizing,
-            portfolioGenerating: isGeneratingPortfolio,
-            processing:
-                stage === "extraction" ||
-                stage === "summarizing" ||
-                stage === "portfolio_generating",
-        },
+        isLoading,
 
         // Actions
         handleFileUpload,
@@ -292,7 +326,6 @@ export const usePDFWorkflow = () => {
             files,
             extractedText,
             summary,
-            portfolioHtml,
             stage,
             error,
             userId,
