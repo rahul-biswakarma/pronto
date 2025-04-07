@@ -224,7 +224,7 @@ export const usePDFWorkflow = () => {
         setError(null);
 
         try {
-            const response = await fetch("/api/portfolio-generator", {
+            const response = await fetch("/api/portfolios/generate", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

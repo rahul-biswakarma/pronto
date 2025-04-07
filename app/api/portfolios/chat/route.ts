@@ -1,30 +1,20 @@
+import { getAIClient } from "@/utils/ai-client";
+import { createErrorResponse } from "@/utils/api-response";
 import { checkAuthentication } from "@/utils/auth";
 import logger from "@/utils/logger";
-import { deepseek } from "@ai-sdk/deepseek";
-import { type Message, StreamingTextResponse } from "ai";
-import { ollama } from "ollama-ai-provider";
-
-// Environment-specific configuration
-const isProduction = process.env.NODE_ENV === "production";
-
-// Initialize the appropriate client based on environment
-const getAIClient = () => {
-    if (isProduction) {
-        // Use DeepSeek in production via OpenAI compatible API
-        logger.debug("Using DeepSeek AI in production");
-        return deepseek("deepseek-chat");
-    }
-
-    // Use Ollama in development (default)
-    logger.debug("Using Ollama AI in development");
-    return ollama("deepseek-r1:8b");
-};
+import { type Message, streamText } from "ai";
 
 export const runtime = "edge";
 
+/**
+ * POST /api/portfolios/chat - Chat with AI about portfolio
+ */
 export async function POST(req: Request) {
     const requestId = crypto.randomUUID();
-    logger.info({ requestId, path: "portfolio-chat" }, "Chat request received");
+    logger.info(
+        { requestId, path: "/api/portfolios/chat" },
+        "Chat request received",
+    );
 
     try {
         // Check authentication
@@ -38,7 +28,8 @@ export async function POST(req: Request) {
         const userId = auth.userId;
         logger.debug({ requestId, userId }, "User authenticated");
 
-        const client = getAIClient();
+        // Get AI client
+        const client = getAIClient(undefined, { requestId });
 
         // Get the messages sent by the client
         const { messages } = await req.json();
@@ -53,6 +44,7 @@ export async function POST(req: Request) {
                 { requestId },
                 "No system message found, fetching portfolio HTML",
             );
+
             // Fetch current portfolio HTML
             const supabase = auth.supabase;
             const { data } = await supabase
@@ -66,6 +58,7 @@ export async function POST(req: Request) {
                     { requestId },
                     "Creating system message with portfolio HTML",
                 );
+
                 const systemMessage: Message = {
                     id: "system-1",
                     role: "system",
@@ -91,31 +84,15 @@ export async function POST(req: Request) {
 
         // Generate a stream of tokens from the AI model
         logger.debug({ requestId }, "Generating AI response stream");
-        const stream = await client.streamText({
+        const { textStream } = streamText({
+            model: client,
             messages: messages as Message[],
         });
 
         logger.info({ requestId }, "Streaming response to client");
         // Return a streaming response
-        return new StreamingTextResponse(stream);
+        return new Response(textStream);
     } catch (error) {
-        logger.error(
-            {
-                requestId,
-                error: error instanceof Error ? error.message : "Unknown error",
-                stack: error instanceof Error ? error.stack : undefined,
-            },
-            "Error in portfolio chat API",
-        );
-
-        return new Response(
-            JSON.stringify({
-                error:
-                    error instanceof Error
-                        ? error.message
-                        : "An error occurred",
-            }),
-            { status: 500 },
-        );
+        return createErrorResponse(error, requestId);
     }
 }

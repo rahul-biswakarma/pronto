@@ -18,6 +18,7 @@ This application allows you to:
 - Modern UI with Tailwind CSS
 - Comprehensive rate limiting with Upstash Redis
 - Structured logging with Pino
+- RESTful API with standardized responses
 
 ## Getting Started
 
@@ -65,6 +66,27 @@ bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## API Structure
+
+The application uses a RESTful API structure:
+
+### Portfolio Management
+- `GET /api/portfolios` - Retrieve the user's portfolio
+- `POST /api/portfolios` - Update the user's portfolio
+
+### AI Interaction
+- `POST /api/portfolios/chat` - Chat with AI about portfolio modifications
+- `POST /api/portfolios/generate` - Generate a new portfolio
+
+### Authentication
+- `GET /api/auth/callback` - OAuth callback handler
+
+All API endpoints include:
+- Authentication via Supabase
+- Rate limiting with Upstash Redis
+- Structured error handling
+- Comprehensive logging
 
 ## System Components
 

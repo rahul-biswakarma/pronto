@@ -33,7 +33,7 @@ export default function PortfolioEditorPage() {
         setMessages,
         isLoading: isChatLoading,
     } = useChat({
-        api: "/api/portfolio-chat",
+        api: "/api/portfolios/chat",
         onFinish: (message) => {
             // Check if this is a code update message
             const content = message.content || "";
@@ -53,7 +53,7 @@ export default function PortfolioEditorPage() {
                 setIsLoading(true);
                 setFetchError(null);
 
-                const response = await fetch("/api/portfolio/get");
+                const response = await fetch("/api/portfolios");
                 if (!response.ok) {
                     const errorData = await response.json();
                     throw new Error(
@@ -117,7 +117,7 @@ export default function PortfolioEditorPage() {
     const handleSave = async () => {
         setIsSaving(true);
         try {
-            const response = await fetch("/api/portfolio/update", {
+            const response = await fetch("/api/portfolios", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
