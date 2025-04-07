@@ -3,6 +3,17 @@ import { updateSession } from "./supabase/middleware";
 import logger from "./utils/logger";
 import { apiRatelimit, ratelimit } from "./utils/ratelimit";
 
+// Security headers to protect against common attacks
+const securityHeaders = {
+    "X-DNS-Prefetch-Control": "on",
+    "X-Frame-Options": "SAMEORIGIN",
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+    "X-XSS-Protection": "1; mode=block",
+    "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
+};
+
 export async function middleware(request: NextRequest) {
     // Check if this is an API route
     const isApiRoute = request.nextUrl.pathname.startsWith("/api");
@@ -39,28 +50,44 @@ export async function middleware(request: NextRequest) {
                 "Retry-After": Math.ceil(
                     (reset - Date.now()) / 1000,
                 ).toString(),
+                ...securityHeaders,
             },
         });
     }
 
     // Continue with session handling if rate limit not exceeded
-    const { response, user } = await updateSession(
-        request,
-        NextResponse.next(),
-        {
-            supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
-            supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-        },
-    );
+    let response: NextResponse;
 
-    if (!request.nextUrl.pathname.endsWith("/login") && !user) {
-        return NextResponse.redirect(new URL("/login", request.url));
+    try {
+        const sessionResponse = await updateSession(
+            request,
+            NextResponse.next(),
+            {
+                supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+                supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+            },
+        );
+
+        response = sessionResponse.response;
+        const user = sessionResponse.user;
+
+        if (!request.nextUrl.pathname.endsWith("/login") && !user) {
+            return NextResponse.redirect(new URL("/login", request.url));
+        }
+    } catch (error) {
+        logger.error({ error }, "Error in session middleware");
+        response = NextResponse.next();
     }
 
     // Add rate limit headers to all responses
     response.headers.set("X-RateLimit-Limit", limit.toString());
     response.headers.set("X-RateLimit-Remaining", remaining.toString());
     response.headers.set("X-RateLimit-Reset", reset.toString());
+
+    // Add security headers to all responses
+    for (const [key, value] of Object.entries(securityHeaders)) {
+        response.headers.set(key, value);
+    }
 
     return response;
 }

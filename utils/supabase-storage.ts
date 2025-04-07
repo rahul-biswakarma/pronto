@@ -2,11 +2,36 @@
 import { createClient } from "@supabase/supabase-js";
 import logger from "./logger";
 
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+
+// Prevent service role key from being exposed
+if (!SERVICE_ROLE_KEY && process.env.NODE_ENV === "production") {
+    logger.error("Missing SUPABASE_SERVICE_ROLE_KEY in production environment");
+}
+
 interface PortfolioUploadResult {
     success: boolean;
     url?: string | null;
     publicUrl?: string | null;
     error?: string;
+}
+
+/**
+ * Creates a secure admin client for server operations that require elevated privileges
+ * @returns Supabase client with admin privileges
+ */
+function createSecureAdminClient() {
+    if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
+        throw new Error("Missing Supabase configuration for admin operations");
+    }
+
+    return createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
+        auth: {
+            persistSession: false,
+            autoRefreshToken: false,
+        },
+    });
 }
 
 /**
@@ -25,16 +50,8 @@ export async function uploadPortfolio(
     logger.info({ operationId, userId, publish }, "Starting portfolio upload");
 
     try {
-        // Create Supabase client with service role key to bypass RLS policies
-        const supabase = createClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL || "",
-            process.env.SUPABASE_SERVICE_ROLE_KEY || "",
-            {
-                auth: {
-                    persistSession: false,
-                },
-            },
-        );
+        // Create secure admin client
+        const supabase = createSecureAdminClient();
 
         // For server-side environments, use Buffer instead of Blob
         const htmlBuffer = Buffer.from(html);
@@ -73,7 +90,7 @@ export async function uploadPortfolio(
 
         let url = urlData.publicUrl;
 
-        // For private files, get a signed URL
+        // For private files, get a signed URL with short expiration
         if (!publish) {
             logger.debug(
                 { operationId, userId },
@@ -81,7 +98,7 @@ export async function uploadPortfolio(
             );
             const { data: signedData } = await supabase.storage
                 .from(bucket)
-                .createSignedUrl(filename, 60 * 60 * 24 * 7); // 7 day expiry
+                .createSignedUrl(filename, 60 * 60 * 24); // 1 day expiry - shorter for security
 
             url = signedData?.signedUrl || url;
         }
@@ -98,6 +115,8 @@ export async function uploadPortfolio(
                 portfolio_public: publish,
                 portfolio_url: url,
                 portfolio_updated_at: new Date().toISOString(),
+                // Add user ID as owner to enforce access control
+                portfolio_owner: userId,
             })
             .eq("user_id", userId);
 

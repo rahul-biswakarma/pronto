@@ -4,8 +4,18 @@ import {
     withErrorHandling,
 } from "@/utils/api-response";
 import { checkAuthentication } from "@/utils/auth";
+import { withCSRFProtection } from "@/utils/csrf";
 import logger from "@/utils/logger";
 import { uploadPortfolio } from "@/utils/supabase-storage";
+import DOMPurify from "dompurify";
+import { JSDOM } from "jsdom";
+
+// Create a DOMPurify instance for server-side sanitization
+const window = new JSDOM("").window;
+const purify = DOMPurify(window);
+
+// Set maximum allowed size for portfolio HTML
+const MAX_HTML_SIZE = 500 * 1024; // 500KB
 
 /**
  * GET /api/portfolios - Retrieves the user's portfolio
@@ -51,9 +61,10 @@ export const GET = withErrorHandling(
 
 /**
  * POST /api/portfolios - Updates the user's portfolio
+ * Protected by CSRF token verification
  */
-export const POST = withErrorHandling(
-    async (req: Request, requestId: string) => {
+export const POST = withCSRFProtection(
+    withErrorHandling(async (req: Request, requestId: string) => {
         // Check authentication
         const auth = await checkAuthentication();
         if (!auth.authenticated) {
@@ -64,7 +75,8 @@ export const POST = withErrorHandling(
         const supabase = auth.supabase;
 
         // Get the HTML from the request body
-        const { html } = await req.json();
+        const body = await req.json();
+        const { html } = body;
 
         if (!html) {
             return createErrorResponse(
@@ -73,6 +85,22 @@ export const POST = withErrorHandling(
                 400,
             );
         }
+
+        // Validate content length
+        if (html.length > MAX_HTML_SIZE) {
+            return createErrorResponse(
+                `HTML content exceeds maximum allowed size of ${MAX_HTML_SIZE / 1024}KB`,
+                requestId,
+                413, // Payload Too Large
+            );
+        }
+
+        // Sanitize HTML content server-side before storage
+        const sanitizedHtml = purify.sanitize(html, {
+            USE_PROFILES: { html: true },
+            FORBID_ATTR: ["onerror", "onload", "onclick", "onmouseover"],
+            ADD_URI_SAFE_ATTR: ["target"],
+        });
 
         logger.debug({ requestId, userId }, "Updating portfolio");
 
@@ -95,7 +123,11 @@ export const POST = withErrorHandling(
         const isPublic = portfolioData?.portfolio_public || false;
 
         // Update the portfolio HTML in storage and the database
-        const uploadResult = await uploadPortfolio(userId, html, isPublic);
+        const uploadResult = await uploadPortfolio(
+            userId,
+            sanitizedHtml,
+            isPublic,
+        );
 
         if (!uploadResult.success) {
             return createErrorResponse(
@@ -113,5 +145,5 @@ export const POST = withErrorHandling(
             },
             requestId,
         );
-    },
+    }),
 );
