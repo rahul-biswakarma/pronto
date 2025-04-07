@@ -1,5 +1,6 @@
 import { createSupabaseServerClient } from "@/supabase/client/server";
 import { supabaseOption } from "@/supabase/config";
+import logger from "@/utils/logger";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
@@ -7,12 +8,24 @@ export async function GET(request: Request) {
     const code = searchParams.get("code");
     const next = searchParams.get("next") ?? "/";
 
+    logger.info({ path: "auth/callback", next }, "Auth callback initiated");
+
     if (code) {
         const supabase = await createSupabaseServerClient(supabaseOption);
+        logger.debug("Exchanging code for session");
         const { error } = await supabase.auth.exchangeCodeForSession(code);
         if (!error) {
             const forwardedHost = request.headers.get("x-forwarded-host");
             const isLocalEnv = process.env.NODE_ENV === "development";
+
+            logger.info(
+                {
+                    forwardedHost,
+                    isLocalEnv,
+                    next,
+                },
+                "Auth successful, redirecting",
+            );
 
             if (isLocalEnv) {
                 return NextResponse.redirect(`${origin}${next}`);
@@ -22,7 +35,12 @@ export async function GET(request: Request) {
             }
             return NextResponse.redirect(`${origin}${next}`);
         }
+
+        logger.error({ error }, "Failed to exchange code for session");
+    } else {
+        logger.warn("No code parameter provided in auth callback");
     }
 
+    logger.error("Auth error, redirecting to error page");
     return NextResponse.redirect(`${origin}?error=auth-code-error`);
 }

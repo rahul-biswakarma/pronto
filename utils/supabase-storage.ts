@@ -1,5 +1,6 @@
 "use server";
 import { createClient } from "@supabase/supabase-js";
+import logger from "./logger";
 
 interface PortfolioUploadResult {
     success: boolean;
@@ -20,6 +21,9 @@ export async function uploadPortfolio(
     html: string,
     publish = false,
 ): Promise<PortfolioUploadResult> {
+    const operationId = crypto.randomUUID();
+    logger.info({ operationId, userId, publish }, "Starting portfolio upload");
+
     try {
         // Create Supabase client with service role key to bypass RLS policies
         const supabase = createClient(
@@ -40,6 +44,11 @@ export async function uploadPortfolio(
         // Use the existing "portfolios" bucket
         const bucket = "portfolios";
 
+        logger.debug(
+            { operationId, userId, filename, bucket },
+            "Uploading portfolio to storage bucket",
+        );
+
         // Upload the file
         const { data, error } = await supabase.storage
             .from(bucket)
@@ -50,6 +59,10 @@ export async function uploadPortfolio(
             });
 
         if (error) {
+            logger.error(
+                { operationId, userId, error: error.message },
+                "Failed to upload portfolio to storage",
+            );
             return { success: false, error: error.message };
         }
 
@@ -62,6 +75,10 @@ export async function uploadPortfolio(
 
         // For private files, get a signed URL
         if (!publish) {
+            logger.debug(
+                { operationId, userId },
+                "Creating signed URL for private portfolio",
+            );
             const { data: signedData } = await supabase.storage
                 .from(bucket)
                 .createSignedUrl(filename, 60 * 60 * 24 * 7); // 7 day expiry
@@ -69,8 +86,12 @@ export async function uploadPortfolio(
             url = signedData?.signedUrl || url;
         }
 
+        logger.debug(
+            { operationId, userId },
+            "Updating database record with portfolio details",
+        );
         // Store the reference in the database to link it to the user
-        await supabase
+        const { error: updateError } = await supabase
             .from("resume_summaries")
             .update({
                 portfolio_s3_path: `${bucket}/${filename}`,
@@ -80,12 +101,43 @@ export async function uploadPortfolio(
             })
             .eq("user_id", userId);
 
+        if (updateError) {
+            logger.error(
+                {
+                    operationId,
+                    userId,
+                    error: updateError.message,
+                },
+                "Database update failed after portfolio upload",
+            );
+        }
+
+        logger.info(
+            {
+                operationId,
+                userId,
+                publish,
+                success: true,
+            },
+            "Portfolio upload completed successfully",
+        );
+
         return {
             success: true,
             url: !publish ? url : null,
             publicUrl: publish ? url : null,
         };
     } catch (error) {
+        logger.error(
+            {
+                operationId,
+                userId,
+                error: error instanceof Error ? error.message : "Unknown error",
+                stack: error instanceof Error ? error.stack : undefined,
+            },
+            "Error during portfolio upload",
+        );
+
         return {
             success: false,
             error:
@@ -106,6 +158,12 @@ export async function updatePortfolioAccess(
     userId: string,
     publish: boolean,
 ): Promise<PortfolioUploadResult> {
+    const operationId = crypto.randomUUID();
+    logger.info(
+        { operationId, userId, publish },
+        "Updating portfolio access permissions",
+    );
+
     try {
         // Create Supabase client with service role key to bypass RLS policies
         const supabase = createClient(
@@ -118,6 +176,10 @@ export async function updatePortfolioAccess(
             },
         );
 
+        logger.debug(
+            { operationId, userId },
+            "Fetching current portfolio information",
+        );
         // Get the current portfolio information
         const { data: portfolioData, error: fetchError } = await supabase
             .from("resume_summaries")
@@ -126,6 +188,15 @@ export async function updatePortfolioAccess(
             .single();
 
         if (fetchError || !portfolioData?.portfolio_s3_path) {
+            logger.error(
+                {
+                    operationId,
+                    userId,
+                    error: fetchError?.message,
+                },
+                "Portfolio not found for access update",
+            );
+
             return {
                 success: false,
                 error: "Portfolio not found",
@@ -135,6 +206,10 @@ export async function updatePortfolioAccess(
         const bucket = "portfolios";
         const filename = `portfolio-${userId}.html`;
 
+        logger.debug(
+            { operationId, userId, publish },
+            "Generating appropriate URL for portfolio",
+        );
         // Just update the public status without moving files
         const { data: urlData } = supabase.storage
             .from(bucket)
@@ -144,6 +219,10 @@ export async function updatePortfolioAccess(
 
         // Generate a signed URL if it's not supposed to be public
         if (!publish) {
+            logger.debug(
+                { operationId, userId },
+                "Creating signed URL for private portfolio",
+            );
             const { data: signedData } = await supabase.storage
                 .from(bucket)
                 .createSignedUrl(filename, 60 * 60 * 24 * 7); // 7 day expiry
@@ -151,8 +230,12 @@ export async function updatePortfolioAccess(
             url = signedData?.signedUrl || url;
         }
 
+        logger.debug(
+            { operationId, userId },
+            "Updating database record with new access settings",
+        );
         // Update database record
-        await supabase
+        const { error: updateError } = await supabase
             .from("resume_summaries")
             .update({
                 portfolio_s3_path: `${bucket}/${filename}`,
@@ -162,12 +245,43 @@ export async function updatePortfolioAccess(
             })
             .eq("user_id", userId);
 
+        if (updateError) {
+            logger.error(
+                {
+                    operationId,
+                    userId,
+                    error: updateError.message,
+                },
+                "Failed to update portfolio access in database",
+            );
+        }
+
+        logger.info(
+            {
+                operationId,
+                userId,
+                publish,
+                success: true,
+            },
+            "Portfolio access updated successfully",
+        );
+
         return {
             success: true,
             url: !publish ? url : null,
             publicUrl: publish ? url : null,
         };
     } catch (error) {
+        logger.error(
+            {
+                operationId,
+                userId,
+                error: error instanceof Error ? error.message : "Unknown error",
+                stack: error instanceof Error ? error.stack : undefined,
+            },
+            "Error updating portfolio access",
+        );
+
         return {
             success: false,
             error:

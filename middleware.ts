@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "./supabase/middleware";
+import logger from "./utils/logger";
 import { apiRatelimit, ratelimit } from "./utils/ratelimit";
 
 export async function middleware(request: NextRequest) {
@@ -13,6 +14,11 @@ export async function middleware(request: NextRequest) {
         : request.headers.get("x-real-ip") || "127.0.0.1";
     const identifier = `${ip}:${request.nextUrl.pathname}`;
 
+    logger.debug(
+        { ip, path: request.nextUrl.pathname },
+        "Rate limiting request",
+    );
+
     // Use different rate limits for API routes vs regular pages
     const limiter = isApiRoute ? apiRatelimit : ratelimit;
     const { success, limit, reset, remaining } =
@@ -20,6 +26,10 @@ export async function middleware(request: NextRequest) {
 
     // If rate limit is exceeded, return 429 Too Many Requests
     if (!success) {
+        logger.warn(
+            { ip, path: request.nextUrl.pathname },
+            "Rate limit exceeded",
+        );
         return new NextResponse("Too Many Requests", {
             status: 429,
             headers: {
