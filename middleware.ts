@@ -7,7 +7,10 @@ export async function middleware(request: NextRequest) {
     const isApiRoute = request.nextUrl.pathname.startsWith("/api");
 
     // Apply rate limiting
-    const ip = request.ip ?? "127.0.0.1";
+    const forwarded = request.headers.get("x-forwarded-for");
+    const ip = forwarded
+        ? forwarded.split(",")[0]
+        : request.headers.get("x-real-ip") || "127.0.0.1";
     const identifier = `${ip}:${request.nextUrl.pathname}`;
 
     // Use different rate limits for API routes vs regular pages
