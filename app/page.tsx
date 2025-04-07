@@ -1,10 +1,14 @@
 "use client";
 
 import { Dropzone, FileMosaic } from "@dropzone-ui/react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { PortfolioPreview } from "../components/portfolio-preview";
 import { usePDFWorkflow } from "../hooks/use-pdf-workflow";
 
 export default function Home() {
+    const router = useRouter();
+
     const {
         files,
         extractedText,
@@ -17,6 +21,31 @@ export default function Home() {
         generatePortfolio,
         userId,
     } = usePDFWorkflow();
+
+    // Check if user has an existing portfolio HTML and redirect to editor
+    useEffect(() => {
+        async function checkExistingPortfolio() {
+            if (!userId) return;
+
+            try {
+                const response = await fetch("/api/portfolio/get");
+                if (!response.ok) {
+                    // If 404 or other error, it means no portfolio exists
+                    return;
+                }
+
+                const data = await response.json();
+                if (data.portfolio_url) {
+                    // User has existing portfolio, redirect to editor
+                    router.push("/editor");
+                }
+            } catch (error) {
+                console.error("Error checking portfolio:", error);
+            }
+        }
+
+        checkExistingPortfolio();
+    }, [userId, router]);
 
     return (
         <div className="flex flex-col justify-center items-center h-full p-4">
@@ -141,12 +170,28 @@ export default function Home() {
 
                         {/* Portfolio section */}
                         {portfolioHtml && (
-                            <div className="mb-6">
-                                <PortfolioPreview html={portfolioHtml} />
+                            <div className="mb-4">
+                                <div className="flex justify-between items-center mb-2">
+                                    <h2 className="text-lg font-semibold">
+                                        Portfolio:
+                                    </h2>
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            router.push("/portfolio-editor")
+                                        }
+                                        className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+                                    >
+                                        Edit Portfolio
+                                    </button>
+                                </div>
+                                <div className="border border-gray-600 rounded bg-[#1a1a1a] overflow-hidden">
+                                    <PortfolioPreview html={portfolioHtml} />
+                                </div>
                             </div>
                         )}
 
-                        {/* Summary section */}
+                        {/* AI Summary section */}
                         {summary && !portfolioHtml && (
                             <div className="p-4 border border-gray-600 rounded bg-[#1a1a1a] mb-4">
                                 <div className="flex justify-between items-center mb-2">
