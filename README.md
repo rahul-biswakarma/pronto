@@ -1,3 +1,5 @@
+# Pronto
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 # PDF Text Extractor & Summarizer
@@ -14,6 +16,8 @@ This application allows you to:
 - Uses Ollama locally and DeepSeek in production
 - Streaming AI responses
 - Modern UI with Tailwind CSS
+- Comprehensive rate limiting with Upstash Redis
+- Structured logging with Pino
 
 ## Getting Started
 
@@ -24,7 +28,7 @@ This application allows you to:
 
 ### Setup Ollama (Local Development)
 
-Run the setup script to install the required Llama3 model:
+Run the setup script to install the required model:
 
 ```bash
 ./setup-ollama.sh
@@ -34,16 +38,17 @@ Make sure the Ollama service is running in the background.
 
 ### Environment Variables
 
-Create a `.env.local` file with the following variables:
+Copy the `.env.example` file to `.env.local` and fill in the required values:
 
+```bash
+cp .env.example .env
 ```
-# Local development with Ollama
-OLLAMA_HOST=http://localhost:11434
 
-# Production variables (will be configured in Vercel)
-# DEEPSEEK_API_KEY=your-deepseek-api-key
-# DEEPSEEK_API_URL=https://api.deepseek.com/v1
-```
+Required environment variables:
+- Supabase credentials
+- Upstash Redis credentials (for rate limiting)
+- Ollama host (for local development)
+- DeepSeek API key (for production)
 
 ### Installation
 
@@ -61,14 +66,29 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## System Components
+
+### Rate Limiting
+
+This application implements rate limiting using Upstash Redis:
+
+- Regular routes are limited to 10 requests per 10 seconds per IP and route
+- API routes are limited to 5 requests per 10 seconds per IP and route
+
+### Logging System
+
+The application uses Pino for structured logging:
+
+- Different log levels based on environment (debug in development, info in production)
+- Request ID tracking for traceability
+- Contextual logging with user IDs and operation details
+- Configurable log level via environment variables
+
 ## Deployment
 
-When deploying to Vercel, add the following environment variables:
+When deploying to Vercel, add all environment variables from `.env.example`.
 
-- `DEEPSEEK_API_KEY`: Your DeepSeek API key
-- `DEEPSEEK_API_URL`: DeepSeek API URL (default: https://api.deepseek.com/v1)
-
-The application will automatically use DeepSeek for AI summarization in production.
+The application will automatically use DeepSeek for AI in production and set appropriate log levels.
 
 ## How It Works
 
@@ -82,8 +102,10 @@ The application will automatically use DeepSeek for AI summarization in producti
 To learn more about the technologies used in this project:
 
 - [Next.js Documentation](https://nextjs.org/docs)
+- [Supabase](https://supabase.com/docs)
+- [Upstash Redis](https://upstash.com/docs/redis)
+- [Pino Logger](https://getpino.io/)
 - [Vercel AI SDK](https://sdk.vercel.ai/docs)
-- [PDF.js](https://mozilla.github.io/pdf.js/)
 - [Ollama](https://ollama.com/)
 
 ## Deploy on Vercel
@@ -91,21 +113,3 @@ To learn more about the technologies used in this project:
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-## Rate Limiting
-
-This application implements rate limiting using Upstash Redis:
-
-- Regular routes are limited to 10 requests per 10 seconds per IP and route
-- API routes are limited to 5 requests per 10 seconds per IP and route
-
-To set up rate limiting:
-
-1. Create an account on [Upstash](https://upstash.com/)
-2. Create a Redis database
-3. Add your Upstash Redis REST URL and token to the `.env` file:
-
-```
-UPSTASH_REDIS_REST_URL=your-upstash-redis-rest-url
-UPSTASH_REDIS_REST_TOKEN=your-upstash-redis-rest-token
-```
