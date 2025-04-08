@@ -62,8 +62,15 @@ export default function PortfolioEditorPage() {
                 }
 
                 const data = await response.json();
-                if (data.html) {
-                    setPortfolioHtml(data.html);
+                if (data.url) {
+                    // Fetch the HTML from the URL
+                    const htmlResponse = await fetch(data.url);
+                    if (!htmlResponse.ok) {
+                        throw new Error("Failed to fetch portfolio HTML");
+                    }
+
+                    const html = await htmlResponse.text();
+                    setPortfolioHtml(html);
 
                     // Add a system message with current HTML
                     setMessages([
@@ -76,7 +83,7 @@ export default function PortfolioEditorPage() {
 
               Current portfolio HTML:
               \`\`\`html
-              ${data.html}
+              ${html}
               \`\`\``,
                         },
                     ]);

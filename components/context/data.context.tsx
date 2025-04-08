@@ -12,50 +12,84 @@ import {
 type DataContextType = {
     summary: string | null;
     portfolioHtml: string | null;
+    portfolioUrl: string | null;
     setSummary: Dispatch<SetStateAction<null | string>>;
     setPortfolioHtml: Dispatch<SetStateAction<null | string>>;
+    setPortfolioUrl: Dispatch<SetStateAction<null | string>>;
+    fetchHtmlFromUrl: (url: string) => Promise<string | null>;
 };
 
 const defaultState = {
     summary: null,
     portfolioHtml: null,
+    portfolioUrl: null,
     setSummary: () => {},
     setPortfolioHtml: () => {},
+    setPortfolioUrl: () => {},
+    fetchHtmlFromUrl: async () => null,
 };
 
 const DataContext = createContext<DataContextType>(defaultState);
 
 export const DataProvider = ({
     children,
-    htmlUrl = "",
+    initialHtmlUrl = "",
 }: {
     children: React.ReactNode;
-    htmlUrl?: string;
+    initialHtmlUrl?: string;
 }) => {
     const [summary, setSummary] = useState<string | null>(defaultState.summary);
     const [portfolioHtml, setPortfolioHtml] = useState<string | null>(
         defaultState.portfolioHtml,
     );
+    const [portfolioUrl, setPortfolioUrl] = useState<string | null>(
+        initialHtmlUrl || null,
+    );
 
-    useEffect(() => {
-        const fetchPortfolioHtml = async () => {
-            if (!htmlUrl) return;
+    // Function to fetch HTML from URL
+    const fetchHtmlFromUrl = async (url: string): Promise<string | null> => {
+        if (!url) return null;
 
-            try {
-                const response = await fetch(htmlUrl);
-                const html = await response.text();
-                setPortfolioHtml(html);
-            } catch (error) {
-                console.error("Failed to fetch portfolio HTML:", error);
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                console.error(`Failed to fetch HTML: ${response.status}`);
+                return null;
             }
-        };
+            const html = await response.text();
+            setPortfolioHtml(html);
+            return html;
+        } catch (error) {
+            console.error("Failed to fetch portfolio HTML:", error);
+            return null;
+        }
+    };
 
-        fetchPortfolioHtml();
-    }, [htmlUrl]);
+    // Fetch HTML on initial load or URL change
+    useEffect(() => {
+        if (portfolioUrl) {
+            fetchHtmlFromUrl(portfolioUrl);
+        }
+    }, [portfolioUrl]);
+
+    // Fetch from initialHtmlUrl on first load
+    useEffect(() => {
+        if (initialHtmlUrl && !portfolioUrl) {
+            setPortfolioUrl(initialHtmlUrl);
+        }
+    }, [initialHtmlUrl]);
 
     return (
         <DataContext.Provider
-            value={{ summary, portfolioHtml, setSummary, setPortfolioHtml }}
+            value={{
+                summary,
+                portfolioHtml,
+                portfolioUrl,
+                setSummary,
+                setPortfolioHtml,
+                setPortfolioUrl,
+                fetchHtmlFromUrl,
+            }}
         >
             {children}
         </DataContext.Provider>
@@ -63,8 +97,9 @@ export const DataProvider = ({
 };
 
 export const useData = () => {
-    const { summary, portfolioHtml, setSummary, setPortfolioHtml } =
-        useContext(DataContext);
-
-    return { summary, portfolioHtml, setSummary, setPortfolioHtml };
+    const context = useContext(DataContext);
+    if (!context) {
+        throw new Error("useData must be used within a DataProvider");
+    }
+    return context;
 };

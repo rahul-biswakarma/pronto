@@ -33,10 +33,10 @@ export const GET = withErrorHandling(
 
         logger.debug({ requestId, userId }, "Fetching portfolio data");
 
-        // Get the portfolio HTML from the database
+        // Get only the portfolio URL from the database, not HTML
         const { data, error } = await supabase
             .from("resume_summaries")
-            .select("portfolio_html, portfolio_url, portfolio_public")
+            .select("portfolio_url, portfolio_public")
             .eq("user_id", userId)
             .single();
 
@@ -50,7 +50,6 @@ export const GET = withErrorHandling(
 
         return createSuccessResponse(
             {
-                html: data.portfolio_html || "",
                 url: data.portfolio_url || null,
                 isPublic: data.portfolio_public || false,
             },

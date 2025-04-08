@@ -2,12 +2,12 @@
 CREATE TABLE resume_summaries (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   user_id UUID REFERENCES auth.users(id),
   summary TEXT NOT NULL,
   skills TEXT[] NOT NULL,
   persona TEXT NOT NULL,
   personality TEXT[] NOT NULL,
-  portfolio_html TEXT,
   portfolio_s3_path TEXT,
   portfolio_public BOOLEAN DEFAULT FALSE,
   portfolio_url TEXT,

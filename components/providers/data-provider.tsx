@@ -38,10 +38,13 @@ export function DataProvider({ children, htmlUrl = "" }: DataProviderProps) {
         const fetchHtmlFromUrl = async () => {
             const response = await fetch(htmlUrl);
             const html = await response.text();
-            setPortfolioHtml(html);
+            if (response.ok) {
+                setPortfolioHtml(html);
+            }
         };
-
-        fetchHtmlFromUrl();
+        if (htmlUrl) {
+            fetchHtmlFromUrl();
+        }
     }, [htmlUrl]);
 
     const value = {

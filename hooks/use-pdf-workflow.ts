@@ -16,21 +16,26 @@ export type WorkflowStage =
     | "completed"
     | "error";
 
-export interface PDFWorkflowState {
+export type PDFWorkflowState = {
     files: ExtFile[];
     extractedText: string;
-    summary: string;
+    summary: string | null;
     stage: WorkflowStage;
     error: Error | string | null;
     userId: string | null;
-}
+};
 
 export const usePDFWorkflow = () => {
     // Files state
     const [files, setFiles] = useState<ExtFile[]>([]);
     const [extractedText, setExtractedText] = useState<string>("");
 
-    const { setPortfolioHtml, portfolioHtml } = useData();
+    const {
+        summary = "",
+        setSummary = () => {},
+        setPortfolioHtml = () => {},
+        setPortfolioUrl = () => {},
+    } = useData();
 
     // Portfolio state
     const [isGeneratingPortfolio, setIsGeneratingPortfolio] = useState(false);
@@ -49,7 +54,7 @@ export const usePDFWorkflow = () => {
         error: pdfError,
     } = usePDFJS();
     const {
-        summary,
+        summary: aiSummary,
         isSummarizing,
         summaryError,
         generateSummary,
@@ -102,12 +107,12 @@ export const usePDFWorkflow = () => {
             return;
         }
 
-        if (summary && isGeneratingPortfolio) {
+        if (aiSummary && isGeneratingPortfolio) {
             setStage("portfolio_generating");
             return;
         }
 
-        if (summary && portfolioHtml && !isGeneratingPortfolio) {
+        if (aiSummary && summary && !isGeneratingPortfolio) {
             setStage("completed");
             return;
         }
@@ -123,8 +128,8 @@ export const usePDFWorkflow = () => {
         extractedText,
         isPDFJSLoading,
         isSummarizing,
+        aiSummary,
         summary,
-        portfolioHtml,
         isGeneratingPortfolio,
         pdfError,
         summaryError,
@@ -148,7 +153,7 @@ export const usePDFWorkflow = () => {
             !userId.startsWith("temp-") &&
             extractedText &&
             !isSummarizing &&
-            !summary &&
+            !aiSummary &&
             stage === "extraction"
         ) {
             generateSummary(extractedText).catch((err) => {
@@ -160,21 +165,27 @@ export const usePDFWorkflow = () => {
                 }
             });
         }
-    }, [extractedText, isSummarizing, summary, generateSummary, stage, userId]);
+    }, [
+        extractedText,
+        isSummarizing,
+        aiSummary,
+        generateSummary,
+        stage,
+        userId,
+    ]);
 
     // Auto-generate portfolio when summary is done
     useEffect(() => {
         if (
             userId &&
-            !userId.startsWith("temp-") &&
-            summary &&
+            aiSummary &&
             !isGeneratingPortfolio &&
-            !portfolioHtml &&
+            !summary &&
             stage === "summarizing"
         ) {
             generatePortfolio();
         }
-    }, [summary, isGeneratingPortfolio, portfolioHtml, userId, stage]);
+    }, [aiSummary, isGeneratingPortfolio, summary, userId, stage]);
 
     // Handle file updates and text extraction
     const handleFileUpload = useCallback(
@@ -216,7 +227,7 @@ export const usePDFWorkflow = () => {
 
     // Generate portfolio
     const generatePortfolio = useCallback(async () => {
-        if (!userId || !summary) {
+        if (!userId || !aiSummary) {
             return;
         }
 
@@ -231,7 +242,7 @@ export const usePDFWorkflow = () => {
                 },
                 body: JSON.stringify({
                     userId,
-                    publish: false, // Default to private
+                    publish: true, // Default to private
                 }),
             });
 
@@ -249,18 +260,24 @@ export const usePDFWorkflow = () => {
                 setPortfolioHtml(data.html);
             }
 
+            // Store the URL in context
+            if (data.deployUrl) {
+                setPortfolioUrl(data.deployUrl);
+            }
+
             // Store resume data in database
             if (userId && !userId.startsWith("temp-")) {
                 try {
                     const supabase =
                         createSupabaseBrowserClient(supabaseOption);
-                    await supabase.from("resume_summaries").upsert({
-                        user_id: userId,
-                        portfolio_html: data.html,
-                        portfolio_url: data.deployUrl,
-                        portfolio_public: data.isPublic,
-                        updated_at: new Date().toISOString(),
-                    });
+                    await supabase
+                        .from("resume_summaries")
+                        .update({
+                            portfolio_url: data.deployUrl,
+                            portfolio_public: data.isPublic,
+                            updated_at: new Date().toISOString(),
+                        })
+                        .eq("user_id", userId);
                 } catch (dbError) {
                     console.error(
                         "Failed to save portfolio to database:",
@@ -281,7 +298,7 @@ export const usePDFWorkflow = () => {
         } finally {
             setIsGeneratingPortfolio(false);
         }
-    }, [userId, summary, setPortfolioHtml]);
+    }, [userId, aiSummary, setPortfolioHtml, setPortfolioUrl]);
 
     // Reset the entire workflow
     const reset = useCallback(() => {
@@ -306,8 +323,8 @@ export const usePDFWorkflow = () => {
         // State
         files,
         extractedText,
+        aiSummary,
         summary,
-        portfolioHtml,
         stage,
         error,
         userId,

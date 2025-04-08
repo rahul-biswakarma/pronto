@@ -49,15 +49,22 @@ export async function POST(req: Request) {
             const supabase = auth.supabase;
             const { data } = await supabase
                 .from("resume_summaries")
-                .select("portfolio_html")
+                .select("portfolio_url")
                 .eq("user_id", userId)
                 .single();
 
-            if (data?.portfolio_html) {
+            if (data?.portfolio_url) {
                 logger.debug(
                     { requestId },
-                    "Creating system message with portfolio HTML",
+                    "Fetching HTML content from portfolio URL",
                 );
+
+                // Fetch HTML content from the URL
+                const htmlResponse = await fetch(data.portfolio_url);
+                if (!htmlResponse.ok) {
+                    throw new Error("Failed to fetch portfolio HTML");
+                }
+                const htmlContent = await htmlResponse.text();
 
                 const systemMessage: Message = {
                     id: "system-1",
@@ -68,7 +75,7 @@ export async function POST(req: Request) {
 
           Current portfolio HTML:
           \`\`\`html
-          ${data.portfolio_html}
+          ${htmlContent}
           \`\`\``,
                 };
 

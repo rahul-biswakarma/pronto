@@ -30,10 +30,7 @@ export default async function Home() {
         .single();
 
     return (
-        <DataProvider
-            initialHtml={summary?.portfolio_html || ""}
-            htmlUrl={summary?.portfolio_url || ""}
-        >
+        <DataProvider htmlUrl={summary?.portfolio_url || ""}>
             <AppLayout />
         </DataProvider>
     );

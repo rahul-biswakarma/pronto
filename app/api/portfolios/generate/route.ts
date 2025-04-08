@@ -182,23 +182,7 @@ export const POST = withErrorHandling(
             publish,
         );
 
-        // Also save a copy in the database for backup and quick retrieval
-        logger.debug(
-            { requestId, userId },
-            "Saving portfolio HTML to database",
-        );
-        const { error: updateError } = await supabase
-            .from("resume_summaries")
-            .update({ portfolio_html: portfolioHTML })
-            .eq("user_id", userId);
-
-        if (updateError) {
-            logger.error(
-                { requestId, error: updateError.message },
-                "Failed to save portfolio HTML to database",
-            );
-        }
-
+        // We no longer save HTML in the database, only store the URL
         logger.info(
             {
                 requestId,
