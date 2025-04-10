@@ -18,41 +18,62 @@ export async function middleware(request: NextRequest) {
     // Check if this is an API route
     const isApiRoute = request.nextUrl.pathname.startsWith("/api");
 
-    // Apply rate limiting
-    const forwarded = request.headers.get("x-forwarded-for");
-    const ip = forwarded
-        ? forwarded.split(",")[0]
-        : request.headers.get("x-real-ip") || "127.0.0.1";
-    const identifier = `${ip}:${request.nextUrl.pathname}`;
+    // Skip rate limiting for auth callback routes (handle both formats)
+    const isAuthCallback =
+        request.nextUrl.pathname === "/api/auth/callback" ||
+        request.nextUrl.pathname.includes("/callback") ||
+        request.nextUrl.pathname.includes("/auth/callback");
 
-    logger.debug(
-        { ip, path: request.nextUrl.pathname },
-        "Rate limiting request",
-    );
+    let limit: number | undefined;
+    let reset: number | undefined;
+    let remaining: number | undefined;
 
-    // Use different rate limits for API routes vs regular pages
-    const limiter = isApiRoute ? apiRatelimit : ratelimit;
-    const { success, limit, reset, remaining } =
-        await limiter.limit(identifier);
+    // Apply rate limiting for all routes except auth callback
+    if (!isAuthCallback) {
+        // Apply rate limiting
+        const forwarded = request.headers.get("x-forwarded-for");
+        const ip = forwarded
+            ? forwarded.split(",")[0]
+            : request.headers.get("x-real-ip") || "127.0.0.1";
+        const identifier = `${ip}:${request.nextUrl.pathname}`;
 
-    // If rate limit is exceeded, return 429 Too Many Requests
-    if (!success) {
-        logger.warn(
+        logger.debug(
             { ip, path: request.nextUrl.pathname },
-            "Rate limit exceeded",
+            "Rate limiting request",
         );
-        return new NextResponse("Too Many Requests", {
-            status: 429,
-            headers: {
-                "X-RateLimit-Limit": limit.toString(),
-                "X-RateLimit-Remaining": remaining.toString(),
-                "X-RateLimit-Reset": reset.toString(),
-                "Retry-After": Math.ceil(
-                    (reset - Date.now()) / 1000,
-                ).toString(),
-                ...securityHeaders,
-            },
-        });
+
+        // Use different rate limits for API routes vs regular pages
+        const limiter = isApiRoute ? apiRatelimit : ratelimit;
+        const {
+            success,
+            limit: rateLimit,
+            reset: rateReset,
+            remaining: rateRemaining,
+        } = await limiter.limit(identifier);
+
+        limit = rateLimit;
+        reset = rateReset;
+        remaining = rateRemaining;
+
+        // If rate limit is exceeded, return 429 Too Many Requests
+        if (!success) {
+            logger.warn(
+                { ip, path: request.nextUrl.pathname },
+                "Rate limit exceeded",
+            );
+            return new NextResponse("Too Many Requests", {
+                status: 429,
+                headers: {
+                    "X-RateLimit-Limit": limit.toString(),
+                    "X-RateLimit-Remaining": remaining.toString(),
+                    "X-RateLimit-Reset": reset.toString(),
+                    "Retry-After": Math.ceil(
+                        (reset - Date.now()) / 1000,
+                    ).toString(),
+                    ...securityHeaders,
+                },
+            });
+        }
     }
 
     // Continue with session handling if rate limit not exceeded
@@ -71,7 +92,12 @@ export async function middleware(request: NextRequest) {
         response = sessionResponse.response;
         const user = sessionResponse.user;
 
-        if (!request.nextUrl.pathname.endsWith("/login") && !user) {
+        // Skip login redirect for auth callback routes
+        if (
+            !request.nextUrl.pathname.endsWith("/login") &&
+            !user &&
+            !isAuthCallback
+        ) {
             return NextResponse.redirect(new URL("/login", request.url));
         }
     } catch (error) {
@@ -79,10 +105,17 @@ export async function middleware(request: NextRequest) {
         response = NextResponse.next();
     }
 
-    // Add rate limit headers to all responses
-    response.headers.set("X-RateLimit-Limit", limit.toString());
-    response.headers.set("X-RateLimit-Remaining", remaining.toString());
-    response.headers.set("X-RateLimit-Reset", reset.toString());
+    // Add rate limit headers to all responses (except auth callback)
+    if (
+        !isAuthCallback &&
+        limit !== undefined &&
+        remaining !== undefined &&
+        reset !== undefined
+    ) {
+        response.headers.set("X-RateLimit-Limit", limit.toString());
+        response.headers.set("X-RateLimit-Remaining", remaining.toString());
+        response.headers.set("X-RateLimit-Reset", reset.toString());
+    }
 
     // Add security headers to all responses
     for (const [key, value] of Object.entries(securityHeaders)) {
