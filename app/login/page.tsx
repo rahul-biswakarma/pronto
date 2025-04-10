@@ -1,4 +1,4 @@
-import { SignInButton } from "@/components/features/auth/sign-in-button";
+import { GoogleSignin } from "@/components/auth/signin";
 import { Card, Flex, Heading, Text } from "@radix-ui/themes";
 
 export default function LoginPage() {
@@ -15,7 +15,7 @@ export default function LoginPage() {
                     <Text size="2" mb="4" align="center">
                         Sign in to create and manage your portfolios
                     </Text>
-                    <SignInButton size="3" />
+                    <GoogleSignin />
                 </Flex>
             </Card>
         </Flex>
