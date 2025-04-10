@@ -265,6 +265,9 @@ export const usePDFWorkflow = () => {
                 setPortfolioUrl(data.deployUrl);
             }
 
+            // Update stage to indicate completion
+            setStage("completed");
+
             // Store resume data in database
             if (userId && !userId.startsWith("temp-")) {
                 try {
