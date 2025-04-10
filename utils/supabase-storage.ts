@@ -115,8 +115,6 @@ export async function uploadPortfolio(
                 portfolio_public: publish,
                 portfolio_url: url,
                 portfolio_updated_at: new Date().toISOString(),
-                // Add user ID as owner to enforce access control
-                portfolio_owner: userId,
             })
             .eq("user_id", userId);
 
