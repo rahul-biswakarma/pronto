@@ -1,37 +1,22 @@
-import { AppLayout } from "@/components/layouts/app-layout";
-import { DataProvider } from "@/libs/components/providers/data-provider";
+import { Onboarding } from "@/libs/components/onboarding/onboarding";
 import { checkAuthentication } from "@/libs/utils/auth";
-import { Flex, Text } from "@radix-ui/themes";
+import { redirect } from "next/navigation";
 
 export default async function Home() {
-    const { userId, supabase } = await checkAuthentication();
+    const { userId, supabase, authenticated } = await checkAuthentication();
 
-    if (!supabase) {
-        return (
-            <Flex
-                align="center"
-                justify="center"
-                direction="column"
-                gap="4"
-                style={{ height: "100vh" }}
-            >
-                <Text size="5" color="red">
-                    Authentication Error
-                </Text>
-                <Text>Please try logging in again</Text>
-            </Flex>
-        );
+    if (authenticated) {
+        const { data: summary } = await supabase
+            .from("portfolio")
+            .select("content")
+            .eq("user_id", userId);
+
+        const content = summary?.[0]?.content;
+
+        if (content) {
+            redirect("/editor");
+        }
     }
 
-    const { data: summary } = await supabase
-        .from("resume_summaries")
-        .select("*")
-        .eq("user_id", userId)
-        .single();
-
-    return (
-        <DataProvider htmlUrl={summary?.portfolio_url || ""}>
-            <AppLayout />
-        </DataProvider>
-    );
+    return <Onboarding />;
 }
