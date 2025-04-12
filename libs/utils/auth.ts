@@ -3,7 +3,6 @@
 import { createSupabaseServerClient } from "@/libs/supabase/client/server";
 import { supabaseOption } from "@/libs/supabase/config";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import logger from "./logger";
 
 type AuthResult =
     | {
@@ -24,12 +23,10 @@ type AuthResult =
  * @returns Object containing userId if authenticated, or error response if not
  */
 export async function checkAuthentication(): Promise<AuthResult> {
-    logger.debug("Checking user authentication");
     const supabase = await createSupabaseServerClient(supabaseOption);
     const { data, error } = await supabase.auth.getUser();
 
     if (error || !data.user) {
-        logger.warn({ error: error?.message }, "Authentication failed");
         return {
             authenticated: false,
             errorResponse: new Response(
@@ -42,7 +39,6 @@ export async function checkAuthentication(): Promise<AuthResult> {
         };
     }
 
-    logger.debug({ userId: data.user.id }, "User authenticated successfully");
     return {
         authenticated: true,
         userId: data.user.id,
