@@ -5,14 +5,24 @@ import {
     type SetStateAction,
     createContext,
     useContext,
-    useEffect,
     useState,
 } from "react";
 
+export type WorkflowStage =
+    | "idle"
+    | "upload"
+    | "extraction"
+    | "summarizing"
+    | "portfolio_generating"
+    | "completed"
+    | "error";
+
 type DataContextType = {
+    stage: WorkflowStage;
     summary: string | null;
     portfolioHtml: string | null;
     portfolioUrl: string | null;
+    setStage: Dispatch<SetStateAction<WorkflowStage>>;
     setSummary: Dispatch<SetStateAction<null | string>>;
     setPortfolioHtml: Dispatch<SetStateAction<null | string>>;
     setPortfolioUrl: Dispatch<SetStateAction<null | string>>;
@@ -20,9 +30,11 @@ type DataContextType = {
 };
 
 const defaultState = {
+    stage: "idle" as WorkflowStage,
     summary: null,
     portfolioHtml: null,
     portfolioUrl: null,
+    setStage: () => {},
     setSummary: () => {},
     setPortfolioHtml: () => {},
     setPortfolioUrl: () => {},
@@ -38,6 +50,7 @@ export const DataProvider = ({
     children: React.ReactNode;
     initialHtmlUrl?: string;
 }) => {
+    const [stage, setStage] = useState<WorkflowStage>(defaultState.stage);
     const [summary, setSummary] = useState<string | null>(defaultState.summary);
     const [portfolioHtml, setPortfolioHtml] = useState<string | null>(
         defaultState.portfolioHtml,
@@ -65,26 +78,14 @@ export const DataProvider = ({
         }
     };
 
-    // Fetch HTML on initial load or URL change
-    useEffect(() => {
-        if (portfolioUrl) {
-            fetchHtmlFromUrl(portfolioUrl);
-        }
-    }, [portfolioUrl]);
-
-    // Fetch from initialHtmlUrl on first load
-    useEffect(() => {
-        if (initialHtmlUrl && !portfolioUrl) {
-            setPortfolioUrl(initialHtmlUrl);
-        }
-    }, [initialHtmlUrl]);
-
     return (
         <DataContext.Provider
             value={{
+                stage,
                 summary,
                 portfolioHtml,
                 portfolioUrl,
+                setStage,
                 setSummary,
                 setPortfolioHtml,
                 setPortfolioUrl,
@@ -96,7 +97,7 @@ export const DataProvider = ({
     );
 };
 
-export const useData = () => {
+export const useDataContext = () => {
     const context = useContext(DataContext);
     if (!context) {
         throw new Error("useData must be used within a DataProvider");
