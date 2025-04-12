@@ -70,9 +70,8 @@ const PDFUpload = ({
             <Button
                 onClick={async () => {
                     try {
-                        await dataLayer.post("/api/portfolios", {
-                            method: "POST",
-                            body: { content: pdfContent },
+                        await dataLayer.post("/api/portfolios/create", {
+                            content: pdfContent,
                         });
                         router.push("/editor");
                     } catch (error) {
