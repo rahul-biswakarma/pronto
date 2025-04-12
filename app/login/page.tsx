@@ -1,4 +1,4 @@
-import { GoogleSignin } from "@/components/auth/signin";
+import { GoogleSignin } from "@/libs/components/auth/signin";
 import { Card, Flex, Heading, Text } from "@radix-ui/themes";
 
 export default function LoginPage() {

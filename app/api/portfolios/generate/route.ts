@@ -1,12 +1,12 @@
-import { getAIClient } from "@/utils/ai-client";
+import { getAIClient } from "@/libs/utils/ai-client";
 import {
     createErrorResponse,
     createSuccessResponse,
     withErrorHandling,
-} from "@/utils/api-response";
-import { checkAuthentication } from "@/utils/auth";
-import { getImageTemplatePrompt } from "@/utils/image-prompts";
-import { uploadPortfolio } from "@/utils/supabase-storage";
+} from "@/libs/utils/api-response";
+import { checkAuthentication } from "@/libs/utils/auth";
+import { getImageTemplatePrompt } from "@/libs/utils/image-prompts";
+import { uploadPortfolio } from "@/libs/utils/supabase-storage";
 import { type CoreMessage, streamObject } from "ai";
 import { z } from "zod";
 

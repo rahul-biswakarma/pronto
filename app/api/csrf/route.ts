@@ -1,6 +1,6 @@
-import { withErrorHandling } from "@/utils/api-response";
-import { generateCSRFToken } from "@/utils/csrf";
-import logger from "@/utils/logger";
+import { withErrorHandling } from "@/libs/utils/api-response";
+import { generateCSRFToken } from "@/libs/utils/csrf";
+import logger from "@/libs/utils/logger";
 import { NextResponse } from "next/server";
 
 /**

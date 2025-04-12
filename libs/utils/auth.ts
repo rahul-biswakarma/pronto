@@ -1,7 +1,7 @@
 "use server";
 
-import { createSupabaseServerClient } from "@/supabase/client/server";
-import { supabaseOption } from "@/supabase/config";
+import { createSupabaseServerClient } from "@/libs/supabase/client/server";
+import { supabaseOption } from "@/libs/supabase/config";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import logger from "./logger";
 

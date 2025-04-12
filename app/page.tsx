@@ -1,6 +1,6 @@
 import { AppLayout } from "@/components/layouts/app-layout";
-import { DataProvider } from "@/components/providers/data-provider";
-import { checkAuthentication } from "@/utils/auth";
+import { DataProvider } from "@/libs/components/providers/data-provider";
+import { checkAuthentication } from "@/libs/utils/auth";
 import { Flex, Text } from "@radix-ui/themes";
 
 export default async function Home() {

@@ -1,6 +1,6 @@
 "use client";
 
-import { createSupabaseBrowserClient } from "@/supabase/client/browser";
+import { createSupabaseBrowserClient } from "@/libs/supabase/client/browser";
 import { Button } from "@radix-ui/themes";
 
 export function GoogleSignin() {

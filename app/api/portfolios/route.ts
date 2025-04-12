@@ -2,11 +2,11 @@ import {
     createErrorResponse,
     createSuccessResponse,
     withErrorHandling,
-} from "@/utils/api-response";
-import { checkAuthentication } from "@/utils/auth";
-import { withCSRFProtection } from "@/utils/csrf";
-import logger from "@/utils/logger";
-import { uploadPortfolio } from "@/utils/supabase-storage";
+} from "@/libs/utils/api-response";
+import { checkAuthentication } from "@/libs/utils/auth";
+import { withCSRFProtection } from "@/libs/utils/csrf";
+import logger from "@/libs/utils/logger";
+import { uploadPortfolio } from "@/libs/utils/supabase-storage";
 import DOMPurify from "dompurify";
 import { JSDOM } from "jsdom";
 

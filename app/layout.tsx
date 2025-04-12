@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import CSRFProvider from "@/components/providers/csrf-provider";
+import CSRFProvider from "@/libs/components/providers/csrf-provider";
 import { Theme } from "@radix-ui/themes";
 
 const geistSans = Geist({

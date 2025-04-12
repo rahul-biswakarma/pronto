@@ -1,6 +1,6 @@
-import { createSupabaseServerClient } from "@/supabase/client/server";
-import { supabaseOption } from "@/supabase/config";
-import logger from "@/utils/logger";
+import { createSupabaseServerClient } from "@/libs/supabase/client/server";
+import { supabaseOption } from "@/libs/supabase/config";
+import logger from "@/libs/utils/logger";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
