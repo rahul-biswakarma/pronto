@@ -9,48 +9,39 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      resume_summaries: {
+      portfolio: {
         Row: {
-          created_at: string | null
+          content_s3_path: string | null
+          created_at: string
+          hosted_domain: string | null
+          hosted_html_url: string | null
+          html_s3_path: string | null
           id: string
-          persona: string
-          personality: string[]
-          portfolio_public: boolean | null
-          portfolio_s3_path: string | null
-          portfolio_updated_at: string | null
-          portfolio_url: string | null
-          skills: string[]
-          summary: string
+          skills: string[] | null
           updated_at: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
-          created_at?: string | null
+          content_s3_path?: string | null
+          created_at?: string
+          hosted_domain?: string | null
+          hosted_html_url?: string | null
+          html_s3_path?: string | null
           id?: string
-          persona: string
-          personality: string[]
-          portfolio_public?: boolean | null
-          portfolio_s3_path?: string | null
-          portfolio_updated_at?: string | null
-          portfolio_url?: string | null
-          skills: string[]
-          summary: string
+          skills?: string[] | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
-          created_at?: string | null
+          content_s3_path?: string | null
+          created_at?: string
+          hosted_domain?: string | null
+          hosted_html_url?: string | null
+          html_s3_path?: string | null
           id?: string
-          persona?: string
-          personality?: string[]
-          portfolio_public?: boolean | null
-          portfolio_s3_path?: string | null
-          portfolio_updated_at?: string | null
-          portfolio_url?: string | null
-          skills?: string[]
-          summary?: string
+          skills?: string[] | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }

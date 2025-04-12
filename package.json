@@ -10,7 +10,7 @@
         "format:check": "biome check",
         "lint": "biome lint --write",
         "supabase:login": "supabase login",
-        "supabase:gen": "supabase gen types typescript --project-id ibozjetcsydxpioqabzp --schema public > ./supabase/database.types.ts"
+        "supabase:gen": "supabase gen types typescript --project-id ibozjetcsydxpioqabzp --schema public > ./libs/supabase/database.types.ts"
     },
     "dependencies": {
         "@ai-sdk/deepseek": "^0.2.6",
