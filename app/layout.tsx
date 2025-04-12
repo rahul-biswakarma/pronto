@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import CSRFProvider from "@/libs/components/providers/csrf-provider";
-import { Theme } from "@radix-ui/themes";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -39,11 +38,9 @@ export default function RootLayout({
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
-                <Theme radius="none" appearance="light">
-                    <CSRFProvider>
-                        <main className="w-full h-screen">{children}</main>
-                    </CSRFProvider>
-                </Theme>
+                <CSRFProvider>
+                    <main className="w-full h-screen">{children}</main>
+                </CSRFProvider>
             </body>
         </html>
     );
