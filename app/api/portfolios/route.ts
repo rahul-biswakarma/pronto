@@ -45,6 +45,7 @@ export const GET = withErrorHandling(
 export const POST = withCSRFProtection(
     withErrorHandling(async (req: Request, requestId: string) => {
         // Check authentication
+
         const auth = await checkAuthentication();
         if (!auth.authenticated) {
             return auth.errorResponse;

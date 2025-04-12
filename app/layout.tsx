@@ -39,11 +39,9 @@ export default function RootLayout({
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
-                <Theme radius="none">
+                <Theme radius="none" appearance="light">
                     <CSRFProvider>
-                        <main className="w-full h-screen bg-black text-white">
-                            {children}
-                        </main>
+                        <main className="w-full h-screen">{children}</main>
                     </CSRFProvider>
                 </Theme>
             </body>
