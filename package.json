@@ -24,10 +24,12 @@
         "@upstash/ratelimit": "^2.0.5",
         "@upstash/redis": "^1.34.7",
         "ai": "^4.3.2",
+        "class-variance-authority": "^0.7.1",
         "dompurify": "^3.2.5",
         "iron-session": "^8.0.4",
         "jsdom": "^26.0.0",
         "langchain": "^0.3.20",
+        "lucide-react": "^0.487.0",
         "next": "15.2.4",
         "ollama-ai-provider": "^1.2.0",
         "pino": "^9.6.0",
@@ -36,6 +38,7 @@
         "sonner": "^2.0.3",
         "supabase": ">=1.8.1",
         "tw-animate-css": "^1.2.5",
+        "tailwind-merge": "^3.2.0",
         "zod": "^3.24.2"
     },
     "devDependencies": {
