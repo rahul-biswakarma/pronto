@@ -42,41 +42,47 @@ export const GET = withErrorHandling(
  * POST /api/portfolios - Updates the user's portfolio
  * Protected by CSRF token verification
  */
-export const POST = withCSRFProtection(
-    withErrorHandling(async (req: Request, requestId: string) => {
-        // Check authentication
+export const POST = withErrorHandling(
+    async (req: Request, requestId: string) => {
+        // First handle CSRF validation
+        const csrfHandler = await withCSRFProtection(
+            async (validatedReq: Request) => {
+                // Check authentication
+                const auth = await checkAuthentication();
+                if (!auth.authenticated) {
+                    return auth.errorResponse;
+                }
 
-        const auth = await checkAuthentication();
-        if (!auth.authenticated) {
-            return auth.errorResponse;
-        }
+                const userId = auth.userId;
+                const supabase = auth.supabase;
 
-        const userId = auth.userId;
-        const supabase = auth.supabase;
+                // Get the HTML from the request body
+                const body = await validatedReq.json();
 
-        // Get the HTML from the request body
-        const body = await req.json();
+                const res = await supabase
+                    .from("portfolio")
+                    .update({
+                        ...(body.content && { content: body.content }),
+                    })
+                    .eq("user_id", userId);
 
-        const res = await supabase
-            .from("portfolio")
-            .update({
-                ...(body.content && { content: body.content }),
-            })
-            .eq("user_id", userId);
+                if (res.error) {
+                    return createErrorResponse(
+                        res.error || "Failed to update portfolio",
+                        requestId,
+                        500,
+                    );
+                }
 
-        if (res.error) {
-            return createErrorResponse(
-                res.error || "Failed to update portfolio",
-                requestId,
-                500,
-            );
-        }
-
-        return createSuccessResponse(
-            {
-                success: true,
+                return createSuccessResponse(
+                    {
+                        success: true,
+                    },
+                    requestId,
+                );
             },
-            requestId,
         );
-    }),
+
+        return csrfHandler(req);
+    },
 );

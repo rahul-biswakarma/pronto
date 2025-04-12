@@ -44,35 +44,43 @@ export async function middleware(request: NextRequest) {
 
         // Use different rate limits for API routes vs regular pages
         const limiter = isApiRoute ? apiRatelimit : ratelimit;
-        const {
-            success,
-            limit: rateLimit,
-            reset: rateReset,
-            remaining: rateRemaining,
-        } = await limiter.limit(identifier);
+        try {
+            const {
+                success,
+                limit: rateLimit,
+                reset: rateReset,
+                remaining: rateRemaining,
+            } = await limiter.limit(identifier);
 
-        limit = rateLimit;
-        reset = rateReset;
-        remaining = rateRemaining;
+            limit = rateLimit;
+            reset = rateReset;
+            remaining = rateRemaining;
 
-        // If rate limit is exceeded, return 429 Too Many Requests
-        if (!success) {
-            logger.warn(
-                { ip, path: request.nextUrl.pathname },
-                "Rate limit exceeded",
+            // If rate limit is exceeded, return 429 Too Many Requests
+            if (!success) {
+                logger.warn(
+                    { ip, path: request.nextUrl.pathname },
+                    "Rate limit exceeded",
+                );
+                return new NextResponse("Too Many Requests", {
+                    status: 429,
+                    headers: {
+                        "X-RateLimit-Limit": limit.toString(),
+                        "X-RateLimit-Remaining": remaining.toString(),
+                        "X-RateLimit-Reset": reset.toString(),
+                        "Retry-After": Math.ceil(
+                            (reset - Date.now()) / 1000,
+                        ).toString(),
+                        ...securityHeaders,
+                    },
+                });
+            }
+        } catch (error) {
+            logger.error(
+                { error, path: request.nextUrl.pathname },
+                "Rate limiting error",
             );
-            return new NextResponse("Too Many Requests", {
-                status: 429,
-                headers: {
-                    "X-RateLimit-Limit": limit.toString(),
-                    "X-RateLimit-Remaining": remaining.toString(),
-                    "X-RateLimit-Reset": reset.toString(),
-                    "Retry-After": Math.ceil(
-                        (reset - Date.now()) / 1000,
-                    ).toString(),
-                    ...securityHeaders,
-                },
-            });
+            // Continue processing the request if rate limiting fails
         }
     }
 

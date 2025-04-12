@@ -1,8 +1,14 @@
 "use client";
 
 import { Button } from "@/libs/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/libs/ui/dialog";
+import {
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    DialogTrigger,
+} from "@/libs/ui/dialog";
 import { Marquee } from "@/libs/ui/marquee";
+import { dataLayer } from "@/libs/utils/data-layer";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -64,9 +70,9 @@ const PDFUpload = ({
             <Button
                 onClick={async () => {
                     try {
-                        await fetch("/api/portfolios", {
+                        await dataLayer.post("/api/portfolios", {
                             method: "POST",
-                            body: JSON.stringify({ content: pdfContent }),
+                            body: { content: pdfContent },
                         });
                         router.push("/editor");
                     } catch (error) {
@@ -126,6 +132,9 @@ const Onboarding = () => {
                                 </div>
                             </DialogTrigger>
                             <DialogContent className="w-full sm:max-w-[700px]">
+                                <DialogTitle className="sr-only">
+                                    Upload Resume for {template.name}
+                                </DialogTitle>
                                 <PDFUpload template={template} />
                             </DialogContent>
                         </Dialog>
