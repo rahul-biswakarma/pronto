@@ -5,15 +5,6 @@ import {
 } from "@/libs/utils/api-response";
 import { checkAuthentication } from "@/libs/utils/auth";
 import { withCSRFProtection } from "@/libs/utils/csrf";
-import DOMPurify from "dompurify";
-import { JSDOM } from "jsdom";
-
-// Create a DOMPurify instance for server-side sanitization
-const window = new JSDOM("").window;
-const purify = DOMPurify(window);
-
-// Set maximum allowed size for portfolio HTML
-const MAX_HTML_SIZE = 500 * 1024; // 500KB
 
 /**
  * GET /api/portfolios - Retrieves the user's portfolio
