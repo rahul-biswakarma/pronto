@@ -1,3 +1,5 @@
+"use client";
+
 import type { Database } from "@/libs/supabase/database.types";
 import { redirect } from "next/navigation";
 import { EditorMain } from "./_components/editor-main";
