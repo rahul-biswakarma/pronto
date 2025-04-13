@@ -4,6 +4,7 @@ import logger from "./logger";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+const BUCKET_NAME = "portfolios"; // Define bucket name centrally
 
 // Prevent service role key from being exposed
 if (!SERVICE_ROLE_KEY && process.env.NODE_ENV === "production") {
@@ -90,7 +91,6 @@ export async function uploadPortfolioFileInBucket({
             .from("portfolio")
             .update({
                 [`${dbColKeyPrefix}_s3_path`]: `${bucket}/${filename}`,
-                [`${dbColKeyPrefix}_url`]: url,
             })
             .eq("id", portfolioId);
 
@@ -130,15 +130,63 @@ export async function uploadPortfolioFileInBucket({
     }
 }
 
-export async function getFileFromBucket(path: string) {
+export async function getFileFromBucket(path: string): Promise<{
+    data: string | null;
+    error: Error | null;
+}> {
+    if (!path) {
+        return { data: null, error: new Error("File path cannot be empty.") };
+    }
+
     const supabase = createSecureAdminClient();
-    const { data, error } = await supabase.storage
-        .from("portfolios")
-        .download(path);
-    return {
-        data,
-        error,
-    };
+    // Assume path might be like "portfolios/content-xyz.json"
+    // We only need the part after the bucket name for download
+    const objectPath = path.startsWith(`${BUCKET_NAME}/`)
+        ? path.substring(BUCKET_NAME.length + 1)
+        : path;
+
+    logger.info(
+        { objectPath },
+        `Attempting to download from bucket ${BUCKET_NAME}`,
+    );
+
+    const { data: blob, error } = await supabase.storage
+        .from(BUCKET_NAME)
+        .download(objectPath);
+
+    if (error) {
+        logger.error(
+            { path, objectPath, error: error.message },
+            "Failed to download file from bucket",
+        );
+        return { data: null, error };
+    }
+
+    if (!blob) {
+        logger.warn({ path, objectPath }, "File downloaded but blob is null");
+        return { data: null, error: new Error("Downloaded file is empty.") };
+    }
+
+    try {
+        const textContent = await blob.text();
+        return { data: textContent, error: null };
+    } catch (conversionError: unknown) {
+        logger.error(
+            {
+                path,
+                objectPath,
+                error:
+                    conversionError instanceof Error
+                        ? conversionError.message
+                        : String(conversionError),
+            },
+            "Failed to convert downloaded blob to text",
+        );
+        return {
+            data: null,
+            error: new Error("Failed to read file content."),
+        };
+    }
 }
 
 /**

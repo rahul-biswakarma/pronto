@@ -1,24 +1,15 @@
 import type { CoreMessage } from "ai";
-import { z } from "zod";
+import * as z from "zod";
 import { getImageTemplatePrompt } from "../utils/image-prompts";
 
-// Define a flexible schema that enforces structure but not specific fields
-export const CONTENT_PROMPT_OUTPUT_SCHEMA = z.object({
-    content: z
-        .record(
-            z.string(),
-            z.union([
-                z.string(),
-                z.number(),
-                z.boolean(),
-                z.array(z.any()),
-                z.record(z.string(), z.any()),
-            ]),
-        )
-        .describe(
-            "JSON object containing structured content for ALL text and data in the portfolio",
-        ),
-});
+// Define a simple but flexible schema for JSON content
+export const CONTENT_PROMPT_OUTPUT_SCHEMA = z
+    .object({
+        content: z.record(z.string(), z.string()),
+    })
+    .describe(
+        "Flat JSON object containing string key-value pairs for ALL text in the portfolio",
+    );
 
 export const contentGenPrompt = ({
     content,
@@ -32,7 +23,7 @@ export const contentGenPrompt = ({
         {
             role: "system",
             content:
-                "You are a professional content structuring assistant that creates clean, structured JSON content for portfolio websites based on resume data. Your goal is to extract ALL content that will appear in the UI and organize it into a logical JSON structure. This includes navigation labels, button text, section titles, and any other textual or data elements.",
+                "You are a professional content writer and structuring assistant that creates clean, structured JSON content for portfolio websites based on resume data. Your goal is to extract ALL information  from user resume data, refer the attached screenshot, our goal is to generate a portfolio website using html that looks like the screenshot. Your first step is to generate a list of all the content that will appear in the UI and organize it into a flat key-value JSON structure. This includes navigation labels, button text, section titles, and any other textual elements.",
         },
         {
             role: "user",
@@ -44,19 +35,34 @@ Here is the user's resume data:
 
 ${content}
 
-Please extract and structure ALL content into a JSON object for a personal portfolio website. Follow these guidelines:
+NOTE: all keys should be in snake_case
+
+Please extract and structure ALL content into a FLAT key-value JSON object for a personal portfolio website. Follow these guidelines:
 
 1. ALL text in the UI must come from the JSON - including navigation labels, buttons, section headers, etc.
-2. Create a logical hierarchy that reflects the structure of a portfolio website
-3. Use descriptive key names that indicate the purpose of each content piece
-4. Organize content by sections (e.g., hero, about, experience, projects, etc.)
-5. For repeated elements like projects or experience items, use arrays of objects
-6. Include all necessary metadata (dates, links, descriptions, etc.)
-7. Add any additional content needed for a complete portfolio (e.g., CTAs, contact form labels)
-8. Make sure your JSON structure is consistent and well-organized
-9. Do not omit any content that would appear in the UI
+2. Create a FLAT structure with NO nesting, NO arrays, and only string values
+3. Include all necessary content (dates, links, descriptions, etc.) as separate flat key-value pairs
+4. Add any additional content needed for a complete portfolio (e.g., CTAs, contact form labels)
+5. Do not omit any content that would appear in the UI
+6. All key should be in snake_case
 
-Output ONLY a valid JSON object with no additional explanation. The portfolio UI will be built entirely using this JSON as its content source.`,
+Example format:
+{
+  "nav_home": "Home",
+  "nav_about": "About Me",
+  "hero_title": "John Doe",
+  "hero_subtitle": "Full Stack Developer",
+  "about_title": "About Me",
+  "about_description": "I am a passionate developer...",
+  "experience_0_title": "Senior Developer",
+  "experience_0_company": "Tech Corp",
+  "experience_0_dates": "2020-Present",
+  "experience_1_title": "Junior Developer",
+  "experience_1_company": "Startup Inc",
+  "experience_1_dates": "2018-2020"
+}
+
+Output ONLY a valid flat JSON object with no additional explanation. The portfolio UI will be built using simple regex replacement of keys with these values.`,
                 },
                 getImageTemplatePrompt(templateId), // This includes image reference or description
             ],

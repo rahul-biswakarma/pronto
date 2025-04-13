@@ -9,7 +9,7 @@ export const haveContentJson = (
 export const havePortfolioHtml = (
     response: Database["public"]["Tables"]["portfolio"]["Row"],
 ) => {
-    return response.hosted_html_url;
+    return response.html_s3_path;
 };
 
 export const havePortfolioContent = (

@@ -2,7 +2,7 @@ import type { CoreMessage } from "ai";
 import { z } from "zod";
 import { getImageTemplatePrompt } from "../utils/image-prompts";
 
-// Define the output schema using Zod
+// Define the output schema using Zod - simple string output schema
 export const HTML_PROMPT_OUTPUT_SCHEMA = z.object({
     html: z
         .string()
@@ -22,7 +22,7 @@ export const htmlGenPrompt = ({
         {
             role: "system",
             content:
-                "You are a professional web developer that creates clean, responsive HTML+CSS websites. Your task is to create an HTML template that uses placeholders instead of actual content. EVERY text element must use a placeholder that will be replaced with content from a JSON structure. No hardcoded text should appear in the final HTML.",
+                "You are a professional web developer that creates clean, responsive HTML+CSS websites. Your task is to create an HTML and CSS website that looks exactly like the screenshot, Color and font should be exactly same as the screenshot, Use google fonts for the fonts. Also you will be given a JSON structure that contains all the content for the website. You will use the JSON for content, you can only use the keys from the JSON for content, you can't use any other text in the HTML. While rendering the HTML, we will replace all the JSON keys with the actual content.",
         },
         {
             role: "user",
@@ -34,15 +34,20 @@ Here is the JSON structure for a portfolio website:
 
 ${content}
 
-Create a complete, responsive, and professional portfolio website HTML+CSS that uses placeholders for ALL text content. Placeholders should be in the format: {{key.subkey}}
+Create a complete, responsive, and professional portfolio website HTML+CSS that uses JSON for ALL text content. JSON keys should be in the format: {{key_1}}
 
-IMPORTANT: Every single piece of text that appears in the UI must use a placeholder - this includes:
+IMPORTANT: Every single piece of visible text that appears in the UI must use a JSON key - this includes:
 - All navigation items and labels
 - All button text
 - All section headers and titles
 - All form labels and placeholders
 - Copyright notices and footer text
 - ALL static text, no matter how small or seemingly fixed
+
+IMPORTANT: DO NOT convert CSS values or properties to placeholders. CSS should remain as regular CSS with actual values:
+- Keep all colors, sizes, margins, paddings as actual CSS values (not placeholders)
+- Keep all CSS properties and values intact
+- Only visible text content should use placeholders, not styling values
 
 SECTION ORGANIZATION:
 The HTML should be organized into clearly defined sections, each with a unique identifier:
@@ -52,56 +57,35 @@ The HTML should be organized into clearly defined sections, each with a unique i
 - Each section should be self-contained with its own styles and structure
 - This organization allows for targeted updates to individual sections
 
-For array items, you can use bracket notation:
-- {{experience[0].position}}
-
-For arrays like experience, you can also create a template for one item that we can repeat using comments:
-
 <!-- BEGIN experience -->
 <div class="experience-item">
-  <h3>{{experience.position}}</h3> or <h3>{{item.position}}</h3>
-  <p>{{experience.company}}</p> or <p>{{item.company}}</p>
-  <span>Index: {{index}}</span> <!-- Optional: Access the current array index -->
+  <h3>{{experience_position}}</h3> or <h3>{{item_position}}</h3>
+  <p>{{experience_company}}</p> or <p>{{item_company}}</p>
+  <span>Index: {{index}}</span>
 </div>
 <!-- END experience -->
 
 You can also use conditional sections that only display if data exists:
 
-<!-- IF contact.email -->
-<div class="contact-email">{{contact.email_label}} {{contact.email}}</div>
-<!-- ENDIF contact.email -->
+<!-- IF contact_email -->
+<div class="contact-email">{{contact_email_label}} {{contact_email}}</div>
+<!-- ENDIF contact_email -->
 
-For nested arrays, you can specify the parent index:
 
-<!-- BEGIN experience -->
-  <div class="experience-item" data-pronto-sec-id="pronto-sec-experience-item-{{index}}">
-    <h3>{{experience.position}}</h3>
-
-    <!-- IF experience.projects -->
-      <div class="projects-list">
-        <!-- BEGIN experience.projects {{index}} -->
-          <div class="project" data-pronto-sec-id="pronto-sec-project-{{parent_index}}-{{index}}">{{item.name}}</div>
-        <!-- END experience.projects -->
-      </div>
-    <!-- ENDIF experience.projects -->
-  </div>
-<!-- END experience -->
 
 Guidelines:
-1. Use modern, responsive design with clean typography and layout
-2. Include all sections from the JSON
-3. For array items, use either the comment-based looping mechanism shown above or individual placeholders
-4. Include CSS directly in the HTML (no external files)
-5. Use semantic HTML5 elements
-6. Make it mobile-friendly with media queries
-7. Use a clean, professional color scheme
-8. Include smooth scrolling and subtle animations
-9. Add appropriate icons for contact methods (no text in icons)
-10. Include a navigation bar that links to each section
-11. Use conditional sections for optional content
-12. EVERY major section must have the data-pronto-sec-id attribute
+1. Website should look exactly like the screenshot
+2. Color and font should be exactly same as the screenshot
+3. Use google fonts for the fonts
+4. Include all sections from the JSON
+5. Include CSS directly in the HTML
+6. Use semantic HTML5 elements
+7. Make it mobile-friendly with media queries
+13. EVERY major section must have the data-pronto-sec-id attribute
 
-REMINDER: The ONLY hardcoded text allowed is non-visible text like comments, alt attributes for decorative images, or ARIA labels. ALL visible text must use placeholders.
+REMINDER: The ONLY hardcoded text allowed is non-visible text like comments, alt attributes for decorative images, or ARIA labels. ALL visible text must use placeholders. CSS values and properties should NOT use placeholders.
+
+REMINDER 2: Don't use key that is not present in the JSON, if you do, it will break the website. And I know you don't do it as your are a responsible and professional developer.
 
 The final HTML should be a complete, self-contained file that we can directly render in a browser after replacing the placeholders with actual content.
 `,

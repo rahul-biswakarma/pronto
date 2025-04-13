@@ -1,5 +1,6 @@
 "use client";
 
+import { generatePortfolioAction } from "@/app/actions/portfolioActions";
 import { templates } from "@/libs/constants/templates";
 import { Button } from "@/libs/ui/button";
 import {
@@ -9,11 +10,11 @@ import {
     DialogTrigger,
 } from "@/libs/ui/dialog";
 import { Marquee } from "@/libs/ui/marquee";
-import { dataLayer } from "@/libs/utils/data-layer";
 import { setTemplateInLocalStorage } from "@/libs/utils/misc";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 import { FileUploader } from "./_components/pdf-dropzone";
 import { OnboardingProvider, useOnboarding } from "./onboarding.context";
 
@@ -31,6 +32,41 @@ const PDFUpload = ({
 }) => {
     const { pdfContent } = useOnboarding();
     const router = useRouter();
+    const [isPending, startTransition] = useTransition();
+    const [error, setError] = useState<string | null>(null);
+
+    const handleGenerate = async () => {
+        if (!pdfContent) {
+            setError("Please upload your resume first");
+            return;
+        }
+
+        setError(null);
+
+        startTransition(async () => {
+            try {
+                setTemplateInLocalStorage(template.id);
+
+                const result = await generatePortfolioAction({
+                    content: pdfContent,
+                    templateId: template.id,
+                });
+
+                if (result.success && result.portfolioId) {
+                    router.push("/editor");
+                } else {
+                    setError(result.error || "Failed to generate portfolio");
+                }
+            } catch (err) {
+                console.error("Error calling generatePortfolioAction:", err);
+                setError(
+                    err instanceof Error
+                        ? err.message
+                        : "An unexpected error occurred",
+                );
+            }
+        });
+    };
 
     return (
         <div className="flex flex-col items-center justify-center h-full w-full gap-8">
@@ -68,23 +104,27 @@ const PDFUpload = ({
                     }}
                 />
             </div>
+
+            {error && (
+                <div className="text-red-500 text-sm w-full">{error}</div>
+            )}
+
             <Button
-                onClick={async () => {
-                    try {
-                        setTemplateInLocalStorage(template.id);
-                        await dataLayer.post("/api/portfolios/create", {
-                            content: pdfContent,
-                            templateId: template.id,
-                        });
-                        router.push("/editor");
-                    } catch (error) {
-                        console.error(error);
-                    }
-                }}
+                onClick={handleGenerate}
                 className="self-end gap-1"
+                disabled={!pdfContent || isPending}
             >
-                Generate
-                <ArrowRight className="-rotate-45" />
+                {isPending ? (
+                    <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Generating...
+                    </>
+                ) : (
+                    <>
+                        Generate
+                        <ArrowRight className="-rotate-45" />
+                    </>
+                )}
             </Button>
         </div>
     );
