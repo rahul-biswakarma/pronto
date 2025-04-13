@@ -1,12 +1,11 @@
 import type { ImagePart } from "ai";
+import { templates } from "../constants/templates";
 
-const design1 = {
-    url: `${process.env.NEXT_PUBLIC_HOST}/ss/design-1.png`,
-};
-
-export function getImageTemplatePrompt(): ImagePart {
+export function getImageTemplatePrompt(templateId: string): ImagePart {
     return {
         type: "image",
-        image: design1.url,
+        image:
+            templates.find((template) => template.id === templateId)?.image ??
+            templates[0].image,
     };
 }

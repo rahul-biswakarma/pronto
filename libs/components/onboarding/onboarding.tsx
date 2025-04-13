@@ -1,5 +1,6 @@
 "use client";
 
+import { templates } from "@/libs/constants/templates";
 import { Button } from "@/libs/ui/button";
 import {
     Dialog,
@@ -9,12 +10,12 @@ import {
 } from "@/libs/ui/dialog";
 import { Marquee } from "@/libs/ui/marquee";
 import { dataLayer } from "@/libs/utils/data-layer";
+import { setTemplateInLocalStorage } from "@/libs/utils/misc";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { FileUploader } from "./_components/pdf-dropzone";
 import { OnboardingProvider, useOnboarding } from "./onboarding.context";
-import { templates } from "./templates";
 
 export type Template = {
     id: string;
@@ -70,6 +71,7 @@ const PDFUpload = ({
             <Button
                 onClick={async () => {
                     try {
+                        setTemplateInLocalStorage(template.id);
                         await dataLayer.post("/api/portfolios/create", {
                             content: pdfContent,
                         });

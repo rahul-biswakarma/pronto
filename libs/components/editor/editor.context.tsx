@@ -35,8 +35,14 @@ export type EditorContextType = {
     setPortfolioHtml: (portfolioHtml: string) => void;
     portfolioContent: string | null;
     setPortfolioContent: (portfolioContent: string) => void;
-    generatePortfolioContent: (portfolioId: string) => Promise<void>;
-    generatePortfolioHtml: (portfolioId: string) => Promise<void>;
+    generatePortfolioContent: (
+        portfolioId: string,
+        templateId: string,
+    ) => Promise<void>;
+    generatePortfolioHtml: (
+        portfolioId: string,
+        templateId: string,
+    ) => Promise<void>;
     generatePortfolioPreview: (portfolioId: string) => Promise<string>;
     isLoading: boolean;
     error: string | null;
@@ -80,6 +86,7 @@ export const EditorProvider = ({
     // Generate JSON content for portfolio
     const generatePortfolioContent = async (
         portfolioId: string,
+        templateId: string,
     ): Promise<void> => {
         setIsLoading(true);
         setError(null);
@@ -89,6 +96,7 @@ export const EditorProvider = ({
                 "/api/portfolios/generate/content",
                 {
                     portfolioId,
+                    templateId,
                 },
             );
 
@@ -107,6 +115,7 @@ export const EditorProvider = ({
     // Generate HTML template based on JSON content
     const generatePortfolioHtml = async (
         portfolioId: string,
+        templateId: string,
     ): Promise<void> => {
         setIsLoading(true);
         setError(null);
@@ -116,6 +125,7 @@ export const EditorProvider = ({
                 "/api/portfolios/generate/html",
                 {
                     portfolioId,
+                    templateId: templateId,
                 },
             );
 

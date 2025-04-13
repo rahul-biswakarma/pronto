@@ -24,7 +24,7 @@ const htmlOutputSchema = z.object({
  */
 export const POST = withErrorHandling(
     async (req: Request, requestId: string) => {
-        const { portfolioId, publish = false } = await req.json();
+        const { portfolioId, templateId } = await req.json();
 
         if (!portfolioId) {
             return createErrorResponse(
@@ -182,7 +182,7 @@ REMINDER: The ONLY hardcoded text allowed is non-visible text like comments, alt
 The final HTML should be a complete, self-contained file that we can directly render in a browser after replacing the placeholders with actual content.
 `,
                     },
-                    getImageTemplatePrompt(), // This includes image reference or description
+                    getImageTemplatePrompt(templateId), // This includes image reference or description
                 ],
             },
         ];
@@ -222,7 +222,6 @@ The final HTML should be a complete, self-contained file that we can directly re
                 {
                     html: htmlTemplate,
                     deployUrl: uploadResult.publicUrl || uploadResult.url,
-                    isPublic: publish,
                     success: uploadResult.success,
                     message:
                         uploadResult.error ||

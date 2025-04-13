@@ -33,7 +33,7 @@ const portfolioOutputSchema = z.object({
  */
 export const POST = withErrorHandling(
     async (req: Request, requestId: string) => {
-        const { portfolioId, publish = false } = await req.json();
+        const { portfolioId, templateId } = await req.json();
 
         if (!portfolioId) {
             return createErrorResponse("User ID is required", requestId, 400);
@@ -103,7 +103,7 @@ Please extract and structure ALL content into a JSON object for a personal portf
 
 Output ONLY a valid JSON object with no additional explanation. The portfolio UI will be built entirely using this JSON as its content source.`,
                     },
-                    getImageTemplatePrompt(), // This includes image reference or description
+                    getImageTemplatePrompt(templateId), // This includes image reference or description
                 ],
             },
         ];
@@ -146,7 +146,6 @@ Output ONLY a valid JSON object with no additional explanation. The portfolio UI
                 {
                     content: portfolioContent,
                     deployUrl: uploadResult.publicUrl || uploadResult.url,
-                    isPublic: publish,
                     success: uploadResult.success,
                     message:
                         uploadResult.error ||

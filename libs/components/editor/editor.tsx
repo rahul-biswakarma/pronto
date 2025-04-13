@@ -1,6 +1,6 @@
 "use client";
-
 import type { Database } from "@/libs/supabase/database.types";
+import { getTemplateFromLocalStorage } from "@/libs/utils/misc";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 import { EditorMain } from "./_components/editor-main";
@@ -31,12 +31,18 @@ const EditorWrapper = ({
                 try {
                     // Generate content if needed
                     if (!contentJson) {
-                        await generatePortfolioContent(portfolio.id);
+                        await generatePortfolioContent(
+                            portfolio.id,
+                            getTemplateFromLocalStorage().id,
+                        );
                     }
 
                     // Generate HTML if needed (only after content is generated)
                     if (!html) {
-                        await generatePortfolioHtml(portfolio.id);
+                        await generatePortfolioHtml(
+                            portfolio.id,
+                            getTemplateFromLocalStorage().id,
+                        );
                     }
 
                     setStage("idle");
