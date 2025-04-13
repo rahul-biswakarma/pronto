@@ -1,5 +1,7 @@
-import { CONTENT_PROMPT_OUTPUT_SCHEMA } from "@/libs/constants/content-gen-prompt";
-import { contentGenPrompt } from "@/libs/constants/content-gen-prompt";
+import {
+    CONTENT_PROMPT_OUTPUT_SCHEMA,
+    contentGenPrompt,
+} from "@/libs/constants/content-gen-prompt";
 import {
     HTML_PROMPT_OUTPUT_SCHEMA,
     htmlGenPrompt,
@@ -13,7 +15,7 @@ import {
 import { checkAuthentication } from "@/libs/utils/auth";
 import { withCSRFProtection } from "@/libs/utils/csrf";
 import { uploadPortfolioFileInBucket } from "@/libs/utils/supabase-storage";
-import { streamObject } from "ai";
+import { generateObject } from "ai";
 
 /**
  * POST /api/portfolios - Creates the user's portfolio and generates content
@@ -59,21 +61,16 @@ export const POST = withErrorHandling(
 
             try {
                 // Generate the portfolio content as JSON using the Vercel AI SDK
-                const { partialObjectStream } = await streamObject({
+
+                const { object: portfolioResponse } = await generateObject({
                     model: llmClient,
                     messages: contentGenPrompt({
-                        content: content,
+                        content: content ? JSON.stringify(content) : "",
                         templateId,
                     }),
                     schema: CONTENT_PROMPT_OUTPUT_SCHEMA,
+                    temperature: 0.7,
                 });
-
-                // Consume the stream to get the full object
-                let portfolioResponse: { content?: object } | null = null;
-
-                for await (const partial of partialObjectStream) {
-                    portfolioResponse = partial as { content?: object } | null;
-                }
 
                 if (!portfolioResponse || !portfolioResponse.content) {
                     throw new Error("No valid content in response");
@@ -86,6 +83,7 @@ export const POST = withErrorHandling(
                 const contentString = JSON.stringify(portfolioContent, null, 2);
 
                 // Upload the portfolio content
+
                 await uploadPortfolioFileInBucket({
                     portfolioId,
                     content: contentString,
@@ -95,21 +93,15 @@ export const POST = withErrorHandling(
                 });
 
                 // Generate the HTML using the Vercel AI SDK
-                const { partialObjectStream: htmlStream } = await streamObject({
+                const { object: htmlResponse } = await generateObject({
                     model: llmClient,
                     messages: htmlGenPrompt({
-                        content: contentString,
+                        content: JSON.stringify(contentString),
                         templateId,
                     }),
                     schema: HTML_PROMPT_OUTPUT_SCHEMA,
+                    temperature: 0.7,
                 });
-
-                // Consume the stream to get the full object
-                let htmlResponse: { html?: string } | null = null;
-
-                for await (const partial of htmlStream) {
-                    htmlResponse = partial as { html?: string } | null;
-                }
 
                 if (!htmlResponse || !htmlResponse.html) {
                     throw new Error("No valid HTML content in response");
@@ -119,6 +111,7 @@ export const POST = withErrorHandling(
                 const htmlTemplate = htmlResponse.html;
 
                 // Upload the HTML template
+
                 await uploadPortfolioFileInBucket({
                     portfolioId,
                     content: htmlTemplate,
@@ -147,6 +140,7 @@ export const POST = withErrorHandling(
         };
 
         const protectedHandler = await withCSRFProtection(handler);
+
         return protectedHandler(req);
     },
 );

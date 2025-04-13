@@ -1,7 +1,7 @@
 "use client";
 
 import { createSupabaseBrowserClient } from "@/libs/supabase/client/browser";
-import { Button } from "@radix-ui/themes";
+import { Button } from "@/libs/ui/button";
 
 export function GoogleSignin() {
     const supabase = createSupabaseBrowserClient({
@@ -18,9 +18,5 @@ export function GoogleSignin() {
         });
     };
 
-    return (
-        <Button onClick={handleSignin} variant="soft">
-            Sign in with Google
-        </Button>
-    );
+    return <Button onClick={handleSignin}>Sign in with Google</Button>;
 }

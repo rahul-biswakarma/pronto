@@ -74,6 +74,7 @@ const PDFUpload = ({
                         setTemplateInLocalStorage(template.id);
                         await dataLayer.post("/api/portfolios/create", {
                             content: pdfContent,
+                            templateId: template.id,
                         });
                         router.push("/editor");
                     } catch (error) {
