@@ -12,7 +12,6 @@ if (!SERVICE_ROLE_KEY && process.env.NODE_ENV === "production") {
 
 interface PortfolioUploadResult {
     success: boolean;
-    url?: string | null;
     publicUrl?: string | null;
     error?: string;
 }
@@ -251,7 +250,6 @@ export async function updatePortfolioAccess(
 
         return {
             success: true,
-            url: !publish ? url : null,
             publicUrl: publish ? url : null,
         };
     } catch (error) {

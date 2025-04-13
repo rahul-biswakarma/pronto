@@ -14,10 +14,12 @@ export type Database = {
                     content: string | null;
                     content_s3_path: string | null;
                     created_at: string;
+                    first_view: boolean;
                     hosted_domain: string | null;
                     hosted_html_url: string | null;
                     html_s3_path: string | null;
                     id: string;
+                    stage: string | null;
                     updated_at: string | null;
                     user_id: string;
                 };
@@ -25,10 +27,12 @@ export type Database = {
                     content?: string | null;
                     content_s3_path?: string | null;
                     created_at?: string;
+                    first_view?: boolean;
                     hosted_domain?: string | null;
                     hosted_html_url?: string | null;
                     html_s3_path?: string | null;
                     id?: string;
+                    stage?: string | null;
                     updated_at?: string | null;
                     user_id: string;
                 };
@@ -36,10 +40,12 @@ export type Database = {
                     content?: string | null;
                     content_s3_path?: string | null;
                     created_at?: string;
+                    first_view?: boolean;
                     hosted_domain?: string | null;
                     hosted_html_url?: string | null;
                     html_s3_path?: string | null;
                     id?: string;
+                    stage?: string | null;
                     updated_at?: string | null;
                     user_id?: string;
                 };
