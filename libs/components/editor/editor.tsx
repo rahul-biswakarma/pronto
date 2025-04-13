@@ -8,11 +8,7 @@ import { havePortfolioContent, havePortfolioHtml } from "./_utils/checks";
 const EditorWrapper = ({
     portfolio,
 }: { portfolio: Database["public"]["Tables"]["portfolio"]["Row"] }) => {
-    if (
-        !havePortfolioContent(portfolio) ||
-        !havePortfolioHtml(portfolio) ||
-        !havePortfolioContent(portfolio)
-    ) {
+    if (!havePortfolioContent(portfolio) || !havePortfolioHtml(portfolio)) {
         redirect("/");
     }
 

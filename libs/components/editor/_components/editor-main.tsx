@@ -108,21 +108,14 @@ export const EditorMain = () => {
     useEffect(() => {
         if (portfolioHtml && portfolioContent) {
             try {
-                let html = portfolioHtml;
-                for (const key of Object.keys(portfolioContent)) {
-                    const value =
-                        portfolioContent[key as keyof typeof portfolioContent];
-                    html = html.replace(new RegExp(`{{${key}}}`, "g"), value);
-                }
-                // Render the template with JSON data using our enhanced parser
-                setRenderedHtml(html);
+                setRenderedHtml(portfolioHtml);
 
                 // Update iframe content if iframe is ready
                 if (iframeRef.current) {
                     const doc = iframeRef.current.contentDocument;
                     if (doc) {
                         doc.open();
-                        doc.write(html);
+                        doc.write(portfolioHtml);
                         doc.close();
                     }
                 }

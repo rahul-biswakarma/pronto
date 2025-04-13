@@ -1,6 +1,4 @@
 "use server";
-
-import { contentGenPrompt } from "@/libs/constants/content-gen-prompt";
 import {
     HTML_PROMPT_OUTPUT_SCHEMA,
     htmlGenPrompt,
@@ -11,7 +9,7 @@ import { uploadPortfolioFileInBucket } from "@/libs/utils/supabase-storage";
 // Assuming you have a way to create a Supabase server client
 // e.g., using cookies() or similar server-side helpers
 
-import { generateObject, generateText } from "ai";
+import { generateObject } from "ai";
 import { revalidatePath } from "next/cache";
 
 type PortfolioActionResult = {
@@ -64,44 +62,11 @@ export async function generatePortfolioAction({
 
         // 3. Generate content JSON using AI SDK
         const llmClient = getAIClient();
-        const { text: portfolioContentJson } = await generateText({
-            model: llmClient,
-            messages: contentGenPrompt({ content, templateId }),
-        });
-
-        if (!portfolioContentJson) {
-            throw new Error("No valid content in AI response");
-        }
-        const contentString = (() => {
-            // remove all the ```json and ``` from the content
-            const contentString = portfolioContentJson
-                .replace(/```json|```/g, "")
-                .replace(/```/g, "")
-                .trim();
-
-            // parse the content string as json
-            try {
-                const contentJson = JSON.parse(contentString);
-                return contentJson;
-            } catch (error) {
-                throw new Error("Failed to parse content as JSON", {
-                    cause: error,
-                });
-            }
-        })();
-
-        await uploadPortfolioFileInBucket({
-            portfolioId,
-            content: JSON.stringify(contentString),
-            filename: `content-${portfolioId}.json`,
-            contentType: "application/json",
-            dbColKeyPrefix: "content",
-        });
 
         // 4. Generate HTML template using AI SDK
         const { object: htmlResponse } = await generateObject({
             model: llmClient,
-            messages: htmlGenPrompt({ content: contentString, templateId }),
+            messages: htmlGenPrompt({ content: content, templateId }),
             schema: HTML_PROMPT_OUTPUT_SCHEMA,
         });
 
@@ -113,7 +78,7 @@ export async function generatePortfolioAction({
         await uploadPortfolioFileInBucket({
             portfolioId,
             content: htmlTemplate,
-            filename: `template-${portfolioId}.html`,
+            filename: `portfolio-${portfolioId}.html`,
             contentType: "text/html",
             dbColKeyPrefix: "html",
         });

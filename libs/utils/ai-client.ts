@@ -25,6 +25,6 @@ export function getAIClient(modelName?: string) {
     }
 
     // Use OpenAI in development by default
-    const model = modelName || "gpt-4o-mini";
+    const model = modelName || "gpt-4o";
     return openai(model);
 }

@@ -21,73 +21,65 @@ export const htmlGenPrompt = ({
     return [
         {
             role: "system",
-            content:
-                "You are a professional web developer that creates clean, responsive HTML+CSS websites. Your task is to create an HTML and CSS website that looks exactly like the screenshot, Color and font should be exactly same as the screenshot, Use google fonts for the fonts. Also you will be given a JSON structure that contains all the content for the website. You will use the JSON for content, you can only use the keys from the JSON for content, you can't use any other text in the HTML. While rendering the HTML, we will replace all the JSON keys with the actual content.",
+            content: `You are an expert HTML and CSS developer specializing in creating professional portfolio websites. Your task is to generate complete, valid HTML+CSS code based on the provided resume content and design reference.
+
+INSTRUCTIONS:
+1. Create a pixel-perfect implementation of the design reference provided
+2. Follow a one-to-one mapping for ALL design elements:
+   - Colors (exact hex/rgb values from the design)
+   - Typography (font families, sizes, weights, line heights)
+   - Spacing (margins, paddings, gaps)
+   - Layout structure (sections, containers, grid/flexbox)
+
+3. Use Google Fonts for typography:
+   - Select font families that best match the design reference
+   - Include proper Google Font import links in the <head> section
+   - Implement correct font-family, font-weight, and font-size properties
+
+4. Integrate the provided resume content:
+   - Use actual content from the resume for all text elements
+   - Ensure proper semantic HTML5 structure (<header>, <main>, <section>, etc.)
+   - Include appropriate accessibility attributes
+
+5. Create responsive design:
+   - Use modern CSS techniques (flexbox/grid)
+   - Include media queries for different viewport sizes
+   - Ensure mobile-friendly layout
+
+6. Optimize for direct rendering in an iframe:
+   - Self-contained HTML file with internal CSS
+   - No external dependencies except Google Fonts
+   - No JavaScript required (pure HTML/CSS solution)
+
+The output should be complete, valid HTML that can be directly rendered in a browser with no additional processing.`,
         },
         {
             role: "user",
             content: [
                 {
                     type: "text",
-                    text: `
-Here is the JSON structure for a portfolio website:
+                    text: `Generate a complete HTML/CSS portfolio website based on the following:
+
+1. RESUME CONTENT:
+Below is the resume/CV content to incorporate into the portfolio design. Use this information to fill all text sections of the portfolio:
 
 ${content}
 
-Create a complete, responsive, and professional portfolio website HTML+CSS that uses JSON for ALL text content. JSON keys should be in the format: {{key_1}}
+2. DESIGN REFERENCE:
+I'm providing a design template reference. Your implementation should precisely follow:
+- Exact color palette used in the design
+- Typography (match font styles, sizes, weights as closely as possible)
+- Layout structure and proportions
+- Visual hierarchy and spacing
 
-IMPORTANT: Every single piece of visible text that appears in the UI must use a JSON key - this includes:
-- All navigation items and labels
-- All button text
-- All section headers and titles
-- All form labels and placeholders
-- Copyright notices and footer text
-- ALL static text, no matter how small or seemingly fixed
+3. OUTPUT REQUIREMENTS:
+- Generate complete, valid HTML5 with internal CSS
+- Include Google Fonts that best match the design
+- Ensure the portfolio is responsive and works on all devices
+- Your code should be directly renderable in an iframe without any external dependencies (except Google Fonts)
+- Use semantic HTML markup for accessibility
 
-IMPORTANT: DO NOT convert CSS values or properties to placeholders. CSS should remain as regular CSS with actual values:
-- Keep all colors, sizes, margins, paddings as actual CSS values (not placeholders)
-- Keep all CSS properties and values intact
-- Only visible text content should use placeholders, not styling values
-
-SECTION ORGANIZATION:
-The HTML should be organized into clearly defined sections, each with a unique identifier:
-- Each major section of the website MUST have a container element with a custom attribute: data-pronto-sec-id="pronto-sec-[section-name]"
-- Example: <section data-pronto-sec-id="pronto-sec-hero">...</section>
-- Use descriptive section names like: hero, about, experience, projects, skills, education, contact, footer
-- Each section should be self-contained with its own styles and structure
-- This organization allows for targeted updates to individual sections
-
-<!-- BEGIN experience -->
-<div class="experience-item">
-  <h3>{{experience_position}}</h3> or <h3>{{item_position}}</h3>
-  <p>{{experience_company}}</p> or <p>{{item_company}}</p>
-  <span>Index: {{index}}</span>
-</div>
-<!-- END experience -->
-
-You can also use conditional sections that only display if data exists:
-
-<!-- IF contact_email -->
-<div class="contact-email">{{contact_email_label}} {{contact_email}}</div>
-<!-- ENDIF contact_email -->
-
-
-
-Guidelines:
-1. Website should look exactly like the screenshot
-2. Color and font should be exactly same as the screenshot
-3. Use google fonts for the fonts
-4. Include all sections from the JSON
-5. Include CSS directly in the HTML
-6. Use semantic HTML5 elements
-7. Make it mobile-friendly with media queries
-13. EVERY major section must have the data-pronto-sec-id attribute
-
-REMINDER: The ONLY hardcoded text allowed is non-visible text like comments, alt attributes for decorative images, or ARIA labels. ALL visible text must use placeholders. CSS values and properties should NOT use placeholders.
-
-REMINDER 2: Don't use key that is not present in the JSON, if you do, it will break the website. And I know you don't do it as your are a responsible and professional developer.
-
-The final HTML should be a complete, self-contained file that we can directly render in a browser after replacing the placeholders with actual content.
+Please provide the complete HTML file with all necessary CSS included (internal styles).
 `,
                 },
                 getImageTemplatePrompt(templateId), // This includes image reference or description

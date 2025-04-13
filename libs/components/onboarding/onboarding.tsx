@@ -10,7 +10,6 @@ import {
     DialogTrigger,
 } from "@/libs/ui/dialog";
 import { Marquee } from "@/libs/ui/marquee";
-import { setTemplateInLocalStorage } from "@/libs/utils/misc";
 import { ArrowRight, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -45,8 +44,6 @@ const PDFUpload = ({
 
         startTransition(async () => {
             try {
-                setTemplateInLocalStorage(template.id);
-
                 const result = await generatePortfolioAction({
                     content: pdfContent,
                     templateId: template.id,
