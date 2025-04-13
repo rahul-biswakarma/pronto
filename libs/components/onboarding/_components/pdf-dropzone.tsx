@@ -4,7 +4,7 @@ import { usePDFJS } from "@/libs/hooks/use-pdf";
 import { cn } from "@/libs/utils/misc";
 import { Dropzone, type ExtFile } from "@dropzone-ui/react";
 import { useState } from "react";
-import { useOnboarding } from "../onboarding-context";
+import { useOnboarding } from "../onboarding.context";
 
 interface FileUploaderProps {
     className?: string;

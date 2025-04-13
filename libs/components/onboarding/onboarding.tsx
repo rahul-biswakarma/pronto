@@ -13,7 +13,7 @@ import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { FileUploader } from "./_components/pdf-dropzone";
-import { OnboardingProvider, useOnboarding } from "./onboarding-context";
+import { OnboardingProvider, useOnboarding } from "./onboarding.context";
 import { templates } from "./templates";
 
 export type Template = {
