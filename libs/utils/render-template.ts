@@ -116,7 +116,7 @@ function renderArraySection(
         /<!-- BEGIN ([a-zA-Z_\[\].]+) ([0-9]+) -->([\s\S]*?)<!-- END \1 -->/g;
     const processedTemplate = template.replace(
         nestedArrayPattern,
-        (match, nestedArrayPath, parentIndexStr, nestedTemplate) => {
+        (_match, nestedArrayPath, parentIndexStr, nestedTemplate) => {
             const parentIndex = Number.parseInt(parentIndexStr, 10);
 
             // If this parent index doesn't match the current index, keep the template as is for later processing
@@ -189,13 +189,18 @@ function renderArraySection(
 
     // Replicate the template for each item in the main array
     return arrayValue
-        .map((item: JSONObject, index: number) => {
+        .map((item: JSONValue, index: number) => {
+            // Skip non-object items
+            if (!item || typeof item !== "object" || Array.isArray(item)) {
+                return "";
+            }
+
             // Create a context that includes both the item and the full data
             const context: JSONObject = { ...jsonData };
-            context[arrayName] = item;
+            context[arrayName] = item as JSONObject;
             // Add index and item references
             context.index = index;
-            context.item = item;
+            context.item = item as JSONObject;
 
             // Replace placeholders in this item's template
             return replaceTemplatePlaceholders(processedTemplate, context);
@@ -210,7 +215,7 @@ function replaceTemplatePlaceholders(
     template: string,
     context: JSONObject,
 ): string {
-    return template.replace(/\{\{([^}]+)\}\}/g, (match, path) => {
+    return template.replace(/\{\{([^}]+)\}\}/g, (_match, path) => {
         const keys = parsePath(path.trim());
         const value = getNestedValue(context, keys);
 
@@ -244,7 +249,7 @@ export function renderTemplate(
 
     let renderedHtml = htmlTemplate.replace(
         conditionalPattern,
-        (match, condition, content) => {
+        (_match, condition, content) => {
             const keys = parsePath(condition.trim());
             const value = getNestedValue(jsonData, keys);
 
@@ -268,7 +273,7 @@ export function renderTemplate(
 
     renderedHtml = renderedHtml.replace(
         arrayPattern,
-        (match, arrayName, template) => {
+        (_match, arrayName, template) => {
             // Check if the array exists in the data
             const arrayValue = jsonData[arrayName] as JSONArray | undefined;
 
