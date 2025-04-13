@@ -34,50 +34,46 @@ function createSecureAdminClient() {
     });
 }
 
-/**
- * Uploads a portfolio HTML file to Supabase Storage
- * @param userId The user ID to associate with the portfolio
- * @param html The HTML content of the portfolio
- * @param publish Whether to make the portfolio publicly accessible
- * @returns Upload result with URLs if successful
- */
-export async function uploadPortfolio(
-    userId: string,
-    html: string,
-    publish = false,
-): Promise<PortfolioUploadResult> {
+type uploadPortfolioFileInBucketProps = {
+    portfolioId: string;
+    content: string;
+    filename: string;
+    contentType: string;
+    dbColKeyPrefix: "html" | "content"; // DANGER: This is based on DB column names
+};
+
+export async function uploadPortfolioFileInBucket({
+    portfolioId,
+    content,
+    filename,
+    contentType,
+    dbColKeyPrefix,
+}: uploadPortfolioFileInBucketProps): Promise<PortfolioUploadResult> {
     const operationId = crypto.randomUUID();
-    logger.info({ operationId, userId, publish }, "Starting portfolio upload");
+    logger.info({ operationId, filename }, "Starting portfolio upload");
 
     try {
         // Create secure admin client
         const supabase = createSecureAdminClient();
 
         // For server-side environments, use Buffer instead of Blob
-        const htmlBuffer = Buffer.from(html);
-
-        const filename = `portfolio-${userId}.html`;
+        const htmlBuffer = Buffer.from(content);
 
         // Use the existing "portfolios" bucket
         const bucket = "portfolios";
-
-        logger.debug(
-            { operationId, userId, filename, bucket },
-            "Uploading portfolio to storage bucket",
-        );
 
         // Upload the file
         const { error } = await supabase.storage
             .from(bucket)
             .upload(filename, htmlBuffer, {
-                cacheControl: "3600",
+                cacheControl: "3600", // 1 hour
                 upsert: true,
-                contentType: "text/html",
+                contentType,
             });
 
         if (error) {
             logger.error(
-                { operationId, userId, error: error.message },
+                { operationId, filename, error: error.message },
                 "Failed to upload portfolio to storage",
             );
             return { success: false, error: error.message };
@@ -88,67 +84,37 @@ export async function uploadPortfolio(
             .from(bucket)
             .getPublicUrl(filename);
 
-        let url = urlData.publicUrl;
+        const url = urlData.publicUrl;
 
-        // For private files, get a signed URL with short expiration
-        if (!publish) {
-            logger.debug(
-                { operationId, userId },
-                "Creating signed URL for private portfolio",
-            );
-            const { data: signedData } = await supabase.storage
-                .from(bucket)
-                .createSignedUrl(filename, 60 * 60 * 24); // 1 day expiry - shorter for security
-
-            url = signedData?.signedUrl || url;
-        }
-
-        logger.debug(
-            { operationId, userId },
-            "Updating database record with portfolio details",
-        );
         // Store the reference in the database to link it to the user
         const { error: updateError } = await supabase
-            .from("resume_summaries")
+            .from("portfolio")
             .update({
-                portfolio_s3_path: `${bucket}/${filename}`,
-                portfolio_public: publish,
-                portfolio_url: url,
-                portfolio_updated_at: new Date().toISOString(),
+                [`${dbColKeyPrefix}_s3_path`]: `${bucket}/${filename}`,
+                [`${dbColKeyPrefix}_url`]: url,
             })
-            .eq("user_id", userId);
+            .eq("id", portfolioId);
 
         if (updateError) {
             logger.error(
                 {
                     operationId,
-                    userId,
+                    portfolioId,
                     error: updateError.message,
                 },
                 "Database update failed after portfolio upload",
             );
         }
 
-        logger.info(
-            {
-                operationId,
-                userId,
-                publish,
-                success: true,
-            },
-            "Portfolio upload completed successfully",
-        );
-
         return {
             success: true,
-            url: !publish ? url : null,
-            publicUrl: publish ? url : null,
+            publicUrl: url,
         };
     } catch (error) {
         logger.error(
             {
                 operationId,
-                userId,
+                portfolioId,
                 error: error instanceof Error ? error.message : "Unknown error",
                 stack: error instanceof Error ? error.stack : undefined,
             },
