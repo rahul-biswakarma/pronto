@@ -130,6 +130,17 @@ export async function uploadPortfolioFileInBucket({
     }
 }
 
+export async function getFileFromBucket(path: string) {
+    const supabase = createSecureAdminClient();
+    const { data, error } = await supabase.storage
+        .from("portfolios")
+        .download(path);
+    return {
+        data,
+        error,
+    };
+}
+
 /**
  * Makes an existing portfolio public or private
  * @param userId The user ID associated with the portfolio
