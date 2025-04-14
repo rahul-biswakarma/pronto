@@ -1,16 +1,9 @@
 "use server";
-import {
-    HTML_PROMPT_OUTPUT_SCHEMA,
-    htmlGenPrompt,
-} from "@/libs/constants/html-gen-prompt";
-import { getAIClient } from "@/libs/utils/ai-client";
+import { htmlGenPrompt } from "@/libs/constants/html-gen-prompt";
+import { getClaudeClient } from "@/libs/utils/ai-client";
 import { checkAuthentication } from "@/libs/utils/auth";
 import { uploadPortfolioFileInBucket } from "@/libs/utils/supabase-storage";
-// Assuming you have a way to create a Supabase server client
-// e.g., using cookies() or similar server-side helpers
-
-import { generateObject } from "ai";
-import { revalidatePath } from "next/cache";
+import type { MessageStream } from "@anthropic-ai/sdk/lib/MessageStream.mjs";
 
 type PortfolioActionResult = {
     success: boolean;
@@ -60,20 +53,42 @@ export async function generatePortfolioAction({
             throw new Error("Failed to create portfolio record");
         }
 
-        // 3. Generate content JSON using AI SDK
-        const llmClient = getAIClient();
-
         // 4. Generate HTML template using AI SDK
-        const { object: htmlResponse } = await generateObject({
-            model: llmClient,
+        const claudeClient = getClaudeClient();
+
+        const textStream: MessageStream = claudeClient({
             messages: htmlGenPrompt({ content: content, templateId }),
-            schema: HTML_PROMPT_OUTPUT_SCHEMA,
+        }).on("text", () => {
+            // TODO
         });
 
-        if (!htmlResponse?.html) {
-            throw new Error("No valid HTML content in response");
+        // Wait for the full response text
+        const responseText = await (
+            await textStream.withResponse()
+        ).data.finalText();
+
+        // Parse the response content
+        let htmlTemplate: string | null;
+        try {
+            // Look for HTML content (either directly or in a code block)
+            const htmlMatch = responseText.match(
+                /<html[^>]*>([\s\S]*)<\/html>/i,
+            );
+
+            if (htmlMatch?.[1]) {
+                htmlTemplate = `<html>${htmlMatch[1]}</html>`;
+            } else {
+                // If no HTML found, use the full response
+                htmlTemplate = null;
+            }
+
+            if (!htmlTemplate) {
+                throw new Error("No valid HTML content in response");
+            }
+        } catch (error) {
+            console.error("Failed to parse AI response:", error);
+            throw new Error("Failed to generate valid HTML content");
         }
-        const htmlTemplate = htmlResponse.html;
 
         await uploadPortfolioFileInBucket({
             portfolioId,
@@ -83,8 +98,6 @@ export async function generatePortfolioAction({
             dbColKeyPrefix: "html",
         });
 
-        // Revalidate relevant paths if needed
-        revalidatePath("/editor"); // Adjust path as needed
         return { success: true, portfolioId };
     } catch (error: unknown) {
         console.error("Server-side portfolio generation error:", error);

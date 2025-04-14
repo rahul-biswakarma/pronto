@@ -1,13 +1,9 @@
-import type { ImagePart } from "ai";
 import { templates } from "../constants/templates";
 
-export function getImageTemplatePrompt(templateId: string): ImagePart {
+export function getImageTemplateUrl(templateId: string): string {
     const template =
         templates.find((template) => template.id === templateId) ??
         templates[0];
 
-    return {
-        type: "image",
-        image: `${process.env.NEXT_PUBLIC_BASE_URL}/${template.image}`,
-    };
+    return `${process.env.NEXT_PUBLIC_BASE_URL}/${template.image}`;
 }

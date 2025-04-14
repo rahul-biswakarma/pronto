@@ -16,7 +16,7 @@ const CSRF_SECRET =
 // Session configuration
 const sessionOptions = {
     password: CSRF_SECRET,
-    cookieName: "pronto_csrf",
+    cookieName: "feno_csrf",
     ttl: 60 * 60, // 1 hour
     cookieOptions: {
         secure: process.env.NODE_ENV === "production",

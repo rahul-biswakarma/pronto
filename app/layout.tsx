@@ -30,8 +30,9 @@ const serif = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-    title: "Feno",
-    description: "build your online presence in minutes",
+    title: "Feno — Your Story, Beautifully Told",
+    description:
+        "Transform your resume into a stunning digital portfolio in minutes. Share your professional journey with style and impact.",
     other: {
         "Content-Security-Policy":
             "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https:; font-src 'self' data:; object-src 'none'; media-src 'self'; frame-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'self';",
