@@ -103,6 +103,7 @@ export async function middleware(request: NextRequest) {
         // Skip login redirect for auth callback routes
         if (
             !request.nextUrl.pathname.endsWith("/login") &&
+            !request.nextUrl.pathname.includes("/") &&
             !user &&
             !isAuthCallback
         ) {
