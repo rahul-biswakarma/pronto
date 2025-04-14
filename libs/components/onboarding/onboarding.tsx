@@ -1,6 +1,6 @@
 "use client";
 
-import { generatePortfolioAction } from "@/app/actions/portfolioActions";
+import { generatePortfolioAction } from "@/app/actions/portfolio-actions";
 import { templates } from "@/libs/constants/templates";
 import { Button } from "@/libs/ui/button";
 import {
