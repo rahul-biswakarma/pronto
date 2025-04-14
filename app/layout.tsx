@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-    title: "Pronto — Your Story, Beautifully Told",
+    title: "Feno — Your Story, Beautifully Told",
     description:
         "Transform your resume into a stunning digital portfolio in minutes. Share your professional journey with style and impact.",
     other: {
