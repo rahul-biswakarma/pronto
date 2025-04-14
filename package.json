@@ -13,7 +13,7 @@
         "supabase:gen": "supabase gen types typescript --project-id ibozjetcsydxpioqabzp --schema public > ./libs/supabase/database.types.ts"
     },
     "dependencies": {
-        "@ai-sdk/deepseek": "^0.2.6",
+        "@ai-sdk/anthropic": "^1.2.10",
         "@ai-sdk/openai": "^1.3.10",
         "@dropzone-ui/react": "^7.0.4",
         "@langchain/core": "^0.3.43",

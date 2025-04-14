@@ -1,4 +1,4 @@
-import { deepseek } from "@ai-sdk/deepseek";
+import { anthropic } from "@ai-sdk/anthropic";
 import { openai } from "@ai-sdk/openai";
 import { ollama } from "ollama-ai-provider";
 
@@ -13,9 +13,9 @@ const useOllama = process.env.USE_OLLAMA === "true";
  */
 export function getAIClient(modelName?: string) {
     if (isProduction) {
-        // Use DeepSeek in production via OpenAI compatible API
-        const model = modelName || "deepseek-chat";
-        return deepseek(model);
+        // Use Claude in production
+        const model = modelName || "claude-3-7-sonnet-20250219";
+        return anthropic(model);
     }
 
     if (useOllama) {
