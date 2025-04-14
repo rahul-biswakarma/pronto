@@ -1,5 +1,9 @@
 import { GoogleSignin } from "@/libs/components/auth/signin";
 
 export default function LoginPage() {
-    return <GoogleSignin />;
+    return (
+        <div className="flex flex-col items-center justify-center h-screen">
+            <GoogleSignin />
+        </div>
+    );
 }
