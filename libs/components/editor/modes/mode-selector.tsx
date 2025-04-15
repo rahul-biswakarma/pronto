@@ -4,6 +4,7 @@ import { EDITOR_MODES } from "../constants";
 import { useEditorContext } from "../editor.context";
 import { CmsEditMode } from "./cms-edit/cms-mode";
 import { DefaultMode } from "./default/default-mode";
+import { DeveloperMode } from "./developer/developer-mode";
 import { SectionEditMode } from "./section-edit/section-edit-mode";
 import { ThemeEditorMode } from "./theme-editor/theme-edit-mode";
 
@@ -18,6 +19,8 @@ export const ModeSelector: React.FC = () => {
             return <CmsEditMode />;
         case EDITOR_MODES.THEME_EDITOR:
             return <ThemeEditorMode />;
+        case EDITOR_MODES.DEVELOPER:
+            return <DeveloperMode />;
         default:
             return <DefaultMode />;
     }

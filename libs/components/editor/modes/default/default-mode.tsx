@@ -7,7 +7,7 @@ import {
     PromptInputActions,
     PromptInputTextarea,
 } from "@/libs/ui/prompt-input";
-import { ArrowUp, Palette, Paperclip, Square, X } from "lucide-react";
+import { ArrowUp, Code, Palette, Paperclip, Square, X } from "lucide-react";
 import { useRef, useState } from "react";
 import { EDITOR_MODES } from "../../constants";
 import { useEditorContext } from "../../editor.context";
@@ -105,6 +105,20 @@ export const DefaultMode: React.FC = () => {
                                     className="hover:bg-secondary-foreground/10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl"
                                 >
                                     <Palette className="text-primary size-5" />
+                                </button>
+                            </PromptInputAction>
+                        )}
+
+                        {availableModes.includes(EDITOR_MODES.DEVELOPER) && (
+                            <PromptInputAction tooltip="Developer Mode">
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setActiveMode(EDITOR_MODES.DEVELOPER)
+                                    }
+                                    className="hover:bg-secondary-foreground/10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl"
+                                >
+                                    <Code className="text-primary size-5" />
                                 </button>
                             </PromptInputAction>
                         )}

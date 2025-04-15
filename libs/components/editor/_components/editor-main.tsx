@@ -451,17 +451,19 @@ export const EditorMain = () => {
 
     return (
         <>
-            <iframe
-                ref={iframeRef}
-                title="Portfolio Preview"
-                onLoad={handleIframeLoad}
-                style={{
-                    backgroundColor: "transparent",
-                    width: "100vw",
-                    height: "100vh",
-                    border: "none",
-                }}
-            />
+            {activeMode !== EDITOR_MODES.DEVELOPER && (
+                <iframe
+                    ref={iframeRef}
+                    title="Portfolio Preview"
+                    onLoad={handleIframeLoad}
+                    style={{
+                        backgroundColor: "transparent",
+                        width: "100vw",
+                        height: "100vh",
+                        border: "none",
+                    }}
+                />
+            )}
             <ModeSelector />
         </>
     );

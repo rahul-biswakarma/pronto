@@ -22,6 +22,7 @@ export const EDITOR_MODES = {
     SECTION_EDIT: "section-edit",
     CMS_EDIT: "cms-edit",
     THEME_EDITOR: "theme-editor",
+    DEVELOPER: "developer",
 } as const;
 
 /**

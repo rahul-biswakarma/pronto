@@ -7,7 +7,8 @@ export type EditorMode =
     | "default"
     | "section-edit"
     | "theme-editor"
-    | "cms-edit";
+    | "cms-edit"
+    | "developer";
 
 export type ThemeVariable = {
     name: string;
@@ -96,6 +97,7 @@ export const EditorProvider = ({
         "default",
         "section-edit",
         "cms-edit",
+        "developer",
     ]);
     const [activeMode, setActiveMode] = useState<EditorMode>("default");
     const [themeVariables, setThemeVariables] = useState<ThemeVariable[]>([]);
