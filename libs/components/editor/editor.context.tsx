@@ -11,6 +11,8 @@ export type EditorContextType = {
     setPortfolioHtml: (portfolioHtml: string) => void;
     portfolioContent: object | null;
     setPortfolioContent: (portfolioContent: object) => void;
+    selectedSection: { id: string; html: string } | null;
+    setSelectedSection: (section: { id: string; html: string } | null) => void;
 };
 
 export type EditorStages =
@@ -27,6 +29,8 @@ export const EditorContext = createContext<EditorContextType>({
     setPortfolioHtml: () => {},
     portfolioContent: null,
     setPortfolioContent: () => {},
+    selectedSection: null,
+    setSelectedSection: () => {},
 });
 
 export const EditorProvider = ({
@@ -44,6 +48,10 @@ export const EditorProvider = ({
     const [portfolioContent, setPortfolioContent] = useState<object | null>(
         contentJson,
     );
+    const [selectedSection, setSelectedSection] = useState<{
+        id: string;
+        html: string;
+    } | null>(null);
 
     return (
         <EditorContext.Provider
@@ -56,6 +64,8 @@ export const EditorProvider = ({
                 setPortfolioHtml,
                 portfolioContent,
                 setPortfolioContent,
+                selectedSection,
+                setSelectedSection,
             }}
         >
             {children}
