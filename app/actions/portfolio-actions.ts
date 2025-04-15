@@ -56,16 +56,53 @@ export async function generatePortfolioAction({
         // 4. Generate HTML template using AI SDK
         const claudeClient = getClaudeClient();
 
-        const textStream: MessageStream = claudeClient({
-            messages: htmlGenPrompt({ content: content, templateId }),
-        }).on("text", () => {
-            // TODO
-        });
+        // Initialize variables for managing potential continuation
+        let responseText = "";
+        let isComplete = false;
+        let attemptCount = 0;
+        const MAX_ATTEMPTS = 3;
 
-        // Wait for the full response text
-        const responseText = await (
-            await textStream.withResponse()
-        ).data.finalText();
+        // Initial request
+        let messages = htmlGenPrompt({ content: content, templateId });
+
+        while (!isComplete && attemptCount < MAX_ATTEMPTS) {
+            const textStream: MessageStream = claudeClient({
+                messages: messages,
+            });
+
+            // Wait for the full response text
+            const response = await textStream.withResponse();
+            const currentText = await response.data.finalText();
+            responseText += currentText;
+
+            // Check if response was cut off due to token limit
+            // This is an approximation - check if HTML is incomplete
+            const isHtmlComplete = responseText.includes("</html>");
+
+            if (!isHtmlComplete) {
+                attemptCount++;
+                // Prepare continuation request with the appropriate type
+                const continuationMessages = [
+                    ...messages,
+                    {
+                        role: "assistant" as const,
+                        content: [{ type: "text" as const, text: currentText }],
+                    },
+                    {
+                        role: "user" as const,
+                        content: [
+                            {
+                                type: "text" as const,
+                                text: "please continue the HTML",
+                            },
+                        ],
+                    },
+                ];
+                messages = continuationMessages;
+            } else {
+                isComplete = true;
+            }
+        }
 
         // Parse the response content
         let htmlTemplate: string | null;
