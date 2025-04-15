@@ -8,7 +8,14 @@ import {
     PromptInputTextarea,
 } from "@/libs/ui/prompt-input";
 import { cn } from "@/libs/utils/misc";
-import { ArrowUp, Paperclip, Square, X } from "lucide-react";
+import {
+    ArrowUp,
+    Palette,
+    Paperclip,
+    PencilLine,
+    Square,
+    X,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useEditorContext } from "../editor.context";
 
@@ -30,7 +37,19 @@ export function EditorInput() {
     const [isLoading, setIsLoading] = useState(false);
     const [files, setFiles] = useState<File[]>([]);
     const uploadInputRef = useRef<HTMLInputElement>(null);
-    const { selectedSection } = useEditorContext();
+    const {
+        selectedSection,
+        activeMode,
+        setActiveMode,
+        availableModes,
+        themeVariables,
+        updateThemeVariable,
+        selectedCmsElement,
+        updateCmsElementText,
+    } = useEditorContext();
+
+    // Track content for CMS editing
+    const [cmsContent, setCmsContent] = useState("");
 
     // Input mode state
     const [inputMode, setInputMode] = useState<EditorInputMode>("default");
@@ -70,6 +89,15 @@ export function EditorInput() {
         }
     }, [selectedSection]);
 
+    // Update CMS content when selected element changes
+    useEffect(() => {
+        if (selectedCmsElement) {
+            setCmsContent(selectedCmsElement.originalText);
+        } else {
+            setCmsContent("");
+        }
+    }, [selectedCmsElement]);
+
     const handleSubmit = () => {
         if (input.trim() || files.length > 0) {
             // Here you can use inputMode and inputContext to handle the submission differently
@@ -104,6 +132,15 @@ export function EditorInput() {
         }
     };
 
+    // Handle CMS content change
+    const handleCmsContentChange = (
+        e: React.ChangeEvent<HTMLTextAreaElement>,
+    ) => {
+        const newContent = e.target.value;
+        setCmsContent(newContent);
+        updateCmsElementText(newContent);
+    };
+
     // Determine the placeholder text based on the current mode
     const getPlaceholderText = () => {
         switch (inputMode) {
@@ -117,10 +154,150 @@ export function EditorInput() {
         }
     };
 
+    // Handle color variable change
+    const handleColorChange = (name: string, value: string) => {
+        updateThemeVariable(name, value);
+    };
+
+    // Render the CMS editor UI
+    if (activeMode === "cms-edit") {
+        return (
+            <div
+                className={cn(
+                    "w-full h-fit max-w-screen-sm mx-auto absolute bottom-2 left-1/2 -translate-x-1/2 bg-accent p-4 rounded-2xl",
+                    "border-2 border-yellow-500/30",
+                )}
+            >
+                <div className="flex flex-col gap-4 bg-background rounded-xl p-4">
+                    <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-lg font-semibold flex items-center">
+                            <PencilLine className="mr-2 size-5" />
+                            Text Editor
+                        </h3>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setActiveMode("default")}
+                        >
+                            Exit
+                        </Button>
+                    </div>
+
+                    {selectedCmsElement ? (
+                        <div className="space-y-3">
+                            <div className="flex flex-col space-y-1.5">
+                                <label
+                                    htmlFor="cms-text-editor"
+                                    className="text-sm font-medium"
+                                >
+                                    Edit Text Content
+                                </label>
+                                <textarea
+                                    id="cms-text-editor"
+                                    value={cmsContent}
+                                    onChange={handleCmsContentChange}
+                                    className="flex w-full rounded-md border px-3 py-2 text-sm min-h-[100px]"
+                                    placeholder="Enter your text here..."
+                                />
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                                Click on any text element in the preview to edit
+                                its content.
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="text-center py-8 text-muted-foreground">
+                            No text element selected. Click on any text in the
+                            preview to edit it.
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    // Render the theme editor UI
+    if (activeMode === "theme-editor") {
+        return (
+            <div
+                className={cn(
+                    "w-full h-fit max-w-screen-sm mx-auto absolute bottom-2 left-1/2 -translate-x-1/2 bg-accent p-4 rounded-2xl",
+                    inputMode === "section-edit" && "bg-pink-500/30",
+                )}
+            >
+                <div className="flex flex-col gap-4 bg-background">
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-semibold flex items-center">
+                            <Palette className="mr-2 size-5" />
+                            Theme Editor
+                        </h3>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setActiveMode("default")}
+                        >
+                            Exit
+                        </Button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[300px] overflow-y-auto">
+                        {themeVariables.map((variable) => (
+                            <div
+                                key={variable.name}
+                                className="flex flex-col space-y-1"
+                            >
+                                <label
+                                    htmlFor={variable.name}
+                                    className="text-sm font-medium"
+                                >
+                                    {variable.displayName}
+                                </label>
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="color"
+                                        id={`color-${variable.name}`}
+                                        value={variable.value}
+                                        onChange={(e) =>
+                                            handleColorChange(
+                                                variable.name,
+                                                e.target.value,
+                                            )
+                                        }
+                                        className="w-10 h-10 rounded-md border cursor-pointer"
+                                    />
+                                    <input
+                                        type="text"
+                                        id={variable.name}
+                                        value={variable.value}
+                                        onChange={(e) =>
+                                            handleColorChange(
+                                                variable.name,
+                                                e.target.value,
+                                            )
+                                        }
+                                        className="flex-1 px-3 py-2 border rounded-md text-sm"
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {themeVariables.length === 0 && (
+                        <div className="text-center py-8 text-muted-foreground">
+                            No theme variables found. Make sure your HTML
+                            includes CSS variables with the prefix "feno-color".
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    // Regular prompt input UI
     return (
         <div
             className={cn(
-                "w-full h-fit max-w-screen-sm mx-auto absolute bottom-2 left-1/2 -translate-x-1/2 bg-accent p-1 rounded-2xl backdrop-blur-sm",
+                "w-full h-fit max-w-screen-sm mx-auto absolute bottom-2 left-1/2 -translate-x-1/2 bg-accent p-1 rounded-2xl",
                 inputMode === "section-edit" && "bg-blue-500/30",
             )}
         >
@@ -155,21 +332,39 @@ export function EditorInput() {
                 )}
                 <PromptInputTextarea placeholder={getPlaceholderText()} />
                 <PromptInputActions className="flex items-center justify-between gap-2 pt-2">
-                    <PromptInputAction tooltip="Attach files">
-                        <label
-                            htmlFor="file-upload"
-                            className="hover:bg-secondary-foreground/10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl"
-                        >
-                            <input
-                                type="file"
-                                multiple
-                                onChange={handleFileChange}
-                                className="hidden"
-                                id="file-upload"
-                            />
-                            <Paperclip className="text-primary size-5" />
-                        </label>
-                    </PromptInputAction>
+                    <div className="flex items-center gap-1">
+                        <PromptInputAction tooltip="Attach files">
+                            <label
+                                htmlFor="file-upload"
+                                className="hover:bg-secondary-foreground/10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl"
+                            >
+                                <input
+                                    type="file"
+                                    multiple
+                                    onChange={handleFileChange}
+                                    className="hidden"
+                                    id="file-upload"
+                                />
+                                <Paperclip className="text-primary size-5" />
+                            </label>
+                        </PromptInputAction>
+
+                        {availableModes.includes("theme-editor") && (
+                            <PromptInputAction tooltip="Theme Editor">
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setActiveMode("theme-editor")
+                                    }
+                                    className="hover:bg-secondary-foreground/10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl"
+                                >
+                                    <Palette className="text-primary size-5" />
+                                </button>
+                            </PromptInputAction>
+                        )}
+
+                        {/* CMS Text Editor mode is activated automatically when clicking on text elements */}
+                    </div>
 
                     <PromptInputAction
                         tooltip={isLoading ? "Stop generation" : "Send message"}
