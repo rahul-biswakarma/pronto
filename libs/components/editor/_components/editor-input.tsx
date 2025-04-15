@@ -102,13 +102,6 @@ export function EditorInput() {
         if (input.trim() || files.length > 0) {
             // Here you can use inputMode and inputContext to handle the submission differently
             // based on the current mode
-            console.log(
-                "Submitting in mode:",
-                inputMode,
-                "with context:",
-                inputContext,
-            );
-
             setIsLoading(true);
             setTimeout(() => {
                 setIsLoading(false);
@@ -164,8 +157,8 @@ export function EditorInput() {
         return (
             <div
                 className={cn(
-                    "w-full h-fit max-w-screen-sm mx-auto absolute bottom-2 left-1/2 -translate-x-1/2 bg-accent p-4 rounded-2xl",
-                    "border-2 border-yellow-500/30",
+                    "w-full h-fit max-w-screen-sm mx-auto absolute bottom-2 left-1/2 -translate-x-1/2 bg-accent p-1 rounded-2xl backdrop-blur-sm",
+                    "bg-yellow-500/30",
                 )}
             >
                 <div className="flex flex-col gap-4 bg-background rounded-xl p-4">
@@ -221,11 +214,11 @@ export function EditorInput() {
         return (
             <div
                 className={cn(
-                    "w-full h-fit max-w-screen-sm mx-auto absolute bottom-2 left-1/2 -translate-x-1/2 bg-accent p-4 rounded-2xl",
-                    inputMode === "section-edit" && "bg-pink-500/30",
+                    "w-full h-fit max-w-screen-sm mx-auto absolute bottom-2 left-1/2 -translate-x-1/2 bg-accent p-1 rounded-2xl backdrop-blur-sm",
+                    "bg-pink-500/30",
                 )}
             >
-                <div className="flex flex-col gap-4 bg-background">
+                <div className="flex flex-col gap-4 bg-background rounded-xl p-4">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-lg font-semibold flex items-center">
                             <Palette className="mr-2 size-5" />
