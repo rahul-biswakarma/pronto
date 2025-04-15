@@ -11,11 +11,12 @@ export const ViewportSwitcher = ({
     onDeviceChange,
 }: ViewportSwitcherProps) => {
     const handleToggleDevice = () => {
-        // Cycle through device types: desktop → tablet → mobile → desktop
+        // Cycle through device types: normal → desktop → tablet → mobile → normal
         const nextDevice: Record<DeviceType, DeviceType> = {
+            normal: "desktop",
             desktop: "tablet",
             tablet: "mobile",
-            mobile: "desktop",
+            mobile: "normal",
         };
 
         onDeviceChange(nextDevice[deviceType]);
@@ -28,6 +29,23 @@ export const ViewportSwitcher = ({
             onClick={handleToggleDevice}
             title={`Current: ${deviceType} view - Click to toggle`}
         >
+            {deviceType === "normal" && (
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="text-primary size-5"
+                >
+                    <rect x="2" y="2" width="20" height="20" rx="2" ry="2" />
+                    <line x1="2" y1="7" x2="22" y2="7" />
+                </svg>
+            )}
             {deviceType === "desktop" && (
                 <svg
                     xmlns="http://www.w3.org/2000/svg"

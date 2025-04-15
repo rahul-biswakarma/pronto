@@ -4,6 +4,7 @@ import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 import type { DeviceType } from "../types";
 import { Desktop } from "./device-mockups/desktop";
 import { MOCKUP_INTERACTION_EVENT, Mobile } from "./device-mockups/mobile";
+import { NormalView } from "./device-mockups/normal";
 import { Tablet } from "./device-mockups/tablet";
 
 interface DeviceViewportProps {
@@ -83,6 +84,9 @@ export const DeviceViewport = ({
                                 )}
                                 {deviceType === "mobile" && (
                                     <Mobile>{wrappedChildren}</Mobile>
+                                )}
+                                {deviceType === "normal" && (
+                                    <NormalView>{wrappedChildren}</NormalView>
                                 )}
                             </div>
                         </TransformComponent>

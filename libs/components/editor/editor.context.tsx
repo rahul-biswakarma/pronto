@@ -75,7 +75,7 @@ export const EditorContext = createContext<EditorContextType>({
     selectedCmsElement: null,
     setSelectedCmsElement: () => {},
     updateCmsElementText: () => {},
-    deviceType: "desktop",
+    deviceType: "normal",
     setDeviceType: () => {},
 });
 
@@ -108,7 +108,7 @@ export const EditorProvider = ({
     const [themeVariables, setThemeVariables] = useState<ThemeVariable[]>([]);
     const [selectedCmsElement, setSelectedCmsElement] =
         useState<CmsElement | null>(null);
-    const [deviceType, setDeviceType] = useState<DeviceType>("desktop");
+    const [deviceType, setDeviceType] = useState<DeviceType>("normal");
 
     // Extract CSS variables when HTML changes
     useEffect(() => {

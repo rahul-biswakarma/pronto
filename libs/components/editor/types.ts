@@ -47,4 +47,4 @@ export type EditorStages =
     | "generating_content"
     | "generating_portfolio";
 
-export type DeviceType = "desktop" | "tablet" | "mobile";
+export type DeviceType = "desktop" | "tablet" | "mobile" | "normal";
