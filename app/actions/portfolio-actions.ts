@@ -70,7 +70,6 @@ export async function generatePortfolioAction({
         // Parse the response content
         let htmlTemplate: string | null;
         try {
-            console.log("responseText", responseText);
             // Look for HTML content (either directly or in a code block)
             const htmlMatch = responseText.match(
                 /<html[^>]*>([\s\S]*)<\/html>/i,
