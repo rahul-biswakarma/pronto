@@ -46,7 +46,7 @@ export const templates: Template[] = [
         id: "feno:6",
         name: "Piccalilli",
         description: "Front-end education platform",
-        image: "/templates/image-6.png",
+        image: "/templates/image-6.webp",
         prompt: "Create a bold educational website with a light background, strong serif typography, and high contrast sections. Focus on front-end web development articles, premium courses, and newsletters. Highlight popular topics with tags and feature a vibrant promotional banner to guide users toward learning resources.",
     },
 ];

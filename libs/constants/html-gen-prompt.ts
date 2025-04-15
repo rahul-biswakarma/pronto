@@ -47,6 +47,8 @@ Technical requirements:
 4. Add subtle hover effects and transitions matching the design's aesthetic
 5. Use embedded CSS in <style> tags within the HTML file
 6. Use Google Fonts that perfectly match the typography in the image
+7. Build HTML in sections and give each section a unique ID starting with \`feno-sec\` (e.g., feno-sec-nav, feno-sec-about, feno-sec-skills)
+8. Create global CSS variables with \`feno-color\` prefix for all colors used in the design (e.g., --feno-color-primary, --feno-color-background), and ensure all color references in the CSS use these variables
 
 IMPORTANT:
 - Your HTML/CSS must render visually identical to the screenshot
