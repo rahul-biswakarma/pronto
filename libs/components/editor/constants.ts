@@ -20,9 +20,10 @@ export const CSS_CLASSES = {
 export const EDITOR_MODES = {
     DEFAULT: "default",
     SECTION_EDIT: "section-edit",
-    CMS_EDIT: "cms-edit",
     THEME_EDITOR: "theme-editor",
+    CMS_EDIT: "cms-edit",
     DEVELOPER: "developer",
+    VERSION_HISTORY: "version-history",
 } as const;
 
 /**

@@ -1,5 +1,6 @@
 "use client";
 
+import { VersionHistoryPanel } from "../_components/version-history";
 import { EDITOR_MODES } from "../constants";
 import { useEditorContext } from "../editor.context";
 import { CmsEditMode } from "./cms-edit/cms-mode";
@@ -21,6 +22,8 @@ export const ModeSelector: React.FC = () => {
             return <ThemeEditorMode />;
         case EDITOR_MODES.DEVELOPER:
             return <DeveloperMode />;
+        case EDITOR_MODES.VERSION_HISTORY:
+            return <VersionHistoryPanel />;
         default:
             return <DefaultMode />;
     }

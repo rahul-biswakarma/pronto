@@ -1,7 +1,11 @@
 "use client";
+import {
+    type Version,
+    versionHistoryService,
+} from "@/libs/services/version-history.service";
 import logger from "@/libs/utils/logger";
 import type React from "react";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import type { DeviceType } from "./types";
 
 export type EditorMode =
@@ -9,7 +13,8 @@ export type EditorMode =
     | "section-edit"
     | "theme-editor"
     | "cms-edit"
-    | "developer";
+    | "developer"
+    | "version-history";
 
 export type ThemeVariable = {
     name: string;
@@ -47,6 +52,11 @@ export type EditorContextType = {
     updateCmsElementText: (text: string) => void;
     deviceType: DeviceType;
     setDeviceType: (device: DeviceType) => void;
+    // Version history functions
+    versions: Version[];
+    loadVersions: () => Promise<void>;
+    saveCurrentVersion: (label?: string) => Promise<void>;
+    restoreVersion: (id: number) => Promise<void>;
 };
 
 export type EditorStages =
@@ -77,6 +87,10 @@ export const EditorContext = createContext<EditorContextType>({
     updateCmsElementText: () => {},
     deviceType: "normal",
     setDeviceType: () => {},
+    versions: [],
+    loadVersions: () => Promise.resolve(),
+    saveCurrentVersion: () => Promise.resolve(),
+    restoreVersion: () => Promise.resolve(),
 });
 
 export const EditorProvider = ({
@@ -110,6 +124,117 @@ export const EditorProvider = ({
         useState<CmsElement | null>(null);
     const [deviceType, setDeviceType] = useState<DeviceType>("normal");
 
+    // Version history state
+    const [versions, setVersions] = useState<Version[]>([]);
+    const [saveVersionDebounce, setSaveVersionDebounce] =
+        useState<NodeJS.Timeout | null>(null);
+
+    // Track previous mode for saving versions
+    const prevModeRef = useRef<EditorMode>("default");
+
+    // Initialize the version history service and load versions
+    useEffect(() => {
+        // Skip on server-side
+        if (typeof window === "undefined") return;
+
+        const initVersionHistory = async () => {
+            try {
+                // Initialize the service (always exists but may be a dummy on server)
+                await versionHistoryService.init();
+                await loadVersions();
+
+                // Save initial version if no versions exist
+                const currentVersions =
+                    await versionHistoryService.getVersions();
+                if (currentVersions.length === 0 && portfolioHtml) {
+                    await versionHistoryService.saveVersion(
+                        portfolioHtml,
+                        "Initial Version",
+                    );
+                    await loadVersions();
+                }
+            } catch (error) {
+                logger.error("Failed to initialize version history", error);
+            }
+        };
+
+        initVersionHistory();
+    }, []);
+
+    // Load versions from IndexedDB
+    const loadVersions = async () => {
+        try {
+            // Skip on server-side
+            if (typeof window === "undefined") return;
+
+            const loadedVersions = await versionHistoryService.getVersions();
+            setVersions(loadedVersions);
+        } catch (error) {
+            logger.error("Failed to load versions", error);
+        }
+    };
+
+    // Save current HTML as a version
+    const saveCurrentVersion = async (label = "") => {
+        // Skip on server-side or if no HTML
+        if (typeof window === "undefined" || !portfolioHtml) {
+            return;
+        }
+
+        try {
+            await versionHistoryService.saveVersion(portfolioHtml, label);
+            await loadVersions();
+        } catch (error) {
+            logger.error("Failed to save version", error);
+        }
+    };
+
+    // Restore a previous version
+    const restoreVersion = async (id: number) => {
+        // Skip on server-side
+        if (typeof window === "undefined") {
+            return;
+        }
+
+        try {
+            const version = await versionHistoryService.getVersion(id);
+            if (version?.html) {
+                setPortfolioHtml(version.html);
+                await saveCurrentVersion(`Restored from ${version.label}`);
+            }
+        } catch (error) {
+            logger.error("Failed to restore version", error);
+        }
+    };
+
+    // Save a version after significant changes (debounced)
+    useEffect(() => {
+        // Skip on server-side or if no HTML
+        if (typeof window === "undefined" || !portfolioHtml) {
+            return;
+        }
+
+        // Clear previous timer
+        if (saveVersionDebounce) {
+            clearTimeout(saveVersionDebounce);
+        }
+
+        // Create a timer to batch changes
+        const timer = setTimeout(() => {
+            saveCurrentVersion("Auto Save").catch((error) => {
+                logger.error("Failed to auto-save version", error);
+            });
+        }, 2000); // Debounce for 2 seconds
+
+        setSaveVersionDebounce(timer);
+
+        return () => {
+            if (saveVersionDebounce) {
+                clearTimeout(saveVersionDebounce);
+            }
+        };
+    }, [portfolioHtml]);
+
     // Extract CSS variables when HTML changes
     useEffect(() => {
         if (portfolioHtml) {
@@ -117,7 +242,7 @@ export const EditorProvider = ({
         }
     }, [portfolioHtml]);
 
-    // When activeMode changes, clear selections for other modes
+    // When activeMode changes, clear selections for other modes and save version when exiting a tool
     useEffect(() => {
         // When switching modes, clear selections that don't apply to current mode
         if (activeMode !== "section-edit" && selectedSection) {
@@ -127,7 +252,24 @@ export const EditorProvider = ({
         if (activeMode !== "cms-edit" && selectedCmsElement) {
             setSelectedCmsElement(null);
         }
-    }, [activeMode, selectedSection, selectedCmsElement]);
+
+        // Save version when exiting a tool mode (except when entering another tool or default)
+        if (
+            prevModeRef.current !== "default" &&
+            activeMode === "default" &&
+            portfolioHtml
+        ) {
+            // Save a version with the tool name that was used
+            saveCurrentVersion(
+                `Changes from ${prevModeRef.current} tool`,
+            ).catch((error) => {
+                logger.error("Failed to save version on tool exit", error);
+            });
+        }
+
+        // Store current mode for next change
+        prevModeRef.current = activeMode;
+    }, [activeMode, selectedSection, selectedCmsElement, portfolioHtml]);
 
     // Extract CSS variables from the HTML
     const extractCssVariables = (html: string) => {
@@ -356,6 +498,11 @@ export const EditorProvider = ({
                 updateCmsElementText,
                 deviceType,
                 setDeviceType,
+                // Version history
+                versions,
+                loadVersions,
+                saveCurrentVersion,
+                restoreVersion,
             }}
         >
             {children}
