@@ -86,6 +86,7 @@ export const EditorMain = () => {
     const [hoverCmsElement, setHoverCmsElement] = useState<HTMLElement | null>(
         null,
     );
+    const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         if (portfolioHtml && portfolioContent) {
@@ -122,33 +123,49 @@ export const EditorMain = () => {
         // Add a style block for the highlight effects
         const styleEl = doc.createElement("style");
         styleEl.textContent = `
+            /* Base styles to prevent default browser styles from showing */
+            [id^="feno-sec"], p, h1, h2, h3, h4, h5, h6, span, a, button, li, td, th, label, figcaption {
+                transition: outline 0.1s ease, background-color 0.1s ease !important;
+            }
+
             .feno-hover {
                 outline: 2px dashed #3b82f6 !important;
+                outline-offset: 1px !important;
                 background-color: rgba(59, 130, 246, 0.05) !important;
-                transition: all 0.2s ease-in-out !important;
+                transition: none !important;
                 position: relative !important;
-                z-index: 1 !important;
+                z-index: 10 !important;
+                box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.1) !important;
             }
+
             .feno-selected {
                 outline: 3px solid #3b82f6 !important;
+                outline-offset: 1px !important;
                 background-color: rgba(59, 130, 246, 0.1) !important;
-                transition: all 0.2s ease-in-out !important;
+                transition: none !important;
                 position: relative !important;
-                z-index: 2 !important;
+                z-index: 20 !important;
+                box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.2) !important;
             }
+
             .feno-cms-hover {
                 outline: 2px dashed #eab308 !important;
+                outline-offset: 1px !important;
                 background-color: rgba(234, 179, 8, 0.05) !important;
-                transition: all 0.2s ease-in-out !important;
+                transition: none !important;
                 position: relative !important;
-                z-index: 1 !important;
+                z-index: 10 !important;
+                box-shadow: 0 0 0 1px rgba(234, 179, 8, 0.1) !important;
             }
+
             .feno-cms-selected {
                 outline: 3px solid #eab308 !important;
+                outline-offset: 1px !important;
                 background-color: rgba(234, 179, 8, 0.1) !important;
-                transition: all 0.2s ease-in-out !important;
+                transition: none !important;
                 position: relative !important;
-                z-index: 2 !important;
+                z-index: 20 !important;
+                box-shadow: 0 0 0 1px rgba(234, 179, 8, 0.2) !important;
             }
         `;
         doc.head.appendChild(styleEl);
@@ -165,57 +182,85 @@ export const EditorMain = () => {
             setHoverCmsElement(null);
         };
 
+        // Clear any pending hover timeout
+        const clearHoverTimeout = () => {
+            if (hoverTimeoutRef.current) {
+                clearTimeout(hoverTimeoutRef.current);
+                hoverTimeoutRef.current = null;
+            }
+        };
+
         // Add mouseover event to the document
         doc.body.addEventListener("mouseover", (e) => {
             const target = e.target as HTMLElement;
 
-            // First check if this is a text element
-            if (isTextElement(target)) {
-                // Clear previous highlights
-                clearAllHighlights();
+            // Clear any pending hover timeout
+            clearHoverTimeout();
 
-                // Don't apply hover highlight to selected element
-                if (
-                    activeMode === "cms-edit" &&
-                    selectedCmsElement?.element === target
-                ) {
-                    return;
-                }
+            // Set a timeout for the hover effect (50ms delay)
+            hoverTimeoutRef.current = setTimeout(() => {
+                // Only apply hover effects for elements relevant to the current mode
+                // or in default mode where both section and text highlighting are allowed
 
-                // Add hover highlight for text element
-                target.classList.add("feno-cms-hover");
-                setHoverCmsElement(target);
-            } else {
-                // Not a text element, try to find a section
-                const fenoSection = target.closest(
-                    '[id^="feno-sec"]',
-                ) as HTMLElement;
+                // First check if this is a text element
+                if (isTextElement(target)) {
+                    // Only apply text highlighting in default mode or cms-edit mode
+                    if (activeMode === "default" || activeMode === "cms-edit") {
+                        // Clear previous highlights
+                        clearAllHighlights();
 
-                if (fenoSection) {
-                    // Clear previous highlights
-                    clearAllHighlights();
+                        // Don't apply hover highlight to selected element
+                        if (
+                            activeMode === "cms-edit" &&
+                            selectedCmsElement?.element === target
+                        ) {
+                            return;
+                        }
 
-                    const sectionId = fenoSection.id;
-
-                    // Don't apply hover highlight to selected section
-                    if (
-                        activeMode === "section-edit" &&
-                        selectedSection?.id === sectionId
-                    ) {
-                        return;
+                        // Add hover highlight for text element
+                        target.classList.add("feno-cms-hover");
+                        setHoverCmsElement(target);
                     }
+                } else {
+                    // Not a text element, try to find a section
+                    const fenoSection = target.closest(
+                        '[id^="feno-sec"]',
+                    ) as HTMLElement;
 
-                    // Add hover highlight for section
-                    fenoSection.classList.add("feno-hover");
-                    setHoverHighlight(sectionId);
+                    // Only apply section highlighting in default mode or section-edit mode
+                    if (
+                        fenoSection &&
+                        (activeMode === "default" ||
+                            activeMode === "section-edit")
+                    ) {
+                        // Clear previous highlights
+                        clearAllHighlights();
+
+                        const sectionId = fenoSection.id;
+
+                        // Don't apply hover highlight to selected section
+                        if (
+                            activeMode === "section-edit" &&
+                            selectedSection?.id === sectionId
+                        ) {
+                            return;
+                        }
+
+                        // Add hover highlight for section
+                        fenoSection.classList.add("feno-hover");
+                        setHoverHighlight(sectionId);
+                    }
                 }
-            }
+            }, 50); // 50ms delay for hover effect
         });
 
         // Add mouseout event to the document
         doc.body.addEventListener("mouseout", (e) => {
             const relatedTarget = e.relatedTarget as HTMLElement;
             const target = e.target as HTMLElement;
+
+            // Clear any pending hover timeout
+            clearHoverTimeout();
 
             // Handle text element mouseout
             if (target === hoverCmsElement) {
