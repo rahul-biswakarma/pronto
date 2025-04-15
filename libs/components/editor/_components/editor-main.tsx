@@ -19,6 +19,7 @@ import {
     removeSectionHighlight,
     setupHighlightStyles,
 } from "../utils/highlight";
+import { DeviceViewport } from "./device-viewport";
 
 export const EditorMain = () => {
     const {
@@ -30,6 +31,7 @@ export const EditorMain = () => {
         setActiveMode,
         selectedCmsElement,
         setSelectedCmsElement,
+        deviceType,
     } = useEditorContext();
 
     const [renderedHtml, setRenderedHtml] = useState<string | null>(null);
@@ -40,6 +42,7 @@ export const EditorMain = () => {
     );
     const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         if (portfolioHtml && portfolioContent) {
             try {
@@ -49,12 +52,19 @@ export const EditorMain = () => {
                 if (iframeRef.current) {
                     const doc = iframeRef.current.contentDocument;
                     if (doc) {
-                        doc.open();
-                        doc.write(portfolioHtml);
-                        doc.close();
+                        // Only write to the iframe if it's empty or content has changed
+                        if (
+                            !doc.body ||
+                            !doc.body.innerHTML ||
+                            doc.body.innerHTML.trim() === ""
+                        ) {
+                            doc.open();
+                            doc.write(portfolioHtml);
+                            doc.close();
 
-                        // Apply mouse event listeners after iframe content is loaded
-                        setupEventListeners(doc);
+                            // Apply mouse event listeners after iframe content is loaded
+                            setupEventListeners(doc);
+                        }
                     }
                 }
             } catch (error) {
@@ -64,11 +74,58 @@ export const EditorMain = () => {
     }, [
         portfolioHtml,
         portfolioContent,
-        setSelectedSection,
-        selectedSection,
-        activeMode,
-        selectedCmsElement,
+        // Remove dependencies that shouldn't cause iframe reloading
+        // These will still be accessible in the useEffect, but won't trigger re-renders
+        // setSelectedSection,
+        // selectedSection,
+        // activeMode,
+        // selectedCmsElement,
     ]);
+
+    // Set up a separate effect for handling device type changes
+    useEffect(() => {
+        // When device type changes, we need to ensure the iframe content is preserved
+        // We'll just make sure event listeners are set up correctly
+        if (iframeRef.current && renderedHtml) {
+            // Use optional chaining as suggested by linter
+            const doc = iframeRef.current.contentDocument;
+            if (doc?.body?.innerHTML) {
+                // Re-setup event listeners since the iframe may have been remounted in the DOM
+                setupEventListeners(doc);
+
+                // Restore any highlighting based on active mode
+                if (
+                    activeMode === EDITOR_MODES.SECTION_EDIT &&
+                    selectedSection
+                ) {
+                    const selectedElement = doc.getElementById(
+                        selectedSection.id,
+                    );
+                    if (selectedElement) {
+                        addSectionHighlight(selectedElement, true);
+                    }
+                } else if (
+                    activeMode === EDITOR_MODES.CMS_EDIT &&
+                    selectedCmsElement
+                ) {
+                    try {
+                        const element = findElementByXPath(
+                            doc,
+                            selectedCmsElement.path,
+                        );
+                        if (element) {
+                            addCmsHighlight(element, true);
+                        }
+                    } catch (error) {
+                        logger.error(
+                            { error },
+                            "Error restoring CMS element highlight on device change",
+                        );
+                    }
+                }
+            }
+        }
+    }, [deviceType, renderedHtml]);
 
     // Setup event listeners on iframe content
     const setupEventListeners = (doc: Document) => {
@@ -401,9 +458,16 @@ export const EditorMain = () => {
         if (iframeRef.current && renderedHtml) {
             const doc = iframeRef.current.contentDocument;
             if (doc) {
-                doc.open();
-                doc.write(renderedHtml);
-                doc.close();
+                // Check if the iframe is already populated to avoid rewriting on viewport changes
+                if (
+                    !doc.body ||
+                    !doc.body.innerHTML ||
+                    doc.body.innerHTML.trim() === ""
+                ) {
+                    doc.open();
+                    doc.write(renderedHtml);
+                    doc.close();
+                }
 
                 // Setup event listeners after iframe load
                 setupEventListeners(doc);
@@ -452,17 +516,23 @@ export const EditorMain = () => {
     return (
         <>
             {activeMode !== EDITOR_MODES.DEVELOPER && (
-                <iframe
-                    ref={iframeRef}
-                    title="Portfolio Preview"
-                    onLoad={handleIframeLoad}
-                    style={{
-                        backgroundColor: "transparent",
-                        width: "100vw",
-                        height: "100vh",
-                        border: "none",
-                    }}
-                />
+                <div className="relative w-full h-full">
+                    <DeviceViewport deviceType={deviceType}>
+                        <iframe
+                            ref={iframeRef}
+                            title="Portfolio Preview"
+                            onLoad={handleIframeLoad}
+                            key="portfolio-preview-iframe"
+                            style={{
+                                backgroundColor: "transparent",
+                                width: "100%",
+                                height: "100%",
+                                border: "none",
+                            }}
+                            srcDoc={renderedHtml || ""}
+                        />
+                    </DeviceViewport>
+                </div>
             )}
             <ModeSelector />
         </>

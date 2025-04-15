@@ -46,3 +46,5 @@ export type EditorStages =
     | "idle"
     | "generating_content"
     | "generating_portfolio";
+
+export type DeviceType = "desktop" | "tablet" | "mobile";

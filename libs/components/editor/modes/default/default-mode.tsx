@@ -9,6 +9,7 @@ import {
 } from "@/libs/ui/prompt-input";
 import { ArrowUp, Code, Palette, Paperclip, Square, X } from "lucide-react";
 import { useRef, useState } from "react";
+import { ViewportSwitcher } from "../../_components/viewport-switcher";
 import { EDITOR_MODES } from "../../constants";
 import { useEditorContext } from "../../editor.context";
 
@@ -18,7 +19,8 @@ export const DefaultMode: React.FC = () => {
     const [files, setFiles] = useState<File[]>([]);
     const uploadInputRef = useRef<HTMLInputElement>(null);
 
-    const { availableModes, setActiveMode } = useEditorContext();
+    const { availableModes, setActiveMode, deviceType, setDeviceType } =
+        useEditorContext();
 
     const handleSubmit = () => {
         if (input.trim() || files.length > 0) {
@@ -122,6 +124,13 @@ export const DefaultMode: React.FC = () => {
                                 </button>
                             </PromptInputAction>
                         )}
+
+                        <PromptInputAction tooltip="Toggle Device View">
+                            <ViewportSwitcher
+                                deviceType={deviceType}
+                                onDeviceChange={setDeviceType}
+                            />
+                        </PromptInputAction>
 
                         {/* CMS Text Editor mode is activated automatically when clicking on text elements */}
                     </div>

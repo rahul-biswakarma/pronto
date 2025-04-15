@@ -2,6 +2,7 @@
 import logger from "@/libs/utils/logger";
 import type React from "react";
 import { createContext, useContext, useEffect, useState } from "react";
+import type { DeviceType } from "./types";
 
 export type EditorMode =
     | "default"
@@ -44,6 +45,8 @@ export type EditorContextType = {
     selectedCmsElement: CmsElement | null;
     setSelectedCmsElement: (element: CmsElement | null) => void;
     updateCmsElementText: (text: string) => void;
+    deviceType: DeviceType;
+    setDeviceType: (device: DeviceType) => void;
 };
 
 export type EditorStages =
@@ -72,6 +75,8 @@ export const EditorContext = createContext<EditorContextType>({
     selectedCmsElement: null,
     setSelectedCmsElement: () => {},
     updateCmsElementText: () => {},
+    deviceType: "desktop",
+    setDeviceType: () => {},
 });
 
 export const EditorProvider = ({
@@ -103,6 +108,7 @@ export const EditorProvider = ({
     const [themeVariables, setThemeVariables] = useState<ThemeVariable[]>([]);
     const [selectedCmsElement, setSelectedCmsElement] =
         useState<CmsElement | null>(null);
+    const [deviceType, setDeviceType] = useState<DeviceType>("desktop");
 
     // Extract CSS variables when HTML changes
     useEffect(() => {
@@ -348,6 +354,8 @@ export const EditorProvider = ({
                 selectedCmsElement,
                 setSelectedCmsElement,
                 updateCmsElementText,
+                deviceType,
+                setDeviceType,
             }}
         >
             {children}
