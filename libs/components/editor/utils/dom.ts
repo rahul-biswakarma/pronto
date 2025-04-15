@@ -1,3 +1,4 @@
+import logger from "@/libs/utils/logger";
 import { SECTION_ID_PREFIX, TEXT_ELEMENT_TAGS } from "../constants";
 
 /**
@@ -89,7 +90,7 @@ export const findElementByXPath = (
 
         return (result.singleNodeValue as HTMLElement) || null;
     } catch (error) {
-        console.error("XPath evaluation error:", error);
+        logger.error({ error, xpath }, "XPath evaluation error");
         // Fallback to ID-based selection if possible
         if (xpath.includes("id=")) {
             const idMatch = xpath.match(/id="([^"]+)"/);

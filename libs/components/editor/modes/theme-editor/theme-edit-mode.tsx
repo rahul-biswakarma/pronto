@@ -18,7 +18,7 @@ export const ThemeEditorMode: React.FC = () => {
     return (
         <div
             className={cn(
-                "w-full h-fit max-w-screen-sm mx-auto absolute bottom-2 left-1/2 -translate-x-1/2 bg-accent p-4 rounded-2xl",
+                "w-full h-fit max-w-screen-sm mx-auto absolute bottom-2 left-1/2 -translate-x-1/2 bg-pink-500/20 backdrop-blur-sm p-1 rounded-2xl",
             )}
         >
             <div className="flex flex-col gap-4 bg-background rounded-xl p-4">

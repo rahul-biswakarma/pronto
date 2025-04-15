@@ -1,4 +1,5 @@
 "use client";
+import logger from "@/libs/utils/logger";
 import type React from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -281,7 +282,7 @@ export const EditorProvider = ({
                         targetElement = result.singleNodeValue as HTMLElement;
                     }
                 } catch (xpathError) {
-                    console.error("XPath failed:", xpathError);
+                    logger.error({ error: xpathError }, "XPath failed");
                 }
             }
 
@@ -313,12 +314,12 @@ export const EditorProvider = ({
                     originalText: text,
                 });
             } else {
-                console.error(
+                logger.error(
                     "Could not find the target element to update text",
                 );
             }
         } catch (error) {
-            console.error("Error updating CMS element:", error);
+            logger.error({ error }, "Error updating CMS element");
         }
     };
 

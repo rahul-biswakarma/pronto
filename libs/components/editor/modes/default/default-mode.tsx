@@ -46,7 +46,7 @@ export const DefaultMode: React.FC = () => {
     };
 
     return (
-        <div className="w-full h-fit max-w-screen-sm mx-auto absolute bottom-2 left-1/2 -translate-x-1/2 bg-accent p-1 rounded-2xl">
+        <div className="w-full h-fit max-w-screen-sm mx-auto absolute bottom-2 left-1/2 -translate-x-1/2 bg-white/30 backdrop-blur-sm p-1 rounded-2xl">
             <PromptInput
                 value={input}
                 onValueChange={setInput}

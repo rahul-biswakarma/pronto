@@ -2,10 +2,10 @@
 
 import { EDITOR_MODES } from "../constants";
 import { useEditorContext } from "../editor.context";
-import { CmsEditMode } from "./cms-edit/CmsEditMode";
-import { DefaultMode } from "./default/DefaultMode";
-import { SectionEditMode } from "./section-edit/SectionEditMode";
-import { ThemeEditorMode } from "./theme-editor/ThemeEditorMode";
+import { CmsEditMode } from "./cms-edit/cms-mode";
+import { DefaultMode } from "./default/default-mode";
+import { SectionEditMode } from "./section-edit/section-edit-mode";
+import { ThemeEditorMode } from "./theme-editor/theme-edit-mode";
 
 export const ModeSelector: React.FC = () => {
     const { activeMode } = useEditorContext();

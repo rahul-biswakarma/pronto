@@ -1,9 +1,10 @@
 "use client";
 
+import logger from "@/libs/utils/logger";
 import { useEffect, useRef, useState } from "react";
 import { EDITOR_MODES, HOVER_DELAY_MS, SECTION_ID_PREFIX } from "../constants";
 import { useEditorContext } from "../editor.context";
-import { ModeSelector } from "../modes/ModeSelector";
+import { ModeSelector } from "../modes/mode-selector";
 import {
     findClosestSection,
     findElementByXPath,
@@ -57,7 +58,7 @@ export const EditorMain = () => {
                     }
                 }
             } catch (error) {
-                console.error("Error rendering template:", error);
+                logger.error({ error }, "Error rendering template");
             }
         }
     }, [
@@ -202,17 +203,27 @@ export const EditorMain = () => {
         doc.body.addEventListener("click", (e) => {
             const target = e.target as HTMLElement;
 
-            // First check if we're in a specific editing mode already
-            if (activeMode === EDITOR_MODES.CMS_EDIT) {
-                // In CMS mode, only allow clicking on text elements
-                if (isTextElement(target)) {
-                    // If clicking on already selected CMS element, deselect it
+            // Stop propagation immediately to prevent any nested handlers
+            e.stopPropagation();
+
+            // Handle clicks based on the current mode
+            switch (activeMode) {
+                // CMS EDIT MODE
+                case EDITOR_MODES.CMS_EDIT: {
+                    // In CMS mode, we ONLY care about text elements or exiting the mode
+
+                    // Check if clicking directly on the selected element
                     if (selectedCmsElement?.element === target) {
+                        // Deselect and exit to default mode
                         removeCmsHighlight(selectedCmsElement.element, true);
                         setSelectedCmsElement(null);
                         setActiveMode(EDITOR_MODES.DEFAULT);
-                    } else {
-                        // Deselect previous element if any
+                        return;
+                    }
+
+                    // Check if clicking on another valid text element
+                    if (isTextElement(target)) {
+                        // Deselect the current element
                         if (selectedCmsElement?.element) {
                             removeCmsHighlight(
                                 selectedCmsElement.element,
@@ -221,7 +232,6 @@ export const EditorMain = () => {
                         }
 
                         // Select the new text element
-                        removeCmsHighlight(target);
                         addCmsHighlight(target, true);
 
                         // Update the selected element
@@ -230,103 +240,123 @@ export const EditorMain = () => {
                             originalText: target.textContent || "",
                             path: getXPath(target),
                         });
+                        return;
                     }
-                } else if (target.closest(".feno-cms-selected")) {
-                    // Clicking inside a selected text element (e.g., on a nested span)
-                    // Do nothing, keep the current selection
-                } else {
-                    // Clicking outside text elements in CMS mode
-                    // Just deselect and go to default mode
+
+                    // Check if clicking inside a selected element (on a child)
+                    const closestSelected =
+                        target.closest(".feno-cms-selected");
+                    if (closestSelected) {
+                        // Do nothing, keep the current selection
+                        return;
+                    }
+
+                    // If we get here, it's a click outside any valid text elements
+                    // Deselect the current element and exit CMS mode
                     if (selectedCmsElement?.element) {
                         removeCmsHighlight(selectedCmsElement.element, true);
                         setSelectedCmsElement(null);
                     }
                     setActiveMode(EDITOR_MODES.DEFAULT);
+                    return;
                 }
-            } else if (activeMode === EDITOR_MODES.SECTION_EDIT) {
-                // In Section mode, only allow clicking on sections
-                const fenoSection = findClosestSection(target);
 
-                if (fenoSection) {
-                    const sectionId = fenoSection.id;
+                // SECTION EDIT MODE
+                case EDITOR_MODES.SECTION_EDIT: {
+                    // In Section edit mode, we ONLY care about section elements or exiting the mode
+                    const fenoSection = findClosestSection(target);
 
-                    // If clicking on already selected section, deselect it
-                    if (selectedSection?.id === sectionId) {
+                    // Check if clicking on the currently selected section
+                    if (
+                        selectedSection &&
+                        fenoSection &&
+                        selectedSection.id === fenoSection.id
+                    ) {
+                        // Deselect and exit to default mode
                         removeSectionHighlight(fenoSection, true);
                         setSelectedSection(null);
                         setActiveMode(EDITOR_MODES.DEFAULT);
-                    } else {
-                        // Deselect previously selected section if any
+                        return;
+                    }
+
+                    // Check if clicking on another valid section
+                    if (fenoSection) {
+                        // Deselect the current section
                         if (selectedSection) {
-                            const prevSection = doc.getElementById(
+                            const prevElement = doc.getElementById(
                                 selectedSection.id,
                             );
-                            if (prevSection) {
-                                removeSectionHighlight(prevSection, true);
+                            if (prevElement) {
+                                removeSectionHighlight(prevElement, true);
                             }
                         }
 
                         // Select the new section
-                        removeSectionHighlight(fenoSection);
                         addSectionHighlight(fenoSection, true);
 
-                        // Update selected section
+                        // Update the selected section
                         setSelectedSection({
-                            id: sectionId,
+                            id: fenoSection.id,
                             html: fenoSection.outerHTML,
                         });
+                        return;
                     }
-                } else {
-                    // Clicking outside sections in Section edit mode
-                    // Just deselect and go to default mode
+
+                    // Check if clicking inside the currently selected section (on a child)
                     if (selectedSection) {
-                        const prevSection = doc.getElementById(
+                        const selectedElement = doc.getElementById(
                             selectedSection.id,
                         );
-                        if (prevSection) {
-                            removeSectionHighlight(prevSection, true);
+                        if (selectedElement?.contains(target)) {
+                            // Do nothing, keep the current selection
+                            return;
+                        }
+                    }
+
+                    // If we get here, it's a click outside any valid section
+                    // Deselect the current section and exit Section mode
+                    if (selectedSection) {
+                        const element = doc.getElementById(selectedSection.id);
+                        if (element) {
+                            removeSectionHighlight(element, true);
                         }
                         setSelectedSection(null);
                     }
                     setActiveMode(EDITOR_MODES.DEFAULT);
+                    return;
                 }
-            } else {
-                // In default mode, allow switching between modes based on what was clicked
-                // First check if this is a text element
-                if (isTextElement(target)) {
-                    // Clear any existing selection
-                    if (selectedSection) {
-                        const prevSection = doc.getElementById(
-                            selectedSection.id,
-                        );
-                        if (prevSection) {
-                            removeSectionHighlight(prevSection, true);
+
+                // DEFAULT MODE - ALLOW MODE SWITCHING
+                default: {
+                    // In default mode, determine what was clicked and enter the appropriate mode
+
+                    // Check if this is a text element - prioritize text selection
+                    if (isTextElement(target)) {
+                        // Clear any existing section selection
+                        if (selectedSection) {
+                            const element = doc.getElementById(
+                                selectedSection.id,
+                            );
+                            if (element) {
+                                removeSectionHighlight(element, true);
+                            }
+                            setSelectedSection(null);
                         }
-                        setSelectedSection(null);
+
+                        // Select the text element and enter CMS mode
+                        addCmsHighlight(target, true);
+
+                        setSelectedCmsElement({
+                            element: target,
+                            originalText: target.textContent || "",
+                            path: getXPath(target),
+                        });
+                        setActiveMode(EDITOR_MODES.CMS_EDIT);
+                        return;
                     }
 
-                    if (selectedCmsElement?.element) {
-                        removeCmsHighlight(selectedCmsElement.element, true);
-                    }
-
-                    // Select the text element
-                    removeCmsHighlight(target);
-                    addCmsHighlight(target, true);
-
-                    // Calculate XPath for the element
-                    const xpath = getXPath(target);
-
-                    // Store the element in context and switch to CMS mode
-                    setSelectedCmsElement({
-                        element: target,
-                        originalText: target.textContent || "",
-                        path: xpath,
-                    });
-                    setActiveMode(EDITOR_MODES.CMS_EDIT);
-                } else {
-                    // Not a text element, try to find a section
+                    // Check if this is a section element
                     const fenoSection = findClosestSection(target);
-
                     if (fenoSection) {
                         // Clear any existing CMS selection
                         if (selectedCmsElement?.element) {
@@ -337,43 +367,32 @@ export const EditorMain = () => {
                             setSelectedCmsElement(null);
                         }
 
-                        const sectionId = fenoSection.id;
-
-                        // Select the section
-                        removeSectionHighlight(fenoSection);
+                        // Select the section and enter Section edit mode
                         addSectionHighlight(fenoSection, true);
 
-                        // Store the section and switch to section-edit mode
                         setSelectedSection({
-                            id: sectionId,
+                            id: fenoSection.id,
                             html: fenoSection.outerHTML,
                         });
                         setActiveMode(EDITOR_MODES.SECTION_EDIT);
-                    } else {
-                        // Clicking outside any selectable element, deselect everything
-                        if (selectedSection) {
-                            const prevSection = doc.getElementById(
-                                selectedSection.id,
-                            );
-                            if (prevSection) {
-                                removeSectionHighlight(prevSection, true);
-                            }
-                            setSelectedSection(null);
-                        }
+                        return;
+                    }
 
-                        if (selectedCmsElement?.element) {
-                            removeCmsHighlight(
-                                selectedCmsElement.element,
-                                true,
-                            );
-                            setSelectedCmsElement(null);
+                    // Clicking outside any selectable element, ensure everything is deselected
+                    if (selectedSection) {
+                        const element = doc.getElementById(selectedSection.id);
+                        if (element) {
+                            removeSectionHighlight(element, true);
                         }
+                        setSelectedSection(null);
+                    }
+
+                    if (selectedCmsElement?.element) {
+                        removeCmsHighlight(selectedCmsElement.element, true);
+                        setSelectedCmsElement(null);
                     }
                 }
             }
-
-            // Prevent the click from bubbling up
-            e.stopPropagation();
         });
     };
 
@@ -414,15 +433,15 @@ export const EditorMain = () => {
                         if (element) {
                             addCmsHighlight(element, true);
                         } else {
-                            console.warn(
-                                "Could not find element with path:",
-                                selectedCmsElement.path,
+                            logger.warn(
+                                { path: selectedCmsElement.path },
+                                "Could not find element with path",
                             );
                         }
                     } catch (error) {
-                        console.error(
-                            "Error restoring CMS element highlight:",
-                            error,
+                        logger.error(
+                            { error },
+                            "Error restoring CMS element highlight",
                         );
                     }
                 }

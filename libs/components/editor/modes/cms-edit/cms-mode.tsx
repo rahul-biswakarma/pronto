@@ -32,8 +32,7 @@ export const CmsEditMode: React.FC = () => {
     return (
         <div
             className={cn(
-                "w-full h-fit max-w-screen-sm mx-auto absolute bottom-2 left-1/2 -translate-x-1/2 bg-accent p-4 rounded-2xl",
-                "border-2 border-yellow-500/30",
+                "w-full h-fit max-w-screen-sm mx-auto absolute bottom-2 left-1/2 -translate-x-1/2 bg-yellow-500/30 p-1 rounded-2xl backdrop-blur-sm",
             )}
         >
             <div className="flex flex-col gap-4 bg-background rounded-xl p-4">
