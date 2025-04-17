@@ -1,18 +1,9 @@
 "use client";
 
-import type { Database } from "@/libs/supabase/database.types";
-import { redirect } from "next/navigation";
-import { EditorMain } from "./_components/editor-main";
-import { havePortfolioContent, havePortfolioHtml } from "./_utils/checks";
+import { PortfolioRenderer } from "./_components/portfolio-renderer";
+import { useEditor } from "./editor.context";
 
-const EditorWrapper = ({
-    portfolio,
-}: { portfolio: Database["public"]["Tables"]["portfolio"]["Row"] }) => {
-    if (!havePortfolioContent(portfolio) || !havePortfolioHtml(portfolio)) {
-        redirect("/");
-    }
-
-    return <EditorMain />;
+export const Editor = () => {
+    const { portfolioHtml } = useEditor();
+    return <PortfolioRenderer portfolioHtml={portfolioHtml} />;
 };
-
-export { EditorWrapper as Editor };

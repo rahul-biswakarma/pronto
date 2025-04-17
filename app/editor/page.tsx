@@ -27,17 +27,11 @@ export default async function Page() {
     }
 
     // TODO: Add portfolio selector in case the user has multiple portfolios
-
-    const contentJson = (await getFileFromBucket(portfolio[0].content_s3_path))
-        .data;
     const html = (await getFileFromBucket(portfolio[0].html_s3_path)).data;
 
     return (
-        <EditorProvider
-            html={html ?? ""}
-            contentJson={JSON.parse(contentJson ?? "{}")}
-        >
-            <Editor portfolio={portfolio[0]} />
+        <EditorProvider html={html ?? ""} portfolio={portfolio[0]}>
+            <Editor />
         </EditorProvider>
     );
 }
