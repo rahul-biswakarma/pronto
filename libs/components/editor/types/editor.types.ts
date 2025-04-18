@@ -4,7 +4,7 @@ export type EditorMode = {
     id: string;
     label?: string;
 
-    actionRenderer?: () => JSX.Element;
+    actionRenderer?: (isActive: boolean) => JSX.Element;
     editorRenderer: () => JSX.Element;
 };
 

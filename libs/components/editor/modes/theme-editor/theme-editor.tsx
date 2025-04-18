@@ -1,4 +1,5 @@
 import { Button } from "@/libs/ui/button";
+import { cn } from "@/libs/utils/misc";
 import { IconPalette } from "@tabler/icons-react";
 import type React from "react";
 import { useCallback, useEffect, useState } from "react";
@@ -126,8 +127,12 @@ export const ThemeEditorMode = (): EditorMode => {
         id: "theme-editor",
         label: "Theme Editor",
         editorRenderer: () => <ThemeEditor />,
-        actionRenderer: () => (
-            <Button size="icon" variant="ghost">
+        actionRenderer: (isActive: boolean) => (
+            <Button
+                size="icon"
+                variant="ghost"
+                className={cn(isActive && "bg-black text-primary-foreground")}
+            >
                 <IconPalette size={28} />
             </Button>
         ),
