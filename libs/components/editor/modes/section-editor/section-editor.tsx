@@ -1,25 +1,27 @@
 import { Button } from "@/libs/ui/button";
 import { cn } from "@/libs/utils/misc";
-import { IconEdit } from "@tabler/icons-react";
+import { IconSection } from "@tabler/icons-react";
 import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useEditor } from "../../editor.context";
 import type { EditorMode } from "../../types/editor.types";
 import {
     baseStyle,
+    findSectionElement,
     hoveredStyle,
-    isOnlyTextElement,
     selectedStyle,
 } from "./utils";
 
-const CONTENT_EDITOR_HIGHLIGHT_CLASS = "feno-content-editor-highlight";
-const CONTENT_EDITOR_SELECTED_CLASS = "feno-content-editor-selected";
+const SECTION_EDITOR_HIGHLIGHT_CLASS = "feno-section-editor-highlight";
+const SECTION_EDITOR_SELECTED_CLASS = "feno-section-editor-selected";
 
-// Content Editor component
-const ContentEditor: React.FC = () => {
+// Section Editor component
+const SectionEditor: React.FC = () => {
     const { iframeDocument, onHtmlChange, modeId } = useEditor();
     const [content, setContent] = useState<string>("");
     const [hasChanges, setHasChanges] = useState(false);
+    const [sectionId, setSectionId] = useState<string>("");
+    const [sectionHtml, setSectionHtml] = useState<string>("");
     const [selectedElement, setSelectedElement] = useState<HTMLElement | null>(
         null,
     );
@@ -37,45 +39,50 @@ const ContentEditor: React.FC = () => {
 
         const handleMouseOver = (e: MouseEvent) => {
             const target = e.target as HTMLElement;
-            if (isOnlyTextElement(target)) {
-                target.classList.add(CONTENT_EDITOR_HIGHLIGHT_CLASS);
+            const sectionElement = findSectionElement(target);
+            if (sectionElement) {
+                sectionElement.classList.add(SECTION_EDITOR_HIGHLIGHT_CLASS);
             }
         };
 
         const handleMouseOut = (e: MouseEvent) => {
             const target = e.target as HTMLElement;
-            if (isOnlyTextElement(target)) {
-                target.classList.remove(CONTENT_EDITOR_HIGHLIGHT_CLASS);
+            const sectionElement = findSectionElement(target);
+            if (sectionElement) {
+                sectionElement.classList.remove(SECTION_EDITOR_HIGHLIGHT_CLASS);
             }
         };
 
         const handleClick = (e: MouseEvent) => {
             e.preventDefault();
             const target = e.target as HTMLElement;
-            if (isOnlyTextElement(target)) {
+            const sectionElement = findSectionElement(target);
+            if (sectionElement) {
                 // Use the ref to access the current selected element
                 if (selectedElementRef.current) {
                     selectedElementRef.current.classList.remove(
-                        CONTENT_EDITOR_SELECTED_CLASS,
+                        SECTION_EDITOR_SELECTED_CLASS,
                     );
                 }
-                target.classList.add(CONTENT_EDITOR_SELECTED_CLASS);
-                setSelectedElement(target);
-                setContent(target.textContent || "");
+                setSectionId(sectionElement.id);
+                setSectionHtml(sectionElement.outerHTML);
+                sectionElement.classList.add(SECTION_EDITOR_SELECTED_CLASS);
+                setSelectedElement(sectionElement);
+                setContent(sectionElement.textContent || "");
             }
         };
 
         // Add CSS for highlight effect
         const style = iframeDocument.createElement("style");
         style.textContent = `
-            .${CONTENT_EDITOR_HIGHLIGHT_CLASS} {
+            .${SECTION_EDITOR_HIGHLIGHT_CLASS} {
 				${baseStyle}
             }
-			.${CONTENT_EDITOR_HIGHLIGHT_CLASS}:hover {
+			.${SECTION_EDITOR_HIGHLIGHT_CLASS}:hover {
 				${hoveredStyle}
             }
-			.${CONTENT_EDITOR_SELECTED_CLASS},
-			.${CONTENT_EDITOR_SELECTED_CLASS}:hover {
+			.${SECTION_EDITOR_SELECTED_CLASS},
+			.${SECTION_EDITOR_SELECTED_CLASS}:hover {
 				${selectedStyle}
             }
         `;
@@ -87,7 +94,10 @@ const ContentEditor: React.FC = () => {
         iframeDocument.body.addEventListener("click", handleClick);
 
         return () => {
+            console.log("Cleaning up section editor");
             // Clean up event listeners and styles
+            // selectedElement?.classList.remove(SECTION_EDITOR_SELECTED_CLASS);
+
             iframeDocument.body.removeEventListener(
                 "mouseover",
                 handleMouseOver,
@@ -97,11 +107,12 @@ const ContentEditor: React.FC = () => {
 
             // Remove highlight styles from all elements
             const highlightedElements = iframeDocument.querySelectorAll(
-                `.${CONTENT_EDITOR_HIGHLIGHT_CLASS}, .${CONTENT_EDITOR_SELECTED_CLASS}`,
+                `.${SECTION_EDITOR_HIGHLIGHT_CLASS}, .${SECTION_EDITOR_SELECTED_CLASS}`,
             );
+
             for (const el of highlightedElements) {
-                el.classList.remove(CONTENT_EDITOR_HIGHLIGHT_CLASS);
-                el.classList.remove(CONTENT_EDITOR_SELECTED_CLASS);
+                el.classList.remove(SECTION_EDITOR_HIGHLIGHT_CLASS);
+                el.classList.remove(SECTION_EDITOR_SELECTED_CLASS);
             }
 
             // Remove style element
@@ -115,60 +126,30 @@ const ContentEditor: React.FC = () => {
         setHasChanges(true);
     }, []);
 
-    // Apply content change
-    const applyContentChange = useCallback(() => {
-        if (!selectedElement || !iframeDocument) return;
-
-        selectedElement.textContent = content;
-        setHasChanges(true);
-        setSelectedElement(null);
-    }, [selectedElement, content, iframeDocument]);
-
     // Save changes when exiting the content editor
     useEffect(() => {
-        return () => {
-            if (modeId !== "content-editor" && hasChanges && iframeDocument) {
-                onHtmlChange({
-                    html: iframeDocument.documentElement.outerHTML,
-                    modeId: "content-editor",
-                    modeLabel: "Content Editor",
-                });
-                setHasChanges(false);
-            }
-        };
+        // If we're leaving the content editor and have changes
+        if (modeId !== "content-editor" && hasChanges && iframeDocument) {
+            onHtmlChange({
+                html: iframeDocument.documentElement.outerHTML,
+                modeId: "content-editor",
+                modeLabel: "Content Editor",
+            });
+            setHasChanges(false);
+        }
     }, [modeId, hasChanges, iframeDocument, onHtmlChange]);
 
     return (
         <div className="p-4 space-y-4">
-            <h3 className="text-lg font-medium">Content Editor</h3>
-            <p className="text-sm text-muted-foreground">
-                Hover over text elements to highlight them, click to edit their
-                content.
-            </p>
+            <h3 className="text-lg font-medium">Section Editor</h3>
 
             {selectedElement && (
                 <div className="space-y-3">
-                    <textarea
-                        value={content}
+                    <input
+                        value=""
                         onChange={(e) => handleContentChange(e.target.value)}
                         className="w-full p-2 border rounded min-h-[100px]"
                     />
-                    <div className="flex justify-end space-x-2">
-                        <Button
-                            onClick={() => {
-                                selectedElement.classList.remove(
-                                    "feno-content-editor-selected",
-                                );
-                                selectedElementRef.current = null;
-                                setSelectedElement(null);
-                                setContent("");
-                            }}
-                            variant="outline"
-                        >
-                            Cancel
-                        </Button>
-                        <Button onClick={applyContentChange}>Apply</Button>
-                    </div>
                 </div>
             )}
         </div>
@@ -176,18 +157,18 @@ const ContentEditor: React.FC = () => {
 };
 
 // Register the content editor mode
-export const ContentEditorMode = (): EditorMode => {
+export const SectionEditorMode = (): EditorMode => {
     return {
-        id: "content-editor",
-        label: "Content Editor",
-        editorRenderer: () => <ContentEditor />,
+        id: "section-editor",
+        label: "Section Editor",
+        editorRenderer: () => <SectionEditor />,
         actionRenderer: (isActive: boolean) => (
             <Button
                 size="icon"
                 variant="ghost"
                 className={cn(isActive && "bg-black text-primary-foreground")}
             >
-                <IconEdit size={28} />
+                <IconSection size={28} />
             </Button>
         ),
     };

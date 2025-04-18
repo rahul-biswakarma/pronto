@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useEditor } from "../editor.context";
 import { ContentEditorMode } from "../modes/content-editor/content-editor";
+import { SectionEditorMode } from "../modes/section-editor/section-editor";
 import { ThemeEditorMode } from "../modes/theme-editor/theme-editor";
 
 export const Moder = () => {
@@ -8,8 +9,9 @@ export const Moder = () => {
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
-        registerMode(ThemeEditorMode());
+        registerMode(SectionEditorMode());
         registerMode(ContentEditorMode());
+        registerMode(ThemeEditorMode());
     }, []);
 
     return (

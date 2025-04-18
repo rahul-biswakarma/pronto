@@ -23,8 +23,6 @@ export type EditorContextType = {
     portfolioHtml: string;
     setPortfolioHtml: (html: string) => void;
 
-    hoveredElement: HTMLElement | null;
-    setHoveredElement: (el: HTMLElement | null) => void;
     onHtmlChange: ({
         html,
         modeId,

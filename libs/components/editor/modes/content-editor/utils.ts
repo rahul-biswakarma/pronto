@@ -1,3 +1,5 @@
+export const COLOR_VAR_PREFIX = "feno-color";
+
 export const isOnlyTextElement = (element: HTMLElement): boolean => {
     if (!element) return false;
 

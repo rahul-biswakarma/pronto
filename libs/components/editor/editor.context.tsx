@@ -23,13 +23,10 @@ export const EditorProvider: React.FC<{
 }> = ({ children, html, onHtmlChange: externalHtmlChangeHandler }) => {
     const iframeRef = useRef<HTMLIFrameElement>(null);
 
-    const [modeId, setModeId] = useState<string>("");
+    const [modeId, setModeId] = useState<string>("section-editor");
     const [modes, setModes] = useState<Record<string, EditorMode>>({});
     const [portfolioHtml, setPortfolioHtml] = useState<string>(html);
     const [iframeDocument, setIframeDocument] = useState<Document | null>(null);
-    const [hoveredElement, setHoveredElement] = useState<HTMLElement | null>(
-        null,
-    );
 
     const registerMode = (mode: EditorMode) => {
         setModes((prevModes) => ({
@@ -65,8 +62,6 @@ export const EditorProvider: React.FC<{
                 registerMode,
                 iframeDocument,
                 setIframeDocument,
-                hoveredElement,
-                setHoveredElement,
                 onHtmlChange,
             }}
         >
