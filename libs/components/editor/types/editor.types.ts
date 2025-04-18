@@ -9,6 +9,8 @@ export type EditorMode = {
 };
 
 export type EditorContextType = {
+    iframeRef: React.RefObject<HTMLIFrameElement | null>;
+
     modeId: string;
     setModeId: (mode: string) => void;
 

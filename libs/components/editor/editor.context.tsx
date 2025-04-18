@@ -2,7 +2,7 @@
 
 import type { Database } from "@/libs/supabase/database.types";
 import type React from "react";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useRef, useState } from "react";
 import type { EditorContextType, EditorMode } from "./types/editor.types";
 
 const EditorContext = createContext<EditorContextType | undefined>(undefined);
@@ -21,6 +21,8 @@ export const EditorProvider: React.FC<{
     portfolio: Database["public"]["Tables"]["portfolio"]["Row"];
     onHtmlChange?: (updatedHtml: string) => void;
 }> = ({ children, html, onHtmlChange: externalHtmlChangeHandler }) => {
+    const iframeRef = useRef<HTMLIFrameElement>(null);
+
     const [modeId, setModeId] = useState<string>("");
     const [modes, setModes] = useState<Record<string, EditorMode>>({});
     const [portfolioHtml, setPortfolioHtml] = useState<string>(html);
@@ -54,6 +56,7 @@ export const EditorProvider: React.FC<{
     return (
         <EditorContext.Provider
             value={{
+                iframeRef,
                 modeId,
                 setModeId,
                 portfolioHtml,
