@@ -94,10 +94,7 @@ const SectionEditor: React.FC = () => {
         iframeDocument.body.addEventListener("click", handleClick);
 
         return () => {
-            console.log("Cleaning up section editor");
             // Clean up event listeners and styles
-            // selectedElement?.classList.remove(SECTION_EDITOR_SELECTED_CLASS);
-
             iframeDocument.body.removeEventListener(
                 "mouseover",
                 handleMouseOver,

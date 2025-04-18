@@ -47,7 +47,10 @@ Technical requirements:
 4. Add subtle hover effects and transitions matching the design's aesthetic
 5. Use embedded CSS in <style> tags within the HTML file
 6. Use Google Fonts that perfectly match the typography in the image
-7. Build HTML in sections and give each section a unique ID starting with \`feno-sec\` (e.g., feno-sec-nav, feno-sec-about, feno-sec-skills)
+7. Structure the HTML in clearly defined sections:
+   - Give each section a unique ID with prefix \`feno-sec\` (e.g., feno-sec-nav, feno-sec-about, feno-sec-skills)
+   - Add a data attribute \`data-section-type\` to each section (e.g., "navigation", "about", "skills")
+   - Ensure each section is a logically coherent block of content
 8. Create global CSS variables with \`feno-color\` prefix for all colors used in the design (e.g., --feno-color-primary, --feno-color-background), and ensure all color references in the CSS use these variables
 
 IMPORTANT:
@@ -56,6 +59,7 @@ IMPORTANT:
 - Do not copy any text, headings, or content from the screenshot
 - The screenshot is ONLY for layout and design reference
 - The portfolio content should be organized to fit the design template's structure
+- Keep sections simple with clear IDs and data attributes that can be targeted by external code
 
 Return ONLY the complete HTML document without any markdown, code blocks, or explanations.`,
                 },
