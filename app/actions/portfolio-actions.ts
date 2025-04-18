@@ -54,7 +54,7 @@ export async function generatePortfolioAction({
         }
 
         // 4. Generate HTML template using AI SDK
-        const claudeClient = getClaudeClient();
+        const claudeClient = getClaudeClient("claude-3-5-haiku-latest");
 
         // Initialize variables for managing potential continuation
         let responseText = "";

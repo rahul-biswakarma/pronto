@@ -84,7 +84,7 @@ export const Moder = () => {
             </motion.div>
             <motion.div className="w-full flex" layout>
                 {Object.values(modes).map((mode) => (
-                    <motion.button
+                    <motion.div
                         key={mode.id}
                         className="p-2"
                         onClick={() => setModeId(mode.id)}
@@ -105,7 +105,7 @@ export const Moder = () => {
                         }}
                     >
                         {mode.actionRenderer?.(mode.id === modeId)}
-                    </motion.button>
+                    </motion.div>
                 ))}
             </motion.div>
         </motion.div>

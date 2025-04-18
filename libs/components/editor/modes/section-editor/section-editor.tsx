@@ -1,4 +1,5 @@
 import { Button } from "@/libs/ui/button";
+import dataLayer from "@/libs/utils/data-layer";
 import { cn } from "@/libs/utils/misc";
 import { IconSection } from "@tabler/icons-react";
 import type React from "react";
@@ -14,11 +15,17 @@ import {
 
 const SECTION_EDITOR_HIGHLIGHT_CLASS = "feno-section-editor-highlight";
 const SECTION_EDITOR_SELECTED_CLASS = "feno-section-editor-selected";
+const SECTION_EDITOR_MODIFIED_CLASS = "feno-section-editor-modified";
+
+interface ModifySectionResponse {
+    modifiedHtml: string;
+}
 
 // Section Editor component
 const SectionEditor: React.FC = () => {
     const { iframeDocument, onHtmlChange, modeId } = useEditor();
-    const [content, setContent] = useState<string>("");
+    const [prompt, setPrompt] = useState<string>("");
+    const [loading, setLoading] = useState(false);
     const [hasChanges, setHasChanges] = useState(false);
     const [sectionId, setSectionId] = useState<string>("");
     const [sectionHtml, setSectionHtml] = useState<string>("");
@@ -68,7 +75,7 @@ const SectionEditor: React.FC = () => {
                 setSectionHtml(sectionElement.outerHTML);
                 sectionElement.classList.add(SECTION_EDITOR_SELECTED_CLASS);
                 setSelectedElement(sectionElement);
-                setContent(sectionElement.textContent || "");
+                setPrompt("");
             }
         };
 
@@ -84,6 +91,23 @@ const SectionEditor: React.FC = () => {
 			.${SECTION_EDITOR_SELECTED_CLASS},
 			.${SECTION_EDITOR_SELECTED_CLASS}:hover {
 				${selectedStyle}
+            }
+            .${SECTION_EDITOR_MODIFIED_CLASS} {
+                animation: glow 1.5s ease-in-out infinite alternate;
+                box-shadow: 0 0 10px rgba(72, 118, 255, 0.7);
+                transition: box-shadow 0.3s ease;
+            }
+            @keyframes glow {
+                from {
+                    box-shadow: 0 0 5px rgba(72, 118, 255, 0.5),
+                                0 0 10px rgba(72, 118, 255, 0.5),
+                                0 0 15px rgba(72, 118, 255, 0.5);
+                }
+                to {
+                    box-shadow: 0 0 10px rgba(72, 118, 255, 0.8),
+                                0 0 20px rgba(72, 118, 255, 0.8),
+                                0 0 30px rgba(72, 118, 255, 0.8);
+                }
             }
         `;
         iframeDocument.head.appendChild(style);
@@ -104,12 +128,13 @@ const SectionEditor: React.FC = () => {
 
             // Remove highlight styles from all elements
             const highlightedElements = iframeDocument.querySelectorAll(
-                `.${SECTION_EDITOR_HIGHLIGHT_CLASS}, .${SECTION_EDITOR_SELECTED_CLASS}`,
+                `.${SECTION_EDITOR_HIGHLIGHT_CLASS}, .${SECTION_EDITOR_SELECTED_CLASS}, .${SECTION_EDITOR_MODIFIED_CLASS}`,
             );
 
             for (const el of highlightedElements) {
                 el.classList.remove(SECTION_EDITOR_HIGHLIGHT_CLASS);
                 el.classList.remove(SECTION_EDITOR_SELECTED_CLASS);
+                el.classList.remove(SECTION_EDITOR_MODIFIED_CLASS);
             }
 
             // Remove style element
@@ -117,37 +142,122 @@ const SectionEditor: React.FC = () => {
         };
     }, [iframeDocument, modeId]);
 
-    // Handle content change
-    const handleContentChange = useCallback((value: string) => {
-        setContent(value);
-        setHasChanges(true);
+    // Handle prompt change
+    const handlePromptChange = useCallback((value: string) => {
+        setPrompt(value);
     }, []);
+
+    // Handle apply button click
+    const handleApplyChanges = async () => {
+        if (!selectedElement || !iframeDocument || !prompt.trim()) return;
+
+        setLoading(true);
+
+        try {
+            // Make LLM call to modify section
+            const response = await dataLayer.post<ModifySectionResponse>(
+                "/api/portfolios/modify-section",
+                {
+                    sectionHtml,
+                    prompt,
+                    sectionId,
+                },
+            );
+
+            const modifiedHtml = response.data?.modifiedHtml;
+
+            // Replace the section in the iframe document
+            if (modifiedHtml && selectedElementRef.current) {
+                // Create a temporary container for the new HTML
+                const tempContainer = document.createElement("div");
+                tempContainer.innerHTML = modifiedHtml;
+                const newElement =
+                    tempContainer.firstElementChild as HTMLElement;
+
+                if (newElement) {
+                    // Ensure the new element has the same ID
+                    newElement.id = selectedElementRef.current.id;
+
+                    // Replace the old element with the new one
+                    selectedElementRef.current.replaceWith(newElement);
+
+                    // Update selected element reference
+                    setSelectedElement(newElement);
+                    selectedElementRef.current = newElement;
+
+                    // Add glow effect to modified section
+                    newElement.classList.add(SECTION_EDITOR_MODIFIED_CLASS);
+                    newElement.classList.add(SECTION_EDITOR_SELECTED_CLASS);
+
+                    // Mark that changes were made
+                    setHasChanges(true);
+
+                    // Update the section HTML for future modifications
+                    setSectionHtml(newElement.outerHTML);
+                }
+            }
+        } catch (error) {
+            console.error("Error modifying section:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     // Save changes when exiting the content editor
     useEffect(() => {
         // If we're leaving the content editor and have changes
-        if (modeId !== "content-editor" && hasChanges && iframeDocument) {
+        if (modeId !== "section-editor" && hasChanges && iframeDocument) {
             onHtmlChange({
                 html: iframeDocument.documentElement.outerHTML,
-                modeId: "content-editor",
-                modeLabel: "Content Editor",
+                modeId: "section-editor",
+                modeLabel: "Section Editor",
             });
             setHasChanges(false);
         }
     }, [modeId, hasChanges, iframeDocument, onHtmlChange]);
 
+    // Get section type for placeholder text
+    const getSectionType = useCallback(() => {
+        if (!selectedElement) return "section";
+
+        // Try to get section type from data attribute
+        const sectionType = selectedElement.getAttribute("data-section-type");
+        if (sectionType) return sectionType;
+
+        // Try to guess from ID
+        const id = selectedElement.id;
+        if (id?.includes("-")) {
+            const parts = id.split("-");
+            return parts[parts.length - 1];
+        }
+
+        return "section";
+    }, [selectedElement]);
+
     return (
         <div className="p-4 space-y-4">
             <h3 className="text-lg font-medium">Section Editor</h3>
 
-            {selectedElement && (
+            {selectedElement ? (
                 <div className="space-y-3">
-                    <input
-                        value=""
-                        onChange={(e) => handleContentChange(e.target.value)}
+                    <textarea
+                        value={prompt}
+                        onChange={(e) => handlePromptChange(e.target.value)}
+                        placeholder={`You are modifying ${getSectionType()} section. What would you like me to change?`}
                         className="w-full p-2 border rounded min-h-[100px]"
                     />
+                    <Button
+                        onClick={handleApplyChanges}
+                        disabled={loading || !prompt.trim()}
+                        className="w-full"
+                    >
+                        {loading ? "Processing..." : "Apply Changes"}
+                    </Button>
                 </div>
+            ) : (
+                <p className="text-sm text-gray-500">
+                    Select a section in the preview to modify it.
+                </p>
             )}
         </div>
     );

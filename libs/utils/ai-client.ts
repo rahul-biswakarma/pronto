@@ -7,7 +7,7 @@ const isProduction = process.env.NODE_ENV === "production";
 const useOllama = process.env.USE_OLLAMA === "true";
 
 // For direct Claude SDK usage (not through Vercel AI SDK)
-export function getClaudeClient() {
+export function getClaudeClient(modelName?: string) {
     if (!process.env.ANTHROPIC_API_KEY) {
         throw new Error("ANTHROPIC_API_KEY is required for Claude client");
     }
@@ -21,7 +21,7 @@ export function getClaudeClient() {
         messages: Anthropic.Messages.MessageParam[];
     }) => {
         return anthropicClient.messages.stream({
-            model: "claude-3-7-sonnet-latest",
+            model: modelName || "claude-3-5-haiku-latest",
             max_tokens: 4096,
             messages: messages,
         });
