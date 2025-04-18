@@ -1,28 +1,52 @@
-import type Anthropic from "@anthropic-ai/sdk";
-import { getImageTemplateUrl } from "../utils/image-prompts";
+import { GoogleGenAI } from "@google/genai";
+import { getImageMimeType, getImageTemplateUrl } from "../utils/image-prompts";
 
-export const htmlGenPrompt = ({
+// Define interface for the uploaded file
+interface FileUploadResult {
+    uri: string;
+    mimeType: string;
+}
+
+/**
+ * Generates the proper message format for Gemini API using Vercel AI SDK
+ */
+export const htmlGenPromptGemini = async ({
     content,
     templateId,
 }: {
     content: string;
     templateId: string;
-}): Anthropic.Messages.MessageParam[] => {
-    return [
-        {
-            role: "user",
-            content: [
-                {
-                    type: "image",
-                    source: {
-                        url: getImageTemplateUrl(templateId),
-                        type: "url",
-                    },
-                },
+}) => {
+    // Get image template URL
+    const url = getImageTemplateUrl(templateId);
 
-                {
-                    type: "text",
-                    text: `Here is the content of the portfolio: ${content}
+    // Create AI instance
+    const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY });
+
+    // Fetch the remote image first
+    let imageFile: FileUploadResult | null = null;
+    try {
+        const imageResponse = await fetch(url);
+        if (!imageResponse.ok)
+            throw new Error(
+                `Failed to fetch image: ${imageResponse.statusText}`,
+            );
+
+        const arrayBuffer = await imageResponse.arrayBuffer();
+        const base64Data = Buffer.from(arrayBuffer).toString("base64");
+
+        // Store image data for inline usage
+        imageFile = {
+            uri: base64Data,
+            mimeType: getImageMimeType(templateId),
+        };
+    } catch (error) {
+        console.error("Error fetching template image:", error);
+        // Continue without image if there's an error
+    }
+
+    // Create prompt text
+    const promptText = `Here is the content of the portfolio: ${content}
 
 I'm showing you a screenshot of a portfolio website design as a visual reference only.
 Your task is to generate a COMPLETE, polished, and highly detailed HTML document (with
@@ -45,7 +69,7 @@ REQUIREMENTS:
      appropriate (e.g., --feno-font-primary, --feno-spacing-base).
 
 3. Layout & Visual Consistency:
-   - Replicate the screenshot’s layout, structure, and visual design details. Strive to be
+   - Replicate the screenshot's layout, structure, and visual design details. Strive to be
      pixel perfect for included modules.
    - Make the layout responsive across major breakpoints (desktop, tablet, mobile).
    - Implement any relevant hover transitions for interactive elements in your CSS.
@@ -62,9 +86,29 @@ REQUIREMENTS:
      for layout/style.
 
 Ensure the final rendered page is aesthetically accurate to the screenshot for included sections,
-and that the content arrangement, styling, and responsiveness all adhere to these requirements.`,
-                },
-            ],
+and that the content arrangement, styling, and responsiveness all adhere to these requirements.`;
+
+    // Create parts array
+    const parts = [];
+
+    // Add text part
+    parts.push({ text: promptText });
+
+    // Add image part if available
+    if (imageFile) {
+        parts.push({
+            inlineData: {
+                mimeType: imageFile.mimeType,
+                data: imageFile.uri,
+            },
+        });
+    }
+
+    // Return properly formatted request
+    return [
+        {
+            role: "user",
+            parts: parts,
         },
     ];
 };

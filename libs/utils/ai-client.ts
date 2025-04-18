@@ -1,10 +1,5 @@
-import { anthropic } from "@ai-sdk/anthropic";
 import Anthropic from "@anthropic-ai/sdk";
-import { ollama } from "ollama-ai-provider";
-
-// Environment-specific configuration
-const isProduction = process.env.NODE_ENV === "production";
-const useOllama = process.env.USE_OLLAMA === "true";
+import { type ContentListUnion, GoogleGenAI } from "@google/genai";
 
 // For direct Claude SDK usage (not through Vercel AI SDK)
 export function getClaudeClient(modelName?: string) {
@@ -29,25 +24,24 @@ export function getClaudeClient(modelName?: string) {
 }
 
 /**
- * Get an instance of the appropriate AI client based on the current environment
- * For use with Vercel AI SDK's streamText and similar functions
+ * Get an instance of the Gemini client
+ * For use with Google's Gemini API directly
  * @param modelName Optional model name override
- * @returns AI client instance ready to use with Vercel AI SDK
+ * @returns Gemini client instance
  */
-export function getAIClient(modelName?: string) {
-    if (isProduction) {
-        // Use Claude in production
-        const model = modelName || "claude-3-7-sonnet-20250219";
-        return anthropic(model);
+export function getGeminiClient(modelName?: string) {
+    if (!process.env.GOOGLE_API_KEY) {
+        throw new Error("GOOGLE_API_KEY is required for Gemini client");
     }
 
-    if (useOllama) {
-        // Use Ollama only when explicitly configured
-        const model = modelName || "deepseek-r1:8b";
-        return ollama(model);
-    }
+    const client = new GoogleGenAI({
+        apiKey: process.env.GOOGLE_API_KEY,
+    });
 
-    // Use Claude in development by default
-    const model = modelName || "claude-3-7-sonnet-20250219";
-    return anthropic(model);
+    return async ({ content }: { content: ContentListUnion }) => {
+        return await client.models.generateContent({
+            model: modelName || "gemini-2.5-pro-exp-03-25",
+            contents: content,
+        });
+    };
 }
