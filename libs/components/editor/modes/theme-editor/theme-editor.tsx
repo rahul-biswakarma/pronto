@@ -1,13 +1,15 @@
 import { Button } from "@/libs/ui/button";
 import { cn } from "@/libs/utils/misc";
-import { IconPalette } from "@tabler/icons-react";
+import { IconBrandGoogle, IconPalette } from "@tabler/icons-react";
 import type React from "react";
 import { useCallback, useEffect, useState } from "react";
 import { useEditor } from "../../editor.context";
 import type { EditorMode } from "../../types/editor.types";
 import {
+    applyTheme,
     extractColorVariables,
     formatColorVariable,
+    generateThemesWithGemini,
     updateColorVariable,
 } from "./utils";
 
@@ -15,6 +17,11 @@ interface ColorVariable {
     name: string;
     value: string;
     displayName: string;
+}
+
+interface Theme {
+    name: string;
+    colors: Record<string, string>;
 }
 
 // Theme Editor component
@@ -25,6 +32,8 @@ const ThemeEditor: React.FC = () => {
         Record<string, string>
     >({});
     const [hasChanges, setHasChanges] = useState(false);
+    const [predefinedThemes, setPredefinedThemes] = useState<Theme[]>([]);
+    const [isGeneratingThemes, setIsGeneratingThemes] = useState(false);
 
     // Load color variables from the document
     useEffect(() => {
@@ -44,6 +53,16 @@ const ThemeEditor: React.FC = () => {
                 displayName: formatColorVariable(variable.name),
             })),
         );
+
+        // Load saved themes from localStorage
+        try {
+            const savedThemes = localStorage.getItem("feno-predefined-themes");
+            if (savedThemes) {
+                setPredefinedThemes(JSON.parse(savedThemes));
+            }
+        } catch (error) {
+            console.error("Error loading themes from localStorage:", error);
+        }
     }, [iframeRef]);
 
     // Handle color change
@@ -77,6 +96,60 @@ const ThemeEditor: React.FC = () => {
         [iframeDocument, originalColors, colorVariables],
     );
 
+    // Generate themes using Gemini
+    const handleGenerateThemes = async () => {
+        if (!colorVariables.length || !iframeDocument) return;
+
+        setIsGeneratingThemes(true);
+
+        try {
+            // Prepare current theme colors
+            const currentTheme = colorVariables.reduce(
+                (acc, variable) => {
+                    acc[variable.name] = variable.value;
+                    return acc;
+                },
+                {} as Record<string, string>,
+            );
+
+            // Generate themes
+            const themes = await generateThemesWithGemini(currentTheme);
+
+            // Save to localStorage
+            localStorage.setItem(
+                "feno-predefined-themes",
+                JSON.stringify(themes),
+            );
+
+            // Update state
+            setPredefinedThemes(themes);
+        } catch (error) {
+            console.error("Error generating themes:", error);
+            alert("Failed to generate themes. Please try again later.");
+        } finally {
+            setIsGeneratingThemes(false);
+        }
+    };
+
+    // Apply a predefined theme
+    const handleApplyTheme = (theme: Theme) => {
+        if (!iframeDocument) return;
+
+        // Apply the theme to the document
+        applyTheme(iframeDocument, theme.colors);
+
+        // Update our state
+        setColorVariables((prev) =>
+            prev.map((variable) => ({
+                ...variable,
+                value: theme.colors[variable.name] || variable.value,
+            })),
+        );
+
+        // Mark that we have changes
+        setHasChanges(true);
+    };
+
     // Save changes when exiting the theme editor
     useEffect(() => {
         // If we're leaving the theme editor and have changes
@@ -92,7 +165,53 @@ const ThemeEditor: React.FC = () => {
 
     return (
         <div className="p-4 space-y-4">
-            <h3 className="text-lg font-medium">Theme Colors</h3>
+            <div className="flex justify-between items-center">
+                <h3 className="text-lg font-medium">Theme Colors</h3>
+                <Button
+                    onClick={handleGenerateThemes}
+                    disabled={isGeneratingThemes}
+                    className="flex items-center gap-2"
+                    size="sm"
+                >
+                    <IconBrandGoogle size={16} />
+                    {isGeneratingThemes
+                        ? "Generating..."
+                        : "Generate AI Themes"}
+                </Button>
+            </div>
+
+            {predefinedThemes.length > 0 && (
+                <div className="space-y-2">
+                    <h4 className="text-sm font-medium">AI Generated Themes</h4>
+                    <div className="grid grid-cols-3 gap-2">
+                        {predefinedThemes.map((theme, idx) => (
+                            <Button
+                                key={idx}
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleApplyTheme(theme)}
+                                className="h-auto py-2 flex flex-col items-center gap-1"
+                            >
+                                <div className="flex gap-1">
+                                    {Object.values(theme.colors)
+                                        .slice(0, 4)
+                                        .map((color, colorIdx) => (
+                                            <div
+                                                key={colorIdx}
+                                                className="w-3 h-3 rounded-full border"
+                                                style={{
+                                                    backgroundColor: color,
+                                                }}
+                                            />
+                                        ))}
+                                </div>
+                                <span className="text-xs">{theme.name}</span>
+                            </Button>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             <div className="space-y-3">
                 {colorVariables.map((variable) => (
                     <div
