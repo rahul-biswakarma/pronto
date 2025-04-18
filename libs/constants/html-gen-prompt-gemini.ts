@@ -79,7 +79,12 @@ REQUIREMENTS:
    - If a design element in the screenshot (e.g., a testimonial section) has no corresponding
      data, omit it gracefully from the final HTML.
 
-5. Final Output:
+5. Icons:
+   - For any icons, use Tabler Icons by including this stylesheet in the <head> section:
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" />
+   - Use icons with the format: <i class="ti ti-[icon-name]"></i>, for example <i class="ti ti-home"></i>
+
+6. Final Output:
    - Return the complete HTML document, starting with <!DOCTYPE html>, including a properly
      formatted <head> (with <style> block) and <body>.
    - Do not include placeholder text or screenshot text. Reference the screenshot design ONLY

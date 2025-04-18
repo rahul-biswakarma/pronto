@@ -1,4 +1,4 @@
-import { getClaudeClient } from "@/libs/utils/ai-client";
+import { getGeminiClient } from "@/libs/utils/ai-client";
 import {
     createErrorResponse,
     createSuccessResponse,
@@ -6,7 +6,6 @@ import {
 } from "@/libs/utils/api-response";
 import { checkAuthentication } from "@/libs/utils/auth";
 import { withCSRFProtection } from "@/libs/utils/csrf";
-import type Anthropic from "@anthropic-ai/sdk";
 
 /**
  * POST /api/portfolios - Updates the user's portfolio
@@ -32,10 +31,15 @@ export const POST = withErrorHandling(
                 );
             }
 
-            const messages: Anthropic.Messages.MessageParam[] = [
+            // Use Gemini for HTML modification
+            const geminiClient = getGeminiClient();
+
+            const content = [
                 {
                     role: "user",
-                    content: `You are an expert web developer assistant. I want you to modify this HTML section based on the following instructions:
+                    parts: [
+                        {
+                            text: `You are an expert web developer assistant. I want you to modify this HTML section based on the following instructions:
 
 INSTRUCTIONS: ${body.prompt}
 
@@ -50,15 +54,19 @@ Please implement the requested changes while maintaining:
 3. Any important classes or data attributes
 4. The overall style and formatting
 
+For any icons, please use Tabler Icons with this stylesheet:
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" />
+
+Example of using Tabler icons: <i class="ti ti-home"></i> for a home icon.
+
 Return only the modified HTML for the section WITHOUT any explanation or code blocks. Do not include any markdown formatting, just the raw HTML.`,
+                        },
+                    ],
                 },
             ];
 
-            const claudeStreamer = getClaudeClient();
-
-            const textStream = claudeStreamer({ messages });
-            const response = await textStream.withResponse();
-            let modifiedHtml = await response.data.finalText();
+            const response = await geminiClient({ content });
+            let modifiedHtml = response.text || "";
 
             // Clean up the response if needed (remove any markdown code blocks if present)
             modifiedHtml = modifiedHtml.replace(/^```html\n|```$/g, "");
