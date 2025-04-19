@@ -266,7 +266,7 @@ export const SectionEditorMode = (): EditorMode => {
                 size="icon"
                 variant="ghost"
                 className={cn(
-                    "!hover:bg-blue-500/10",
+                    "!hover:bg-blue-500/10 hover:text-blue-700",
                     isActive &&
                         "text-blue-700 bg-blue-500/10 hover:text-blue-700",
                 )}

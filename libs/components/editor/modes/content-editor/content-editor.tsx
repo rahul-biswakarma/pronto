@@ -139,7 +139,7 @@ export const ContentEditorMode = (): EditorMode => {
                 size="icon"
                 variant="ghost"
                 className={cn(
-                    "!hover:bg-yellow-500/10",
+                    "!hover:bg-yellow-500/10 hover:text-yellow-600",
                     isActive &&
                         "text-yellow-600 bg-yellow-500/10 hover:text-yellow-600",
                 )}

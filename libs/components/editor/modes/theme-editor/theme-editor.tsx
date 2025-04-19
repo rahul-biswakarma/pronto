@@ -444,7 +444,7 @@ export const ThemeEditorMode = (): EditorMode => {
                 size="icon"
                 variant="ghost"
                 className={cn(
-                    "hover:bg-pink-500/10",
+                    "hover:bg-pink-500/10 hover:text-pink-500",
                     isActive && " bg-pink-500/10 !text-pink-500",
                 )}
             >

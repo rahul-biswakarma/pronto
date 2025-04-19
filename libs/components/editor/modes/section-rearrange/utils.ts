@@ -65,6 +65,7 @@ export const draggableStyle = `
     cursor: grab !important;
     position: relative !important;
     user-select: none !important;
+    border: 1px solid #ccc !important;
 `;
 
 export const handleStyle = `
@@ -86,7 +87,7 @@ export const handleStyle = `
 `;
 
 export const dragoverStyle = `
-    outline: 2px dashed #3b82f6 !important;
+    outline: 3px solid #3b82f6 !important;
     outline-offset: 2px !important;
     background-color: rgba(59, 130, 246, 0.05) !important;
 `;
