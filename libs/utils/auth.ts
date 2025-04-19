@@ -2,7 +2,7 @@
 
 import { createSupabaseServerClient } from "@/libs/supabase/client/server";
 import { supabaseOption } from "@/libs/supabase/config";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { SupabaseClient, User } from "@supabase/supabase-js";
 
 type AuthResult =
     | {
@@ -10,11 +10,13 @@ type AuthResult =
           errorResponse: Response;
           supabase?: never;
           userId?: never;
+          user?: never;
       }
     | {
           authenticated: true;
           userId: string;
           supabase: SupabaseClient;
+          user: User;
           errorResponse?: never;
       };
 
@@ -43,5 +45,6 @@ export async function checkAuthentication(): Promise<AuthResult> {
         authenticated: true,
         userId: data.user.id,
         supabase: supabase,
+        user: data.user,
     };
 }

@@ -5,7 +5,7 @@ import { getFileFromBucket } from "@/libs/utils/supabase-storage";
 import { redirect } from "next/navigation";
 
 export default async function Page() {
-    const { authenticated, errorResponse, supabase, userId } =
+    const { authenticated, errorResponse, supabase, userId, user } =
         await checkAuthentication();
 
     if (!authenticated || errorResponse) {
@@ -30,7 +30,7 @@ export default async function Page() {
     const html = (await getFileFromBucket(portfolio[0].html_s3_path)).data;
 
     return (
-        <EditorProvider html={html ?? ""} portfolio={portfolio[0]}>
+        <EditorProvider user={user} html={html ?? ""} portfolio={portfolio[0]}>
             <Editor />
         </EditorProvider>
     );

@@ -1,3 +1,4 @@
+import type { User } from "@supabase/supabase-js";
 import type { JSX } from "react";
 
 export type EditorMode = {
@@ -9,6 +10,9 @@ export type EditorMode = {
 };
 
 export type EditorContextType = {
+    user: User;
+    portfolioId: string;
+
     iframeRef: React.RefObject<HTMLIFrameElement | null>;
 
     modeId: string;

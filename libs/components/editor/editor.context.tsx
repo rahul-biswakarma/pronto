@@ -1,6 +1,7 @@
 "use client";
 
 import type { Database } from "@/libs/supabase/database.types";
+import type { User } from "@supabase/supabase-js";
 import type React from "react";
 import { createContext, useContext, useRef, useState } from "react";
 import type { EditorContextType, EditorMode } from "./types/editor.types";
@@ -16,11 +17,18 @@ export const useEditor = () => {
 };
 
 export const EditorProvider: React.FC<{
+    user: User;
     children: React.ReactNode;
     html: string;
     portfolio: Database["public"]["Tables"]["portfolio"]["Row"];
     onHtmlChange?: (updatedHtml: string) => void;
-}> = ({ children, html, onHtmlChange: externalHtmlChangeHandler }) => {
+}> = ({
+    user,
+    portfolio,
+    children,
+    html,
+    onHtmlChange: externalHtmlChangeHandler,
+}) => {
     const iframeRef = useRef<HTMLIFrameElement>(null);
 
     const [modeId, setModeId] = useState<string>("section-editor");
@@ -53,12 +61,14 @@ export const EditorProvider: React.FC<{
     return (
         <EditorContext.Provider
             value={{
+                user,
                 iframeRef,
                 modeId,
                 setModeId,
                 portfolioHtml,
                 setPortfolioHtml,
                 modes,
+                portfolioId: portfolio.id,
                 registerMode,
                 iframeDocument,
                 setIframeDocument,

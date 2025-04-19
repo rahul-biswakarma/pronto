@@ -266,12 +266,12 @@ export const SectionEditorMode = (): EditorMode => {
                 size="icon"
                 variant="ghost"
                 className={cn(
-                    "!hover:bg-blue-500/10 hover:text-blue-700",
+                    "!hover:bg-blue-500/10 hover:text-blue-700 rounded-lg",
                     isActive &&
                         "text-blue-700 bg-blue-500/10 hover:text-blue-700",
                 )}
             >
-                <IconCashEdit stroke={2} size={28} />
+                <IconCashEdit size={28} />
             </Button>
         ),
     };
