@@ -1,7 +1,7 @@
 import { Button } from "@/libs/ui/button";
 import dataLayer from "@/libs/utils/data-layer";
 import { cn } from "@/libs/utils/misc";
-import { IconSection } from "@tabler/icons-react";
+import { IconSection, IconSend } from "@tabler/icons-react";
 import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useEditor } from "../../editor.context";
@@ -235,30 +235,24 @@ const SectionEditor: React.FC = () => {
     }, [selectedElement]);
 
     return (
-        <div className="p-4 space-y-4">
+        <div className="p-4 space-y-4 bg">
             <h3 className="text-lg font-medium">Section Editor</h3>
 
-            {selectedElement ? (
-                <div className="space-y-3">
-                    <textarea
-                        value={prompt}
-                        onChange={(e) => handlePromptChange(e.target.value)}
-                        placeholder={`You are modifying ${getSectionType()} section. What would you like me to change?`}
-                        className="w-full p-2 border rounded min-h-[100px]"
-                    />
-                    <Button
-                        onClick={handleApplyChanges}
-                        disabled={loading || !prompt.trim()}
-                        className="w-full"
-                    >
-                        {loading ? "Processing..." : "Apply Changes"}
-                    </Button>
-                </div>
-            ) : (
-                <p className="text-sm text-gray-500">
-                    Select a section in the preview to modify it.
-                </p>
-            )}
+            <input
+                type="text"
+                value={prompt}
+                onChange={(e) => handlePromptChange(e.target.value)}
+                placeholder={`Modify ${getSectionType()} section...`}
+                className="flex-1 p-2 border rounded"
+            />
+            <Button
+                size="icon"
+                onClick={handleApplyChanges}
+                disabled={loading || !prompt.trim()}
+                className="h-10 w-10 flex items-center justify-center"
+            >
+                <IconSend size={18} />
+            </Button>
         </div>
     );
 };
@@ -273,7 +267,7 @@ export const SectionEditorMode = (): EditorMode => {
             <Button
                 size="icon"
                 variant="ghost"
-                className={cn(isActive && "bg-black text-primary-foreground")}
+                className={cn(isActive && "text-primary-foreground")}
             >
                 <IconSection size={28} />
             </Button>

@@ -20,7 +20,7 @@ export const Moder = () => {
     return (
         <motion.div
             layout
-            className="mx-auto bg-accent p-1 rounded-2xl fixed bottom-8 left-1/2 -translate-x-1/2 max-w-[900px] max-h-fit"
+            className="mx-auto bg-white/10 backdrop-blur-md p-3 rounded-3xl fixed bottom-8 left-1/2 -translate-x-1/2 max-w-[900px] max-h-fit shadow-[0_8px_32px_rgba(0,0,0,0.1)] border border-white/20"
             style={{
                 transformOrigin: "bottom center",
                 willChange: "transform",
@@ -76,17 +76,20 @@ export const Moder = () => {
                     willChange: "transform",
                     transformOrigin: "bottom center",
                 }}
-                className="bg-background rounded-lg overflow-hidden"
+                className="bg-white/30 backdrop-blur-sm rounded-2xl overflow-hidden shadow-sm border border-white/20"
             >
                 {Object.values(modes)
                     .find((mode) => mode.id === modeId)
                     ?.editorRenderer()}
             </motion.div>
-            <motion.div className="w-full flex" layout>
+            <motion.div
+                className="w-full flex justify-center gap-2 mt-3"
+                layout
+            >
                 {Object.values(modes).map((mode) => (
                     <motion.div
                         key={mode.id}
-                        className="p-2"
+                        className={`p-2 rounded-full ${mode.id === modeId ? "bg-white/20 backdrop-blur-sm border border-white/30" : "hover:bg-white/10"}`}
                         onClick={() => setModeId(mode.id)}
                         layout
                         initial={{
@@ -102,6 +105,12 @@ export const Moder = () => {
                         transition={{
                             duration: 0.1,
                             ease: "easeOut",
+                        }}
+                        whileHover={{
+                            scale: 1.05,
+                        }}
+                        whileTap={{
+                            scale: 0.95,
                         }}
                     >
                         {mode.actionRenderer?.(mode.id === modeId)}
