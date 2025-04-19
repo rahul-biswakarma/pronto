@@ -4,6 +4,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import type * as React from "react";
 
 import { cn } from "@/libs/utils/misc";
+import { VisuallyHidden } from "./visually-hidden";
 
 function Dialog({
     ...props
@@ -45,11 +46,26 @@ function DialogOverlay({
     );
 }
 
+interface DialogContentProps
+    extends React.ComponentProps<typeof DialogPrimitive.Content> {
+    /**
+     * Title for the dialog (required for accessibility)
+     * If you don't want to display the title, set hideTitle to true
+     */
+    title: string;
+    /**
+     * Hide the title visually while keeping it accessible for screen readers
+     */
+    hideTitle?: boolean;
+}
+
 function DialogContent({
     className,
     children,
+    title,
+    hideTitle = false,
     ...props
-}: React.ComponentProps<typeof DialogPrimitive.Content>) {
+}: DialogContentProps) {
     return (
         <DialogPortal data-slot="dialog-portal">
             <DialogOverlay />
@@ -61,6 +77,13 @@ function DialogContent({
                 )}
                 {...props}
             >
+                {hideTitle ? (
+                    <VisuallyHidden>
+                        <DialogTitle>{title}</DialogTitle>
+                    </VisuallyHidden>
+                ) : (
+                    <DialogTitle>{title}</DialogTitle>
+                )}
                 {children}
             </DialogPrimitive.Content>
         </DialogPortal>
