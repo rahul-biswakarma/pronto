@@ -25,6 +25,12 @@ export const Moder = () => {
                 transformOrigin: "bottom center",
                 willChange: "transform",
             }}
+            transition={{
+                layout: {
+                    duration: 0.2,
+                    ease: "easeOut",
+                },
+            }}
             animate={{
                 scale: 1,
                 filter: "blur(0px)",
