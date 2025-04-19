@@ -120,11 +120,13 @@ const ContentEditor: React.FC = () => {
     };
 
     return (
-        <TiptapEditor
-            placeholder="Select a text element to edit content"
-            initialContent={selectedElement?.innerHTML || ""}
-            onChange={handleEditorChange}
-        />
+        <div className="w-[600px]">
+            <TiptapEditor
+                placeholder="Select a text element to edit content"
+                initialContent={selectedElement?.innerHTML || ""}
+                onChange={handleEditorChange}
+            />
+        </div>
     );
 };
 

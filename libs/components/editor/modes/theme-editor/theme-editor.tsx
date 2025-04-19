@@ -47,21 +47,17 @@ const ThemeCustomization: React.FC<{
     return (
         <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="customize-colors" className="border-b-0">
-                <AccordionTrigger className="px-3 py-2 hover:no-underline rounded-md hover:bg-muted/50 transition-colors text-sm font-medium text-muted-foreground [&[data-state=open]>svg]:rotate-180">
+                <AccordionTrigger className="py-2 text-[14px] hover:no-underline rounded-md hover:bg-muted/50 transition-colors text-sm font-medium text-muted-foreground [&[data-state=open]>svg]:rotate-180">
                     Customize Colors
                     {/* Keep the chevron, remove default rotation if needed */}
                 </AccordionTrigger>
-                <AccordionContent className="pt-2 pb-1 px-1 space-y-3">
+                <AccordionContent className="pt-2 pb-1 px-1 space-y-1">
                     {colorVariables.map((variable) => (
                         <div
                             key={variable.name}
-                            className="flex items-center justify-between gap-4 px-2 py-1.5 rounded-md hover:bg-muted/30"
+                            className="flex items-center justify-between gap-4 py-1.5 rounded-md hover:bg-muted/30"
                         >
                             <div className="flex items-center gap-2 flex-1 min-w-0">
-                                <div
-                                    className="w-4 h-4 rounded-full border flex-shrink-0"
-                                    style={{ backgroundColor: variable.value }}
-                                />
                                 <span className="text-sm truncate">
                                     {variable.displayName}
                                 </span>
@@ -175,7 +171,7 @@ const PredefinedThemesSection: React.FC<{
             {/* Horizontal scroll container */}
             <div
                 ref={scrollContainerRef}
-                className="flex space-x-3 overflow-x-auto pb-0 -mx-4 p-4 scrollbar-hide"
+                className="flex space-x-3 overflow-x-auto pb-0 -mx-4 p-4 pt-2 scrollbar-hide"
                 style={{
                     scrollbarWidth: "none" /* Firefox */,
                     msOverflowStyle: "none" /* IE and Edge */,
@@ -397,7 +393,7 @@ const ThemeEditor: React.FC = () => {
     }, [modeId, hasChanges, iframeDocument, onHtmlChange]);
 
     return (
-        <div className="p-4 space-y-4 min-w-[700px] min-h-0">
+        <div className="p-4 space-y-4 w-[600px] min-h-0">
             <div className="flex justify-between items-center">
                 <h3 className="text-lg font-medium">Theme Colors</h3>
                 {predefinedThemes.length === 0 && (

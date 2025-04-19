@@ -235,13 +235,13 @@ const SectionEditor: React.FC = () => {
     }, [selectedElement]);
 
     return (
-        <div className="flex gap-2 p-1">
+        <div className="flex gap-2 p-1 w-[600px]">
             <input
                 type="text"
                 value={prompt}
                 onChange={(e) => handlePromptChange(e.target.value)}
                 placeholder={`Modify ${getSectionType()} section...`}
-                className="flex-1 p-2 rounded min-w-[500px] border-none outline-none text-[14px]"
+                className="flex-1 p-2 rounded w-full border-none outline-none text-[14px]"
             />
             <Button
                 size="icon"

@@ -21,7 +21,7 @@ export const Moder = () => {
     }, []);
 
     return (
-        <div className="mx-auto bg-[#eee] p-2 pb-0 rounded-3xl fixed bottom-8 left-1/2 -translate-x-1/2 max-w-[900px] max-h-fit shadow-[0_8px_32px_rgba(0,0,0,0.1)] border border-[#DDD] text-neutral-800">
+        <div className="mx-auto bg-[#eee] p-2 pb-0 rounded-3xl fixed bottom-8 left-1/2 -translate-x-1/2 min-w-[600px] max-w-[900px] max-h-fit shadow-[0_8px_32px_rgba(0,0,0,0.1)] border border-[#DDD] text-neutral-800">
             <motion.div
                 initial={{
                     scale: 0.9,
