@@ -20,7 +20,7 @@ export const Moder = () => {
     return (
         <motion.div
             layout
-            className="mx-auto bg-white/10 backdrop-blur-md p-3 rounded-3xl fixed bottom-8 left-1/2 -translate-x-1/2 max-w-[900px] max-h-fit shadow-[0_8px_32px_rgba(0,0,0,0.1)] border border-white/20"
+            className="mx-auto bg-[#eee] p-2 rounded-3xl fixed bottom-8 left-1/2 -translate-x-1/2 max-w-[900px] max-h-fit shadow-[0_8px_32px_rgba(0,0,0,0.1)] border border-[#DDD] text-neutral-800"
             style={{
                 transformOrigin: "bottom center",
                 willChange: "transform",
@@ -74,22 +74,24 @@ export const Moder = () => {
                 style={{
                     originY: 1,
                     willChange: "transform",
+                    boxShadow:
+                        "0 2px 8px rgba(0, 0, 0, 0.06), inset 0 2px 2px rgba(255, 255, 255, 0.2)",
                     transformOrigin: "bottom center",
                 }}
-                className="bg-white/30 backdrop-blur-sm rounded-2xl overflow-hidden shadow-sm border border-white/20"
+                className="bg-[#f5f5f5] rounded-2xl overflow-hidden"
             >
                 {Object.values(modes)
                     .find((mode) => mode.id === modeId)
                     ?.editorRenderer()}
             </motion.div>
             <motion.div
-                className="w-full flex justify-center gap-2 mt-3"
+                className="w-full flex justify-center gap-2 mt-1"
                 layout
             >
                 {Object.values(modes).map((mode) => (
                     <motion.div
                         key={mode.id}
-                        className={`p-2 rounded-full ${mode.id === modeId ? "bg-white/20 backdrop-blur-sm border border-white/30" : "hover:bg-white/10"}`}
+                        className={"p-1 rounded-full cursor-pointer"}
                         onClick={() => setModeId(mode.id)}
                         layout
                         initial={{

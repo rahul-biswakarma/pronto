@@ -185,7 +185,11 @@ export const ContentEditorMode = (): EditorMode => {
             <Button
                 size="icon"
                 variant="ghost"
-                className={cn(isActive && "bg-black text-primary-foreground")}
+                className={cn(
+                    "!hover:bg-yellow-500/10",
+                    isActive &&
+                        "text-yellow-600 bg-yellow-500/10 hover:text-yellow-600",
+                )}
             >
                 <IconEdit size={28} />
             </Button>

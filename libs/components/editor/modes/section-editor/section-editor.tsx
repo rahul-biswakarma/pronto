@@ -235,23 +235,21 @@ const SectionEditor: React.FC = () => {
     }, [selectedElement]);
 
     return (
-        <div className="p-4 space-y-4 bg">
-            <h3 className="text-lg font-medium">Section Editor</h3>
-
+        <div className="flex gap-2 p-1">
             <input
                 type="text"
                 value={prompt}
                 onChange={(e) => handlePromptChange(e.target.value)}
                 placeholder={`Modify ${getSectionType()} section...`}
-                className="flex-1 p-2 border rounded"
+                className="flex-1 p-2 rounded min-w-[500px] border-none outline-none"
             />
             <Button
                 size="icon"
                 onClick={handleApplyChanges}
                 disabled={loading || !prompt.trim()}
-                className="h-10 w-10 flex items-center justify-center"
+                className="h-10 w-10 flex items-center justify-center rounded-xl bg-blue-700"
             >
-                <IconSend size={18} />
+                <IconSend size={18} stroke={2} />
             </Button>
         </div>
     );
@@ -267,9 +265,13 @@ export const SectionEditorMode = (): EditorMode => {
             <Button
                 size="icon"
                 variant="ghost"
-                className={cn(isActive && "text-primary-foreground")}
+                className={cn(
+                    "!hover:bg-blue-500/10",
+                    isActive &&
+                        "text-blue-700 !hover:bg-blue-500/10 hover:text-blue-700",
+                )}
             >
-                <IconSection size={28} />
+                <IconSection stroke={2} size={28} />
             </Button>
         ),
     };
