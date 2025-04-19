@@ -16,6 +16,7 @@ import {
 } from "@tabler/icons-react";
 import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { ModerActionRenderer } from "../../_components/moder-action-renderer";
 import { useEditor } from "../../editor.context";
 import type { EditorMode } from "../../types/editor.types";
 import {
@@ -45,25 +46,25 @@ const ThemeCustomization: React.FC<{
     if (colorVariables.length === 0) return null;
 
     return (
-        <Accordion type="single" collapsible className="w-full">
+        <Accordion type="single" collapsible className="w-full px-1.5 pb-1">
             <AccordionItem value="customize-colors" className="border-b-0">
-                <AccordionTrigger className="py-2 text-[14px] hover:no-underline rounded-md hover:bg-muted/50 transition-colors text-sm font-medium text-muted-foreground [&[data-state=open]>svg]:rotate-180">
-                    Customize Colors
+                <AccordionTrigger className="py-2 px-1.5 text-xs cursor-pointer hover:no-underline rounded-md hover:bg-muted transition-colors font-medium text-muted-foreground [&[data-state=open]>svg]:rotate-180">
+                    Customize Theme
                     {/* Keep the chevron, remove default rotation if needed */}
                 </AccordionTrigger>
-                <AccordionContent className="pt-2 pb-1 px-1 space-y-1">
+                <AccordionContent className="pt-2 pb-1 px-1.5">
                     {colorVariables.map((variable) => (
                         <div
                             key={variable.name}
-                            className="flex items-center justify-between gap-4 py-1.5 rounded-md hover:bg-muted/30"
+                            className="flex items-center justify-between gap-4 py-1.5 hover:bg-muted/30 border-b last:border-b-0 first:border-t px-1.5"
                         >
                             <div className="flex items-center gap-2 flex-1 min-w-0">
-                                <span className="text-sm truncate">
+                                <span className="text-xs truncate font-medium">
                                     {variable.displayName}
                                 </span>
                             </div>
                             {/* Keep the color input separate */}
-                            <div className="relative h-7 w-9 border rounded overflow-hidden flex-shrink-0">
+                            <div className="relative h-6 w-8 border rounded overflow-hidden flex-shrink-0">
                                 <input
                                     type="color"
                                     value={variable.value}
@@ -73,7 +74,7 @@ const ThemeCustomization: React.FC<{
                                             e.target.value,
                                         )
                                     }
-                                    className="absolute inset-0 w-full h-full cursor-pointer border-none p-0 appearance-none bg-transparent"
+                                    className="absolute object-cover scale-200 w-full h-full cursor-pointer border-none appearance-none bg-transparent"
                                     title={`Select color for ${variable.displayName}`}
                                 />
                             </div>
@@ -141,9 +142,9 @@ const PredefinedThemesSection: React.FC<{
     if (themes.length === 0) return null;
 
     return (
-        <div className="pt-2">
+        <div className="px-3 pb-4">
             <div className="flex justify-between items-center">
-                <h4 className="text-sm font-medium text-muted-foreground">
+                <h4 className="text-xs font-medium text-muted-foreground">
                     Predefined Themes
                 </h4>
                 <div className="flex space-x-1">
@@ -169,79 +170,79 @@ const PredefinedThemesSection: React.FC<{
             </div>
 
             {/* Horizontal scroll container */}
-            <div
-                ref={scrollContainerRef}
-                className="flex space-x-3 overflow-x-auto pb-0 -mx-4 p-4 pt-2 scrollbar-hide"
-                style={{
-                    scrollbarWidth: "none" /* Firefox */,
-                    msOverflowStyle: "none" /* IE and Edge */,
-                }}
-            >
-                <style>
-                    {".scrollbar-hide::-webkit-scrollbar { display: none; }"}
-                </style>
-                {/* Webkit */}
-                {themes.map((theme) => {
-                    const isSelected = selectedThemeName === theme.name;
-                    const primaryColor =
-                        theme.colors["--primary"] ||
-                        Object.values(theme.colors)[0] ||
-                        "#000000"; // Fallback color
-                    const accentColors = Object.values(theme.colors)
-                        .filter((c) => c !== primaryColor)
-                        .slice(0, 3);
+            <div className="relative overflow-hidden">
+                <div
+                    ref={scrollContainerRef}
+                    className="flex space-x-3 overflow-x-auto pb-0 py-4 scrollbar-hide"
+                    style={{
+                        scrollbarWidth: "none" /* Firefox */,
+                        msOverflowStyle: "none" /* IE and Edge */,
+                    }}
+                >
+                    {themes.map((theme) => {
+                        const isSelected = selectedThemeName === theme.name;
 
-                    return (
-                        <button
-                            type="button"
-                            key={theme.name}
-                            onClick={() => onSelectTheme(theme)}
-                            className={cn(
-                                "border rounded-lg p-2.5 w-36 flex-shrink-0 text-left transition-all duration-150 focus:outline-none",
-                                isSelected
-                                    ? "border-blue-500/90 ring-2 ring-blue-500/90 ring-offset-2 ring-offset-background"
-                                    : "border-border hover:border-muted-foreground",
-                            )}
-                        >
-                            {/* Simplified Preview Area */}
-                            <div
-                                className="h-20 rounded bg-muted/50 border border-border/50 mb-2 p-1.5 flex flex-col justify-between relative overflow-hidden"
-                                style={{
-                                    backgroundColor: primaryColor,
-                                }}
-                            >
-                                <div className="flex space-x-1">
-                                    {/* Dots representing window controls */}
-                                    <div className="w-2 h-2 rounded-full bg-red-500/70" />
-                                    <div className="w-2 h-2 rounded-full bg-yellow-500/70" />
-                                    <div className="w-2 h-2 rounded-full bg-green-500/70" />
-                                </div>
-                                <div className="flex justify-end space-x-1.5">
-                                    {accentColors.map((color, idx) => (
-                                        <div
-                                            key={`${theme.name}-accent-${color}-${idx}`}
-                                            className="w-4 h-4 rounded border border-background/50"
-                                            style={{
-                                                backgroundColor: color,
-                                            }}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="flex items-center justify-between mt-1">
-                                <span className="text-xs font-medium truncate">
-                                    {theme.name}
-                                </span>
-                                {isSelected && (
-                                    <IconCheck
-                                        size={16}
-                                        className="text-primary flex-shrink-0"
-                                    />
+                        const primaryColor =
+                            theme.colors["--primary"] ||
+                            Object.values(theme.colors)[0] ||
+                            "#000000"; // Fallback color
+
+                        const accentColors = Object.values(theme.colors)
+                            .filter((c) => c !== primaryColor)
+                            .slice(0, 3);
+
+                        return (
+                            <button
+                                type="button"
+                                key={theme.name}
+                                onClick={() => onSelectTheme(theme)}
+                                className={cn(
+                                    "border rounded-lg p-1 w-36 flex-shrink-0 text-left transition-all duration-150 focus:outline-none",
+                                    isSelected
+                                        ? "border-primary"
+                                        : "border-border hover:border-muted-foreground",
                                 )}
-                            </div>
-                        </button>
-                    );
-                })}
+                            >
+                                {/* Simplified Preview Area */}
+                                <div
+                                    className="h-20 rounded border mb-2 p-1.5 flex flex-col justify-between relative"
+                                    style={{
+                                        background: `linear-gradient(143deg, ${accentColors[0]} 0%, ${accentColors[1]} 50%, ${accentColors[2]} 100%)`,
+                                    }}
+                                >
+                                    <div className="flex justify-end space-x-1.5">
+                                        {accentColors.map((color, idx) => (
+                                            <div
+                                                key={`${theme.name}-accent-${color}-${idx}`}
+                                                className="w-4 h-4 rounded border border-background/50"
+                                                style={{
+                                                    backgroundColor: color,
+                                                }}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="flex items-center justify-between mt-1">
+                                    <span className="text-xs font-medium truncate">
+                                        {theme.name}
+                                    </span>
+                                    {isSelected && (
+                                        <IconCheck
+                                            size={16}
+                                            className="text-primary flex-shrink-0"
+                                        />
+                                    )}
+                                </div>
+                            </button>
+                        );
+                    })}
+                    {canScrollLeft && (
+                        <div className="pointer-events-none absolute inset-y-0 left-0 w-1/5 bg-gradient-to-r from-background" />
+                    )}
+                    {canScrollRight && (
+                        <div className="pointer-events-none absolute inset-y-0 right-0 w-1/5 bg-gradient-to-l from-background" />
+                    )}
+                </div>
             </div>
         </div>
     );
@@ -393,9 +394,9 @@ const ThemeEditor: React.FC = () => {
     }, [modeId, hasChanges, iframeDocument, onHtmlChange]);
 
     return (
-        <div className="p-4 space-y-4 w-[600px] min-h-0">
-            <div className="flex justify-between items-center">
-                <h3 className="text-lg font-medium">Theme Colors</h3>
+        <div className="w-[600px] min-h-0">
+            <div className="flex justify-between items-center p-3">
+                <h3 className="text-sm font-medium">Modify Theme</h3>
                 {predefinedThemes.length === 0 && (
                     <Button
                         onClick={handleGenerateThemes}
@@ -406,7 +407,7 @@ const ThemeEditor: React.FC = () => {
                         <IconBrandGoogle size={16} />
                         {isGeneratingThemes
                             ? "Generating..."
-                            : "Generate AI Themes"}
+                            : "Generate Themes"}
                     </Button>
                 )}
             </div>
@@ -417,14 +418,12 @@ const ThemeEditor: React.FC = () => {
                 onSelectTheme={handleApplyTheme}
             />
 
-            <Separator className="my-4" />
+            <Separator className="my-1" />
 
-            <div className="space-y-3">
-                <ThemeCustomization
-                    colorVariables={colorVariables}
-                    onColorChange={handleColorChange}
-                />
-            </div>
+            <ThemeCustomization
+                colorVariables={colorVariables}
+                onColorChange={handleColorChange}
+            />
         </div>
     );
 };
@@ -436,16 +435,11 @@ export const ThemeEditorMode = (): EditorMode => {
         label: "Theme Editor",
         editorRenderer: () => <ThemeEditor />,
         actionRenderer: (isActive: boolean) => (
-            <Button
-                size="icon"
-                variant="ghost"
-                className={cn(
-                    "hover:bg-pink-500/10 hover:text-pink-500",
-                    isActive && " bg-pink-500/10 !text-pink-500",
-                )}
-            >
-                <IconPalette size={28} />
-            </Button>
+            <ModerActionRenderer
+                icon={IconPalette}
+                label="Theme Editor"
+                active={isActive}
+            />
         ),
     };
 };

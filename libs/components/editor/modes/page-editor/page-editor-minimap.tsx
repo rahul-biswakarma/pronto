@@ -1,12 +1,26 @@
-import logger from "@/libs/utils/logger";
-import { IconDragDrop } from "@tabler/icons-react";
-import type React from "react";
 import { useCallback, useEffect, useState } from "react";
-import { ModerActionRenderer } from "../../_components/moder-action-renderer";
+
+import { SortableList } from "@/libs/ui/sortable/sortable";
+import logger from "@/libs/utils/logger";
+
 import { useEditor } from "../../editor.context";
-import type { EditorMode } from "../../types/editor.types";
-import SectionMinimap from "./section-minimap";
-import { SECTION_ID_PREFIX, getAllSections } from "./utils";
+import { SECTION_ID_PREFIX, getAllSections } from "../section-rearrange/utils";
+
+import {
+    restrictToFirstScrollableAncestor,
+    restrictToVerticalAxis,
+} from "@dnd-kit/modifiers";
+
+export function createRange<T>(
+    length: number,
+    initializer: (index: number) => T,
+): T[] {
+    return [...new Array(length)].map((_, index) => initializer(index));
+}
+
+function getMockItems() {
+    return createRange(7, (index) => ({ id: index + 1 }));
+}
 
 // Helper function to extract section data
 const getSectionsData = (doc: Document): { id: string; name: string }[] => {
@@ -41,12 +55,13 @@ const getSectionsData = (doc: Document): { id: string; name: string }[] => {
     });
 };
 
-const SectionRearrange: React.FC = () => {
+export const PageEditorMinimap = () => {
     const { iframeDocument, onHtmlChange } = useEditor();
     const [hasChanges, setHasChanges] = useState(false);
     const [sectionsData, setSectionsData] = useState<
         { id: string; name: string }[]
     >([]);
+    const [items, setItems] = useState(getMockItems());
 
     // Function to update sections data state from iframe
     const updateSectionsData = useCallback(() => {
@@ -75,7 +90,7 @@ const SectionRearrange: React.FC = () => {
 
     // Function called by Minimap to reorder sections in the iframe
     const handleReorder = useCallback(
-        (newOrderedIds: string[]) => {
+        (newOrderedIds: { id: string; name: string }[]) => {
             if (!iframeDocument) return;
 
             const parent = iframeDocument.body; // Or the main container if sections aren't direct children
@@ -92,7 +107,7 @@ const SectionRearrange: React.FC = () => {
             // Re-append sections in the new order using for...of
             let successfullyReordered = false;
             for (const id of newOrderedIds) {
-                const sectionElement = sectionMap.get(id);
+                const sectionElement = sectionMap.get(id.id);
                 if (sectionElement) {
                     parent.appendChild(sectionElement); // Appending moves the element
                     successfullyReordered = true;
@@ -115,34 +130,22 @@ const SectionRearrange: React.FC = () => {
         [iframeDocument, updateSectionsData],
     );
 
-    // We no longer directly manipulate the iframe for dragging here
-    // The enable/disable and iframe event listeners are removed.
-
     return (
-        <div className="space-y-1 w-[600px]">
-            <h3 className="text-sm font-medium p-3 pb-0">Section Rearrange</h3>
-            <p className="text-xs text-gray-600 px-3 mb-4">
-                Drag and drop section blocks below to rearrange the layout in
-                the preview.
-            </p>
-            {/* Render the minimap, passing the data and the reorder handler */}
-            <SectionMinimap sections={sectionsData} onReorder={handleReorder} />
+        <div className="relative" style={{ maxWidth: 400 }}>
+            <SortableList
+                items={items}
+                onChange={setItems}
+                renderItem={(item) => (
+                    <SortableList.Item id={item.id}>
+                        {item.id}
+                        <SortableList.DragHandle />
+                    </SortableList.Item>
+                )}
+                modifiers={[
+                    restrictToVerticalAxis,
+                    restrictToFirstScrollableAncestor,
+                ]}
+            />
         </div>
     );
-};
-
-// Register the section rearrange mode
-export const SectionRearrangeMode = (): EditorMode => {
-    return {
-        id: "section-rearrange",
-        label: "Section Rearrange",
-        editorRenderer: () => <SectionRearrange />,
-        actionRenderer: (isActive: boolean) => (
-            <ModerActionRenderer
-                icon={IconDragDrop}
-                label="Section Rearrange"
-                active={isActive}
-            />
-        ),
-    };
 };

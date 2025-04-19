@@ -50,21 +50,19 @@ const ProfileSettings: React.FC = () => {
     );
 };
 
-// Register the profile settings mode
-export const ProfileSettingsMode = (user: User): EditorMode => {
-    return {
-        id: "profile-settings",
-        label: "Profile",
-        editorRenderer: () => <ProfileSettings />,
-        actionRenderer: (isActive) => (
+export const UserSettings = () => {
+    const { user } = useEditor();
+
+    return (
+        <div className="w-9 h-9 rounded-full bg-gradient-to-tl from-yellow-500 to-red-500 p-0.5">
             <Avatar
                 className={cn(
-                    "!w-8 !h-8 !rounded-lg",
-                    isActive && "outline-2 outline-blue-500/50",
+                    "w-full h-full",
+                    // isActive && "outline-2 outline-white",
                 )}
             >
                 <AvatarImage
-                    className="!w-8 !h-8 !rounded-lg"
+                    className="object-cover object-center"
                     src={user.user_metadata.avatar_url || undefined}
                 />
                 <AvatarFallback className="text-[14px] bg-white !rounded-lg">
@@ -75,6 +73,16 @@ export const ProfileSettingsMode = (user: User): EditorMode => {
                     )}
                 </AvatarFallback>
             </Avatar>
-        ),
+        </div>
+    );
+};
+
+// Register the profile settings mode
+export const ProfileSettingsMode = (user: User): EditorMode => {
+    return {
+        id: "profile-settings",
+        label: "Profile",
+        editorRenderer: () => <ProfileSettings />,
+        actionRenderer: (isActive) => <UserSettings />,
     };
 };

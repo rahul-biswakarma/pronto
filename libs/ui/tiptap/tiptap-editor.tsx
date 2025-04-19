@@ -1,14 +1,9 @@
 import { Button } from "@/libs/ui/button";
 import { cn } from "@/libs/utils/misc";
 import {
-    IconBlockquote,
     IconBold,
-    IconCode,
     IconItalic,
     IconLink,
-    IconList,
-    IconListCheck,
-    IconListNumbers,
     IconSend,
     IconStrikethrough,
 } from "@tabler/icons-react";
@@ -134,7 +129,7 @@ const MenuBar = ({ editor, setLink }: MenuBarProps) => {
     return (
         <div className="flex items-center gap-0.5 flex-wrap">
             <Button
-                size="sm"
+                size="icon"
                 variant="ghost"
                 onClick={() => editor.chain().focus().toggleBold().run()}
                 disabled={!editor.can().chain().focus().toggleBold().run()}
@@ -146,7 +141,7 @@ const MenuBar = ({ editor, setLink }: MenuBarProps) => {
                 <IconBold size={16} />
             </Button>
             <Button
-                size="sm"
+                size="icon"
                 variant="ghost"
                 onClick={() => editor.chain().focus().toggleItalic().run()}
                 disabled={!editor.can().chain().focus().toggleItalic().run()}
@@ -159,7 +154,7 @@ const MenuBar = ({ editor, setLink }: MenuBarProps) => {
             </Button>
             <div className="w-[1px] h-4 bg-neutral-200 mx-1" />
             <Button
-                size="sm"
+                size="icon"
                 variant="ghost"
                 onClick={() => editor.chain().focus().toggleStrike().run()}
                 disabled={!editor.can().chain().focus().toggleStrike().run()}
@@ -170,37 +165,9 @@ const MenuBar = ({ editor, setLink }: MenuBarProps) => {
             >
                 <IconStrikethrough size={16} />
             </Button>
-            <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => editor.chain().focus().toggleCode().run()}
-                disabled={!editor.can().chain().focus().toggleCode().run()}
-                className={cn(
-                    "p-1",
-                    editor.isActive("code") ? "is-active bg-neutral-200" : "",
-                )}
-            >
-                <IconCode size={16} />
-            </Button>
             <div className="w-[1px] h-4 bg-neutral-200 mx-1" />
             <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => editor.chain().focus().toggleBlockquote().run()}
-                disabled={
-                    !editor.can().chain().focus().toggleBlockquote().run()
-                }
-                className={cn(
-                    "p-1",
-                    editor.isActive("blockquote")
-                        ? "is-active bg-neutral-200"
-                        : "",
-                )}
-            >
-                <IconBlockquote size={16} />
-            </Button>
-            <Button
-                size="sm"
+                size="icon"
                 variant="ghost"
                 onClick={setLink}
                 className={cn(
@@ -209,53 +176,6 @@ const MenuBar = ({ editor, setLink }: MenuBarProps) => {
                 )}
             >
                 <IconLink size={16} />
-            </Button>
-            <div className="w-[1px] h-4 bg-neutral-200 mx-1" />
-            <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => editor.chain().focus().toggleBulletList().run()}
-                disabled={
-                    !editor.can().chain().focus().toggleBulletList().run()
-                }
-                className={cn(
-                    "p-1",
-                    editor.isActive("bulletList")
-                        ? "is-active bg-neutral-200"
-                        : "",
-                )}
-            >
-                <IconList size={16} />
-            </Button>
-            <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => editor.chain().focus().toggleOrderedList().run()}
-                disabled={
-                    !editor.can().chain().focus().toggleOrderedList().run()
-                }
-                className={cn(
-                    "p-1",
-                    editor.isActive("orderedList")
-                        ? "is-active bg-neutral-200"
-                        : "",
-                )}
-            >
-                <IconListNumbers size={16} />
-            </Button>
-            <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => editor.chain().focus().toggleTaskList().run()}
-                disabled={!editor.can().chain().focus().toggleTaskList().run()}
-                className={cn(
-                    "p-1",
-                    editor.isActive("taskList")
-                        ? "is-active bg-neutral-200"
-                        : "",
-                )}
-            >
-                <IconListCheck size={16} />
             </Button>
         </div>
     );

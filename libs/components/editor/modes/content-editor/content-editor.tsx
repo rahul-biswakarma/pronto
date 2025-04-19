@@ -1,9 +1,8 @@
-import { Button } from "@/libs/ui/button";
-import { cn } from "@/libs/utils/misc";
 import { IconEdit } from "@tabler/icons-react";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { TiptapEditor } from "../../../../ui/tiptap/tiptap-editor";
+import { ModerActionRenderer } from "../../_components/moder-action-renderer";
 import { useEditor } from "../../editor.context";
 import type { EditorMode } from "../../types/editor.types";
 import {
@@ -137,17 +136,11 @@ export const ContentEditorMode = (): EditorMode => {
         label: "Content Editor",
         editorRenderer: () => <ContentEditor />,
         actionRenderer: (isActive: boolean) => (
-            <Button
-                size="icon"
-                variant="ghost"
-                className={cn(
-                    "!hover:bg-yellow-500/10 hover:text-yellow-600",
-                    isActive &&
-                        "text-yellow-600 bg-yellow-500/10 hover:text-yellow-600",
-                )}
-            >
-                <IconEdit size={28} />
-            </Button>
+            <ModerActionRenderer
+                icon={IconEdit}
+                active={isActive}
+                label="Content Editor"
+            />
         ),
     };
 };
