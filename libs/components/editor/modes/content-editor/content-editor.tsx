@@ -2,9 +2,10 @@ import { Button } from "@/libs/ui/button";
 import { cn } from "@/libs/utils/misc";
 import { IconEdit } from "@tabler/icons-react";
 import type React from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useEditor } from "../../editor.context";
 import type { EditorMode } from "../../types/editor.types";
+import { TiptapEditor } from "../../../../ui/tiptap/tiptap-editor";
 import {
     baseStyle,
     hoveredStyle,
@@ -18,8 +19,6 @@ const CONTENT_EDITOR_SELECTED_CLASS = "feno-content-editor-selected";
 // Content Editor component
 const ContentEditor: React.FC = () => {
     const { iframeDocument, onHtmlChange, modeId } = useEditor();
-    const [content, setContent] = useState<string>("");
-    const [hasChanges, setHasChanges] = useState(false);
     const [selectedElement, setSelectedElement] = useState<HTMLElement | null>(
         null,
     );
@@ -61,24 +60,24 @@ const ContentEditor: React.FC = () => {
                 }
                 target.classList.add(CONTENT_EDITOR_SELECTED_CLASS);
                 setSelectedElement(target);
-                setContent(target.textContent || "");
+                // The TiptapEditor component will handle setting its own initial content via props
             }
         };
 
         // Add CSS for highlight effect
         const style = iframeDocument.createElement("style");
         style.textContent = `
-            .${CONTENT_EDITOR_HIGHLIGHT_CLASS} {
+			.${CONTENT_EDITOR_HIGHLIGHT_CLASS} {
 				${baseStyle}
-            }
+			}
 			.${CONTENT_EDITOR_HIGHLIGHT_CLASS}:hover {
 				${hoveredStyle}
-            }
+			}
 			.${CONTENT_EDITOR_SELECTED_CLASS},
 			.${CONTENT_EDITOR_SELECTED_CLASS}:hover {
 				${selectedStyle}
-            }
-        `;
+			}
+		`;
         iframeDocument.head.appendChild(style);
 
         // Add event listeners
@@ -109,70 +108,23 @@ const ContentEditor: React.FC = () => {
         };
     }, [iframeDocument, modeId]);
 
-    // Handle content change
-    const handleContentChange = useCallback((value: string) => {
-        setContent(value);
-        setHasChanges(true);
-    }, []);
+    const handleEditorChange = (html: string) => {
+        if (selectedElement && iframeDocument) {
+            selectedElement.innerHTML = html;
+            onHtmlChange({
+                html: iframeDocument.documentElement.outerHTML,
+                modeId: "content-editor",
+                modeLabel: "Content Editor",
+            });
+        }
+    };
 
-    // Apply content change
-    const applyContentChange = useCallback(() => {
-        if (!selectedElement || !iframeDocument) return;
-
-        selectedElement.textContent = content;
-        setHasChanges(true);
-        setSelectedElement(null);
-    }, [selectedElement, content, iframeDocument]);
-
-    // Save changes when exiting the content editor
-    useEffect(() => {
-        return () => {
-            if (modeId !== "content-editor" && hasChanges && iframeDocument) {
-                onHtmlChange({
-                    html: iframeDocument.documentElement.outerHTML,
-                    modeId: "content-editor",
-                    modeLabel: "Content Editor",
-                });
-                setHasChanges(false);
-            }
-        };
-    }, [modeId, hasChanges, iframeDocument, onHtmlChange]);
-
-    return (
-        <div className="p-4 space-y-4">
-            <h3 className="text-lg font-medium">Content Editor</h3>
-            <p className="text-sm text-muted-foreground">
-                Hover over text elements to highlight them, click to edit their
-                content.
-            </p>
-
-            {selectedElement && (
-                <div className="space-y-3">
-                    <textarea
-                        value={content}
-                        onChange={(e) => handleContentChange(e.target.value)}
-                        className="w-full p-2 border rounded min-h-[100px]"
-                    />
-                    <div className="flex justify-end space-x-2">
-                        <Button
-                            onClick={() => {
-                                selectedElement.classList.remove(
-                                    "feno-content-editor-selected",
-                                );
-                                selectedElementRef.current = null;
-                                setSelectedElement(null);
-                                setContent("");
-                            }}
-                            variant="outline"
-                        >
-                            Cancel
-                        </Button>
-                        <Button onClick={applyContentChange}>Apply</Button>
-                    </div>
-                </div>
-            )}
-        </div>
-    );
+    return selectedElement ? (
+        <TiptapEditor
+            initialContent={selectedElement.innerHTML || ""}
+            onChange={handleEditorChange}
+        />
+    ) : null;
 };
 
 // Register the content editor mode

@@ -186,7 +186,7 @@ const ThemeEditor: React.FC = () => {
                     <div className="grid grid-cols-3 gap-2">
                         {predefinedThemes.map((theme, idx) => (
                             <Button
-                                key={idx}
+                                key={theme.name}
                                 variant="outline"
                                 size="sm"
                                 onClick={() => handleApplyTheme(theme)}
@@ -197,7 +197,7 @@ const ThemeEditor: React.FC = () => {
                                         .slice(0, 4)
                                         .map((color, colorIdx) => (
                                             <div
-                                                key={colorIdx}
+                                                key={`${theme.name}-${colorIdx}`}
                                                 className="w-3 h-3 rounded-full border"
                                                 style={{
                                                     backgroundColor: color,
