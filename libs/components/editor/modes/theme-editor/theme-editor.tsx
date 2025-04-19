@@ -1,3 +1,9 @@
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/libs/ui/accordion";
 import { Button } from "@/libs/ui/button";
 import { Separator } from "@/libs/ui/separator";
 import { cn } from "@/libs/utils/misc";
@@ -36,39 +42,50 @@ const ThemeCustomization: React.FC<{
     colorVariables: ColorVariable[];
     onColorChange: (name: string, value: string) => void;
 }> = ({ colorVariables, onColorChange }) => {
+    if (colorVariables.length === 0) return null;
+
     return (
-        <>
-            <h4 className="text-sm font-medium text-muted-foreground">
-                Customize Colors
-            </h4>
-            {colorVariables.map((variable) => (
-                <div
-                    key={variable.name}
-                    className="flex items-center justify-between gap-4"
-                >
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
+        <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="customize-colors" className="border-b-0">
+                <AccordionTrigger className="px-3 py-2 hover:no-underline rounded-md hover:bg-muted/50 transition-colors text-sm font-medium text-muted-foreground [&[data-state=open]>svg]:rotate-180">
+                    Customize Colors
+                    {/* Keep the chevron, remove default rotation if needed */}
+                </AccordionTrigger>
+                <AccordionContent className="pt-2 pb-1 px-1 space-y-3">
+                    {colorVariables.map((variable) => (
                         <div
-                            className="w-5 h-5 rounded border flex-shrink-0"
-                            style={{ backgroundColor: variable.value }}
-                        />
-                        <span className="text-sm truncate">
-                            {variable.displayName}
-                        </span>
-                    </div>
-                    <div className="relative h-8 w-10 border rounded overflow-hidden">
-                        <input
-                            type="color"
-                            value={variable.value}
-                            onChange={(e) =>
-                                onColorChange(variable.name, e.target.value)
-                            }
-                            className="absolute inset-0 w-full h-full cursor-pointer border-none p-0 appearance-none"
-                            style={{ backgroundColor: "transparent" }}
-                        />
-                    </div>
-                </div>
-            ))}
-        </>
+                            key={variable.name}
+                            className="flex items-center justify-between gap-4 px-2 py-1.5 rounded-md hover:bg-muted/30"
+                        >
+                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                                <div
+                                    className="w-4 h-4 rounded-full border flex-shrink-0"
+                                    style={{ backgroundColor: variable.value }}
+                                />
+                                <span className="text-sm truncate">
+                                    {variable.displayName}
+                                </span>
+                            </div>
+                            {/* Keep the color input separate */}
+                            <div className="relative h-7 w-9 border rounded overflow-hidden flex-shrink-0">
+                                <input
+                                    type="color"
+                                    value={variable.value}
+                                    onChange={(e) =>
+                                        onColorChange(
+                                            variable.name,
+                                            e.target.value,
+                                        )
+                                    }
+                                    className="absolute inset-0 w-full h-full cursor-pointer border-none p-0 appearance-none bg-transparent"
+                                    title={`Select color for ${variable.displayName}`}
+                                />
+                            </div>
+                        </div>
+                    ))}
+                </AccordionContent>
+            </AccordionItem>
+        </Accordion>
     );
 };
 

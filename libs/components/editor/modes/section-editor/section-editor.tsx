@@ -241,7 +241,7 @@ const SectionEditor: React.FC = () => {
                 value={prompt}
                 onChange={(e) => handlePromptChange(e.target.value)}
                 placeholder={`Modify ${getSectionType()} section...`}
-                className="flex-1 p-2 rounded min-w-[500px] border-none outline-none"
+                className="flex-1 p-2 rounded min-w-[500px] border-none outline-none text-[14px]"
             />
             <Button
                 size="icon"
