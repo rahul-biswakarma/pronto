@@ -1,7 +1,7 @@
 import { Button } from "@/libs/ui/button";
 import dataLayer from "@/libs/utils/data-layer";
 import { cn } from "@/libs/utils/misc";
-import { IconSection, IconSend } from "@tabler/icons-react";
+import { IconCashEdit, IconSend } from "@tabler/icons-react";
 import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useEditor } from "../../editor.context";
@@ -271,7 +271,7 @@ export const SectionEditorMode = (): EditorMode => {
                         "text-blue-700 bg-blue-500/10 hover:text-blue-700",
                 )}
             >
-                <IconSection stroke={2} size={28} />
+                <IconCashEdit stroke={2} size={28} />
             </Button>
         ),
     };

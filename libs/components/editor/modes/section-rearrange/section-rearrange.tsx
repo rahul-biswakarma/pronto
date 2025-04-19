@@ -1,7 +1,7 @@
 import { Button } from "@/libs/ui/button";
 import logger from "@/libs/utils/logger";
 import { cn } from "@/libs/utils/misc";
-import { IconArrowsExchange2 } from "@tabler/icons-react";
+import { IconDragDrop } from "@tabler/icons-react";
 import type React from "react";
 import { useCallback, useEffect, useState } from "react";
 import { useEditor } from "../../editor.context";
@@ -148,7 +148,7 @@ export const SectionRearrangeMode = (): EditorMode => {
                 )}
                 title="Rearrange Sections"
             >
-                <IconArrowsExchange2 size={28} />
+                <IconDragDrop size={28} />
             </Button>
         ),
     };

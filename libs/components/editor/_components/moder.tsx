@@ -71,7 +71,6 @@ export const Moder = () => {
                     },
                     opacity: {
                         value: 1,
-                        delay: 0.3,
                         duration: 0.2,
                         ease: "easeOut",
                     },
