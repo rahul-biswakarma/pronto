@@ -268,7 +268,7 @@ export const SectionEditorMode = (): EditorMode => {
                 className={cn(
                     "!hover:bg-blue-500/10",
                     isActive &&
-                        "text-blue-700 !hover:bg-blue-500/10 hover:text-blue-700",
+                        "text-blue-700 bg-blue-500/10 hover:text-blue-700",
                 )}
             >
                 <IconSection stroke={2} size={28} />
