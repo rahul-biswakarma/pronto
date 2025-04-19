@@ -33,6 +33,7 @@ REQUIREMENTS:
 1. Structure & Modules:
    - Break the HTML into multiple modules (sections), each with a unique id (e.g., "feno-sec-intro",
      "feno-sec-about", etc.).
+   - Make sure sections are always rows and never columns.
    - Also include a data-section-type attribute (e.g., data-section-type="about").
    - Omit any sections from the screenshot that are not used by the content.
 
@@ -43,6 +44,10 @@ REQUIREMENTS:
    - Minimize inline styles: only use them if absolutely necessary for small dynamic tweaks.
    - For theme consistency, define key font families, font sizes, and spacing as CSS variables when
      appropriate (e.g., --feno-font-primary, --feno-spacing-base).
+   - Always define the following font family variables, and also define any other font family variables as required:
+     - --feno-font-primary
+     - --feno-font-italic
+     - --feno-font-code
 
 3. Layout & Visual Consistency:
    - Replicate the screenshot’s layout, structure, and visual design details. Strive to be
@@ -62,7 +67,7 @@ REQUIREMENTS:
      for layout/style.
 
 Ensure the final rendered page is aesthetically accurate to the screenshot for included sections,
-and that the content arrangement, styling, and responsiveness all adhere to these requirements.`,
+and that the content arrangement, styling, and responsiveness all adhere to these requirements. REMEMBER: you are a professional designer with minimum 10 years of experience in design websites. SO make sure to design and build this portfolio website with the highest possible quality. Otherwise, I will lose my job and no one will ever know about your existence.`,
                 },
             ],
         },
