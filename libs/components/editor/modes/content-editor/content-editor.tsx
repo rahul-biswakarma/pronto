@@ -3,9 +3,9 @@ import { cn } from "@/libs/utils/misc";
 import { IconEdit } from "@tabler/icons-react";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
+import { TiptapEditor } from "../../../../ui/tiptap/tiptap-editor";
 import { useEditor } from "../../editor.context";
 import type { EditorMode } from "../../types/editor.types";
-import { TiptapEditor } from "../../../../ui/tiptap/tiptap-editor";
 import {
     baseStyle,
     hoveredStyle,
@@ -119,12 +119,13 @@ const ContentEditor: React.FC = () => {
         }
     };
 
-    return selectedElement ? (
+    return (
         <TiptapEditor
-            initialContent={selectedElement.innerHTML || ""}
+            placeholder="Select a text element to edit content"
+            initialContent={selectedElement?.innerHTML || ""}
             onChange={handleEditorChange}
         />
-    ) : null;
+    );
 };
 
 // Register the content editor mode

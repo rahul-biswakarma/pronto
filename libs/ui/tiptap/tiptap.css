@@ -2,4 +2,15 @@
     border: none;
     outline: none;
     background-color: transparent;
+    font-size: 14px;
+}
+
+/* Placeholder styles */
+.tiptap p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    float: left;
+    color: #adb5bd; /* Default placeholder color */
+    pointer-events: none;
+    font-size: 14px;
+    height: 0;
 }

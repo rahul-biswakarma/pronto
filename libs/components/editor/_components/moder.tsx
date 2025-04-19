@@ -84,10 +84,7 @@ export const Moder = () => {
                     .find((mode) => mode.id === modeId)
                     ?.editorRenderer()}
             </motion.div>
-            <motion.div
-                className="w-full flex justify-center gap-2 mt-1"
-                layout
-            >
+            <motion.div className="w-full flex justify-center mt-1" layout>
                 {Object.values(modes).map((mode) => (
                     <motion.div
                         key={mode.id}
