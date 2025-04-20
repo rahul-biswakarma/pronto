@@ -90,6 +90,7 @@ const SectionEditor: React.FC = () => {
             const sectionElement = findSectionElement(target);
             if (sectionElement) {
                 // Use the ref to access the current selected element
+
                 if (selectedElementRef.current) {
                     selectedElementRef.current.classList.remove(
                         SECTION_SELECTED_CLASS,
@@ -287,7 +288,7 @@ const SectionEditor: React.FC = () => {
     };
 
     return (
-        <div className="flex w-[700px]">
+        <div className="flex w-[600px]">
             {selectedElement && elementType === "section" && (
                 <div className="w-full flex flex-col gap-1">
                     <div className="flex items-center justify-between bg-blue-400/10 border border-blue-400/20 text-blue-500 p-1 px-3 rounded-xl">

@@ -9,8 +9,7 @@ import { ThemeEditorMode } from "../modes/theme-editor/theme-editor";
 import { ProfileSettingsMode } from "../modes/user-setting/user-setting";
 
 export const Moder = () => {
-    const { modes, setModeId, registerMode, modeId, previewMode, user } =
-        useEditor();
+    const { modes, setModeId, registerMode, modeId, previewMode } = useEditor();
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
@@ -20,7 +19,7 @@ export const Moder = () => {
         registerMode(ThemeEditorMode());
         registerMode(StyleEditorMode());
         registerMode(SectionRearrangeMode());
-        registerMode(ProfileSettingsMode(user));
+        registerMode(ProfileSettingsMode());
     }, []);
 
     return (

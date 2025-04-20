@@ -4,7 +4,7 @@ import {
     createSuccessResponse,
     withErrorHandling,
 } from "@/libs/utils/api-response";
-import Color from "color"; // Import the color library
+import Color from "color";
 
 /**
  * POST /api/ai/generate-themes - Generate theme suggestions using Gemini AI
@@ -51,7 +51,11 @@ export const POST = withErrorHandling(
             const responseText = geminiResponse.text || "";
 
             // Try to parse the response as JSON
-            let themes;
+            let themes: Array<{
+                name: string;
+                colors: Record<string, string>;
+            }> = [];
+
             try {
                 // Extract JSON from the response (handling potential code blocks or extra text)
                 const jsonMatch = responseText.match(/\[[\s\S]*\]/);
@@ -119,7 +123,8 @@ function generateFallbackThemes(currentTheme: Record<string, string>) {
     // Helper function using the 'color' library
     const transformColor = (
         hex: string,
-        transformation: (c: Color) => Color,
+        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+        transformation: (c: any) => any,
     ): string => {
         try {
             const originalColor = Color(hex);
