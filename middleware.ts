@@ -20,7 +20,7 @@ export async function middleware(request: NextRequest) {
 
         const subdomain = subdomains?.[0];
 
-        if (subdomain) {
+        if (subdomain && subdomain !== process.env.NEXT_PUBLIC_DOMAIN) {
             return NextResponse.rewrite(
                 new URL(`/preview${request.nextUrl.pathname}`, request.url),
             );
