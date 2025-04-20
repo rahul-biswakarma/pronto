@@ -1,11 +1,12 @@
-import { Button } from "@/libs/ui/button";
+import {} from "@/libs/ui/tooltip";
 import dataLayer from "@/libs/utils/data-layer";
-import { cn } from "@/libs/utils/misc";
-import { IconCashEdit, IconSend } from "@tabler/icons-react";
+import { IconCashEdit } from "@tabler/icons-react";
 import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { ModerActionRenderer } from "../../_components/moder-action-renderer";
 import { useEditor } from "../../editor.context";
 import type { EditorMode } from "../../types/editor.types";
+import { SectionEditorInput } from "./section-editor-input";
 import {
     baseStyle,
     findSectionElement,
@@ -235,22 +236,13 @@ const SectionEditor: React.FC = () => {
     }, [selectedElement]);
 
     return (
-        <div className="flex gap-2 p-1 w-[600px]">
-            <input
-                type="text"
-                value={prompt}
-                onChange={(e) => handlePromptChange(e.target.value)}
-                placeholder={`Modify ${getSectionType()} section...`}
-                className="flex-1 p-2 rounded w-full border-none outline-none text-[14px]"
+        <div className="flex w-[700px]">
+            <SectionEditorInput
+                input={prompt}
+                loading={loading}
+                onSubmit={handleApplyChanges}
+                onInputChange={handlePromptChange}
             />
-            <Button
-                size="icon"
-                onClick={handleApplyChanges}
-                disabled={loading || !prompt.trim()}
-                className="h-10 w-10 flex items-center justify-center rounded-xl bg-blue-700"
-            >
-                <IconSend size={18} stroke={2} />
-            </Button>
         </div>
     );
 };
@@ -262,17 +254,11 @@ export const SectionEditorMode = (): EditorMode => {
         label: "Section Editor",
         editorRenderer: () => <SectionEditor />,
         actionRenderer: (isActive: boolean) => (
-            <Button
-                size="icon"
-                variant="ghost"
-                className={cn(
-                    "!hover:bg-blue-500/10 hover:text-blue-700 rounded-lg",
-                    isActive &&
-                        "text-blue-700 bg-blue-500/10 hover:text-blue-700",
-                )}
-            >
-                <IconCashEdit size={28} />
-            </Button>
+            <ModerActionRenderer
+                icon={IconCashEdit}
+                label="Section Editor"
+                active={isActive}
+            />
         ),
     };
 };

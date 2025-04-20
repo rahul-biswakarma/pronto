@@ -33,6 +33,7 @@ export const EditorProvider: React.FC<{
 
     const [modeId, setModeId] = useState<string>("section-editor");
     const [modes, setModes] = useState<Record<string, EditorMode>>({});
+    const [previewMode, setPreviewMode] = useState<boolean>(true);
     const [portfolioHtml, setPortfolioHtml] = useState<string>(html);
     const [iframeDocument, setIframeDocument] = useState<Document | null>(null);
 
@@ -73,6 +74,8 @@ export const EditorProvider: React.FC<{
                 iframeDocument,
                 setIframeDocument,
                 onHtmlChange,
+                previewMode,
+                setPreviewMode,
             }}
         >
             {children}
