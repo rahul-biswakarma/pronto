@@ -1,7 +1,8 @@
+import { Button } from "@/libs/ui/button";
 import { TiptapEditor } from "@/libs/ui/tiptap";
 import {} from "@/libs/ui/tooltip";
 import dataLayer from "@/libs/utils/data-layer";
-import { IconCashEdit } from "@tabler/icons-react";
+import { IconCashEdit, IconX } from "@tabler/icons-react";
 import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ModerActionRenderer } from "../../_components/moder-action-renderer";
@@ -260,12 +261,39 @@ const SectionEditor: React.FC = () => {
     return (
         <div className="flex w-[700px]">
             {selectedElement && elementType === "section" && (
-                <SectionEditorInput
-                    input={prompt}
-                    loading={loading}
-                    onSubmit={handleApplyChanges}
-                    onInputChange={handlePromptChange}
-                />
+                <div className="w-full flex flex-col gap-2">
+                    <div className="flex items-center justify-between bg-blue-400/10 border border-blue-400/20 text-blue-500 p-1 px-3 rounded-xl">
+                        <p className="text-sm">
+                            Currently editing section{" "}
+                            {selectedElement.id
+                                .replace("feno-sec-", "")
+                                .replace("-", " ")}
+                        </p>
+                        <Button
+                            variant="ghost"
+                            onClick={() => {
+                                setSelectedElement(null);
+                                setElementType(null);
+                                selectedElement.classList.remove(
+                                    SECTION_SELECTED_CLASS,
+                                );
+                                selectedElement.classList.remove(
+                                    CONTENT_SELECTED_CLASS,
+                                );
+                            }}
+                            size="icon"
+                            className="!dark:hover:bg-blue-300 !hover:bg-blue-300 hover:text-blue-700"
+                        >
+                            <IconX className="size-4" />
+                        </Button>
+                    </div>
+                    <SectionEditorInput
+                        input={prompt}
+                        loading={loading}
+                        onSubmit={handleApplyChanges}
+                        onInputChange={handlePromptChange}
+                    />
+                </div>
             )}
             {selectedElement && elementType === "text" && (
                 <TiptapEditor

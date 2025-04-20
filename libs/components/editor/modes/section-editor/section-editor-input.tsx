@@ -7,7 +7,14 @@ import {
     PromptInputActions,
     PromptInputTextarea,
 } from "@/libs/ui/prompt-input";
-import { ArrowUp, Square } from "lucide-react";
+import {
+    IconArrowUp,
+    IconPaperclip,
+    IconSquare,
+    IconX,
+} from "@tabler/icons-react";
+import { useRef } from "react";
+import { useState } from "react";
 
 export function SectionEditorInput({
     input,
@@ -20,30 +27,30 @@ export function SectionEditorInput({
     onSubmit: () => void;
     onInputChange: (value: string) => void;
 }) {
-    // const [files, setFiles] = useState<File[]>([]);
-    // const uploadInputRef = useRef<HTMLInputElement>(null);
+    const [files, setFiles] = useState<File[]>([]);
+    const uploadInputRef = useRef<HTMLInputElement>(null);
 
-    // const handleSubmit = () => {
-    //     if (input.trim() || files.length > 0) {
-    //         setTimeout(() => {
-    //             setFiles([]);
-    //         }, 2000);
-    //     }
-    // };
+    const handleSubmit = () => {
+        if (input.trim() || files.length > 0) {
+            setTimeout(() => {
+                setFiles([]);
+            }, 2000);
+        }
+    };
 
-    // const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    //     if (event.target.files) {
-    //         const newFiles = Array.from(event.target.files);
-    //         setFiles((prev) => [...prev, ...newFiles]);
-    //     }
-    // };
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files) {
+            const newFiles = Array.from(event.target.files);
+            setFiles((prev) => [...prev, ...newFiles]);
+        }
+    };
 
-    // const handleRemoveFile = (index: number) => {
-    //     setFiles((prev) => prev.filter((_, i) => i !== index));
-    //     if (uploadInputRef?.current) {
-    //         uploadInputRef.current.value = "";
-    //     }
-    // };
+    const handleRemoveFile = (index: number) => {
+        setFiles((prev) => prev.filter((_, i) => i !== index));
+        if (uploadInputRef?.current) {
+            uploadInputRef.current.value = "";
+        }
+    };
 
     return (
         <PromptInput
@@ -53,14 +60,13 @@ export function SectionEditorInput({
             onSubmit={onSubmit}
             className="w-full max-w-(--breakpoint-md) rounded-lg"
         >
-            {/* {files.length > 0 && (
+            {files.length > 0 && (
                 <div className="flex flex-wrap gap-2 pb-2">
                     {files.map((file, index) => (
                         <div
                             key={file.name}
-                            className="bg-secondary flex items-center gap-2 rounded-lg px-3 py-2 text-sm"
+                            className="bg-secondary flex items-center gap-2 rounded-lg pl-3 text-sm"
                         >
-                            <Paperclip className="size-4" />
                             <span className="max-w-[120px] truncate">
                                 {file.name}
                             </span>
@@ -70,17 +76,17 @@ export function SectionEditorInput({
                                 onClick={() => handleRemoveFile(index)}
                                 className="hover:bg-secondary/50 rounded-full p-1"
                             >
-                                <X className="size-4" />
+                                <IconX className="size-4" />
                             </Button>
                         </div>
                     ))}
                 </div>
-            )} */}
+            )}
 
             <PromptInputTextarea placeholder="Ask me anything..." />
 
-            <PromptInputActions className="flex items-center justify-end gap-2 pt-2">
-                {/* <PromptInputAction tooltip="Attach files">
+            <PromptInputActions className="flex items-center justify-between gap-2 pt-2">
+                <PromptInputAction tooltip="Attach files">
                     <label
                         htmlFor="file-upload"
                         className="hover:bg-secondary-foreground/10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-2xl"
@@ -92,9 +98,9 @@ export function SectionEditorInput({
                             className="hidden"
                             id="file-upload"
                         />
-                        <Paperclip className="text-primary size-5" />
+                        <IconPaperclip className="size-5 !text-black/70" />
                     </label>
-                </PromptInputAction> */}
+                </PromptInputAction>
 
                 <PromptInputAction
                     tooltip={loading ? "Stop generation" : "Send message"}
@@ -102,13 +108,13 @@ export function SectionEditorInput({
                     <Button
                         variant="default"
                         size="icon"
-                        className="h-8 w-8 rounded-lg"
+                        className="h-8 w-8 rounded-lg "
                         onClick={onSubmit}
                     >
                         {loading ? (
-                            <Square className="size-5 fill-current animate-pulse" />
+                            <IconSquare className="size-5 fill-current animate-pulse" />
                         ) : (
-                            <ArrowUp className="size-5 rotate-45" />
+                            <IconArrowUp className="size-5 rotate-45 !text-white" />
                         )}
                     </Button>
                 </PromptInputAction>

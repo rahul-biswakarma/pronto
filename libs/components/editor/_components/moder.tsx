@@ -72,11 +72,11 @@ export const Moder = () => {
                 style={{
                     originY: 1,
                     willChange: "transform",
-                    boxShadow:
-                        "0 2px 8px rgba(0, 0, 0, 0.06), inset 0 2px 2px rgba(255, 255, 255, 0.2)",
+                    // boxShadow:
+                    //     "0 2px 8px rgba(0, 0, 0, 0.06), inset 0 2px 2px rgba(255, 255, 255, 0.2)",
                     transformOrigin: "bottom center",
                 }}
-                className="bg-[#f5f5f5] rounded-xl overflow-hidden"
+                className="rounded-xl overflow-hidden"
             >
                 {modes[modeId]?.editorRenderer()}
             </motion.div>
