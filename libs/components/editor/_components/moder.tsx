@@ -2,7 +2,6 @@ import { cn } from "@/libs/utils/misc";
 import { motion } from "framer-motion";
 import { useEffect } from "react";
 import { useEditor } from "../editor.context";
-import { ContentEditorMode } from "../modes/content-editor/content-editor";
 import { SectionEditorMode } from "../modes/section-editor/section-editor";
 import { SectionRearrangeMode } from "../modes/section-rearrange/section-rearrange";
 import { ThemeEditorMode } from "../modes/theme-editor/theme-editor";
@@ -17,7 +16,6 @@ export const Moder = () => {
         if (modeId === "preview") return;
 
         registerMode(SectionEditorMode());
-        registerMode(ContentEditorMode());
         registerMode(ThemeEditorMode());
         registerMode(SectionRearrangeMode());
         registerMode(ProfileSettingsMode(user));

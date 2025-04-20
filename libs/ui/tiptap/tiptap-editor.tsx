@@ -24,12 +24,14 @@ import { useCallback, useEffect } from "react";
 interface TiptapEditorProps {
     placeholder?: string;
     initialContent: string;
+    liveChange?: boolean;
     onChange: (html: string) => void;
 }
 
 export const TiptapEditor: React.FC<TiptapEditorProps> = ({
     initialContent,
     onChange,
+    liveChange = false,
     placeholder = "Send a message...",
 }) => {
     const editor = useTiptapEditor({
@@ -50,6 +52,11 @@ export const TiptapEditor: React.FC<TiptapEditorProps> = ({
             attributes: {
                 class: "prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none p-2 border rounded min-h-[100px] w-full bg-white text-black",
             },
+        },
+        onUpdate: ({ editor }) => {
+            if (liveChange) {
+                onChange(editor.getHTML());
+            }
         },
     });
 
@@ -102,16 +109,18 @@ export const TiptapEditor: React.FC<TiptapEditorProps> = ({
         <div className="p-2 rounded-lg flex flex-col gap-1 min-w-[600px] relative border border-neutral-200 bg-white">
             <MenuBar editor={editor} setLink={setLink} />
             <EditorContent editor={editor} />
-            <div className="flex justify-end mt-1 absolute bottom-2 right-2">
-                <Button
-                    size="icon"
-                    onClick={() => editor && onChange(editor.getHTML())}
-                    className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg p-2"
-                    disabled={!editor?.getText().trim()}
-                >
-                    <IconSend size={18} />
-                </Button>
-            </div>
+            {!liveChange && (
+                <div className="flex justify-end mt-1 absolute bottom-2 right-2">
+                    <Button
+                        size="icon"
+                        onClick={() => editor && onChange(editor.getHTML())}
+                        className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg p-2"
+                        disabled={!editor?.getText().trim()}
+                    >
+                        <IconSend size={18} />
+                    </Button>
+                </div>
+            )}
         </div>
     );
 };

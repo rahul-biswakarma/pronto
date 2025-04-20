@@ -1,3 +1,4 @@
+import { TiptapEditor } from "@/libs/ui/tiptap";
 import {} from "@/libs/ui/tooltip";
 import dataLayer from "@/libs/utils/data-layer";
 import { IconCashEdit } from "@tabler/icons-react";
@@ -9,14 +10,17 @@ import type { EditorMode } from "../../types/editor.types";
 import { SectionEditorInput } from "./section-editor-input";
 import {
     baseStyle,
+    contentHoveredStyle,
+    contentSelectedStyle,
     findSectionElement,
-    hoveredStyle,
-    selectedStyle,
+    sectionHoveredStyle,
+    sectionSelectedStyle,
 } from "./utils";
 
-const SECTION_EDITOR_HIGHLIGHT_CLASS = "feno-section-editor-highlight";
-const SECTION_EDITOR_SELECTED_CLASS = "feno-section-editor-selected";
-const SECTION_EDITOR_MODIFIED_CLASS = "feno-section-editor-modified";
+const SECTION_HIGHLIGHT_CLASS = "feno-section-editor-highlight";
+const SECTION_SELECTED_CLASS = "feno-section-editor-selected";
+const CONTENT_HIGHLIGHT_CLASS = "feno-content-highlight";
+const CONTENT_SELECTED_CLASS = "feno-content-selected";
 
 interface ModifySectionResponse {
     modifiedHtml: string;
@@ -31,6 +35,9 @@ const SectionEditor: React.FC = () => {
     const [sectionId, setSectionId] = useState<string>("");
     const [sectionHtml, setSectionHtml] = useState<string>("");
     const [selectedElement, setSelectedElement] = useState<HTMLElement | null>(
+        null,
+    );
+    const [elementType, setElementType] = useState<"section" | "text" | null>(
         null,
     );
     const selectedElementRef = useRef<HTMLElement | null>(null);
@@ -49,7 +56,15 @@ const SectionEditor: React.FC = () => {
             const target = e.target as HTMLElement;
             const sectionElement = findSectionElement(target);
             if (sectionElement) {
-                sectionElement.classList.add(SECTION_EDITOR_HIGHLIGHT_CLASS);
+                if (sectionElement.type === "section") {
+                    sectionElement.element.classList.add(
+                        SECTION_HIGHLIGHT_CLASS,
+                    );
+                } else if (sectionElement.type === "text") {
+                    sectionElement.element.classList.add(
+                        CONTENT_HIGHLIGHT_CLASS,
+                    );
+                }
             }
         };
 
@@ -57,7 +72,15 @@ const SectionEditor: React.FC = () => {
             const target = e.target as HTMLElement;
             const sectionElement = findSectionElement(target);
             if (sectionElement) {
-                sectionElement.classList.remove(SECTION_EDITOR_HIGHLIGHT_CLASS);
+                if (sectionElement.type === "section") {
+                    sectionElement.element.classList.remove(
+                        SECTION_HIGHLIGHT_CLASS,
+                    );
+                } else if (sectionElement.type === "text") {
+                    sectionElement.element.classList.remove(
+                        CONTENT_HIGHLIGHT_CLASS,
+                    );
+                }
             }
         };
 
@@ -69,47 +92,59 @@ const SectionEditor: React.FC = () => {
                 // Use the ref to access the current selected element
                 if (selectedElementRef.current) {
                     selectedElementRef.current.classList.remove(
-                        SECTION_EDITOR_SELECTED_CLASS,
+                        SECTION_SELECTED_CLASS,
+                    );
+                    selectedElementRef.current.classList.remove(
+                        CONTENT_SELECTED_CLASS,
                     );
                 }
-                setSectionId(sectionElement.id);
-                setSectionHtml(sectionElement.outerHTML);
-                sectionElement.classList.add(SECTION_EDITOR_SELECTED_CLASS);
-                setSelectedElement(sectionElement);
+                if (sectionElement.type === "section") {
+                    setSectionId(sectionElement.element.id);
+                    setSectionHtml(sectionElement.element.outerHTML);
+                    sectionElement.element.classList.add(
+                        SECTION_SELECTED_CLASS,
+                    );
+                    setSelectedElement(sectionElement.element);
+                    setElementType("section");
+                } else if (sectionElement.type === "text") {
+                    sectionElement.element.classList.add(
+                        CONTENT_SELECTED_CLASS,
+                    );
+                    setSelectedElement(sectionElement.element);
+                    setElementType("text");
+                }
                 setPrompt("");
+            } else {
+                selectedElementRef.current?.classList.remove(
+                    SECTION_SELECTED_CLASS,
+                );
+                selectedElementRef.current?.classList.remove(
+                    CONTENT_SELECTED_CLASS,
+                );
+                setSelectedElement(null);
+                setElementType(null);
             }
         };
 
         // Add CSS for highlight effect
         const style = iframeDocument.createElement("style");
         style.textContent = `
-            .${SECTION_EDITOR_HIGHLIGHT_CLASS} {
+            .${SECTION_HIGHLIGHT_CLASS} .${CONTENT_HIGHLIGHT_CLASS} .${SECTION_SELECTED_CLASS} .${CONTENT_SELECTED_CLASS} {
 				${baseStyle}
             }
-			.${SECTION_EDITOR_HIGHLIGHT_CLASS}:hover {
-				${hoveredStyle}
+            .${SECTION_SELECTED_CLASS} {
+                ${sectionSelectedStyle}
             }
-			.${SECTION_EDITOR_SELECTED_CLASS},
-			.${SECTION_EDITOR_SELECTED_CLASS}:hover {
-				${selectedStyle}
+            .${CONTENT_SELECTED_CLASS} {
+                ${contentSelectedStyle}
             }
-            .${SECTION_EDITOR_MODIFIED_CLASS} {
-                animation: glow 1.5s ease-in-out infinite alternate;
-                box-shadow: 0 0 10px rgba(72, 118, 255, 0.7);
-                transition: box-shadow 0.3s ease;
+			.${SECTION_HIGHLIGHT_CLASS}:not(.${SECTION_SELECTED_CLASS}):hover {
+				${sectionHoveredStyle}
             }
-            @keyframes glow {
-                from {
-                    box-shadow: 0 0 5px rgba(72, 118, 255, 0.5),
-                                0 0 10px rgba(72, 118, 255, 0.5),
-                                0 0 15px rgba(72, 118, 255, 0.5);
-                }
-                to {
-                    box-shadow: 0 0 10px rgba(72, 118, 255, 0.8),
-                                0 0 20px rgba(72, 118, 255, 0.8),
-                                0 0 30px rgba(72, 118, 255, 0.8);
-                }
+			.${CONTENT_HIGHLIGHT_CLASS}:not(.${CONTENT_SELECTED_CLASS}):hover {
+				${contentHoveredStyle}
             }
+
         `;
         iframeDocument.head.appendChild(style);
 
@@ -129,13 +164,14 @@ const SectionEditor: React.FC = () => {
 
             // Remove highlight styles from all elements
             const highlightedElements = iframeDocument.querySelectorAll(
-                `.${SECTION_EDITOR_HIGHLIGHT_CLASS}, .${SECTION_EDITOR_SELECTED_CLASS}, .${SECTION_EDITOR_MODIFIED_CLASS}`,
+                `.${SECTION_HIGHLIGHT_CLASS}, .${SECTION_SELECTED_CLASS}, .${CONTENT_SELECTED_CLASS} ${CONTENT_HIGHLIGHT_CLASS}`,
             );
 
             for (const el of highlightedElements) {
-                el.classList.remove(SECTION_EDITOR_HIGHLIGHT_CLASS);
-                el.classList.remove(SECTION_EDITOR_SELECTED_CLASS);
-                el.classList.remove(SECTION_EDITOR_MODIFIED_CLASS);
+                el.classList.remove(SECTION_HIGHLIGHT_CLASS);
+                el.classList.remove(SECTION_SELECTED_CLASS);
+                el.classList.remove(CONTENT_SELECTED_CLASS);
+                el.classList.remove(CONTENT_HIGHLIGHT_CLASS);
             }
 
             // Remove style element
@@ -186,10 +222,6 @@ const SectionEditor: React.FC = () => {
                     setSelectedElement(newElement);
                     selectedElementRef.current = newElement;
 
-                    // Add glow effect to modified section
-                    newElement.classList.add(SECTION_EDITOR_MODIFIED_CLASS);
-                    newElement.classList.add(SECTION_EDITOR_SELECTED_CLASS);
-
                     // Mark that changes were made
                     setHasChanges(true);
 
@@ -217,32 +249,40 @@ const SectionEditor: React.FC = () => {
         }
     }, [modeId, hasChanges, iframeDocument, onHtmlChange]);
 
-    // Get section type for placeholder text
-    const getSectionType = useCallback(() => {
-        if (!selectedElement) return "section";
+    const handleEditorChange = (html: string) => {
+        const newHtml = html.replace(/^<p>|<\/p>$/g, "");
 
-        // Try to get section type from data attribute
-        const sectionType = selectedElement.getAttribute("data-section-type");
-        if (sectionType) return sectionType;
-
-        // Try to guess from ID
-        const id = selectedElement.id;
-        if (id?.includes("-")) {
-            const parts = id.split("-");
-            return parts[parts.length - 1];
+        if (selectedElement && iframeDocument) {
+            selectedElement.innerHTML = newHtml;
         }
-
-        return "section";
-    }, [selectedElement]);
+    };
 
     return (
         <div className="flex w-[700px]">
-            <SectionEditorInput
-                input={prompt}
-                loading={loading}
-                onSubmit={handleApplyChanges}
-                onInputChange={handlePromptChange}
-            />
+            {selectedElement && elementType === "section" && (
+                <SectionEditorInput
+                    input={prompt}
+                    loading={loading}
+                    onSubmit={handleApplyChanges}
+                    onInputChange={handlePromptChange}
+                />
+            )}
+            {selectedElement && elementType === "text" && (
+                <TiptapEditor
+                    liveChange={true}
+                    placeholder="Select a text element to edit content"
+                    initialContent={selectedElement?.innerHTML || ""}
+                    onChange={handleEditorChange}
+                />
+            )}
+            {!selectedElement && (
+                <SectionEditorInput
+                    input={prompt}
+                    loading={loading}
+                    onSubmit={handleApplyChanges}
+                    onInputChange={handlePromptChange}
+                />
+            )}
         </div>
     );
 };
