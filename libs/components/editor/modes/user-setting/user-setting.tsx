@@ -53,7 +53,7 @@ export const UserSettings = () => {
     const { user } = useEditor();
 
     return (
-        <div className="w-9 h-9 rounded-full bg-gradient-to-tl from-yellow-500 to-red-500 p-0.5">
+        <div className="w-7 h-7 rounded-full bg-gradient-to-tl from-yellow-500 to-red-500 p-0.5">
             <Avatar
                 className={cn(
                     "w-full h-full",
