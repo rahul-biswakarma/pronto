@@ -82,7 +82,7 @@ const SectionMinimap: React.FC<SectionMinimapProps> = ({
     };
 
     return (
-        <div className="min-h-[10rem] overflow-y-auto p-4 pt-1">
+        <div className="min-h-[10rem] overflow-y-auto p-3 pb-4 pt-1">
             {sections.length === 0 ? (
                 <p className="text-xs text-gray-400 text-center italic py-4">
                     No sections found.
