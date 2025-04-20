@@ -10,7 +10,8 @@ import {
     DialogTrigger,
 } from "@/libs/ui/dialog";
 import { Marquee } from "@/libs/ui/marquee";
-import { ArrowRight, Loader2 } from "lucide-react";
+
+import { IconArrowRight, IconLoader } from "@tabler/icons-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -119,13 +120,13 @@ const PDFUpload = ({
                 >
                     {isPending ? (
                         <>
-                            <Loader2 className="h-4 w-4 animate-spin" />
+                            <IconLoader className="h-4 w-4 animate-spin" />
                             Generating...
                         </>
                     ) : (
                         <>
                             Generate
-                            <ArrowRight className="-rotate-45" />
+                            <IconArrowRight className="-rotate-45" />
                         </>
                     )}
                 </Button>
@@ -219,7 +220,7 @@ const Onboarding = ({
                                                 variant="default"
                                                 size="icon"
                                             >
-                                                <ArrowRight className="-rotate-45" />
+                                                <IconArrowRight className="-rotate-45" />
                                             </Button>
                                         </div>
                                         <div className="flex flex-col px-2 pt-2 pb-1">
