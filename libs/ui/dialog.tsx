@@ -52,7 +52,7 @@ interface DialogContentProps
      * Title for the dialog (required for accessibility)
      * If you don't want to display the title, set hideTitle to true
      */
-    title: string;
+    title?: string;
     /**
      * Hide the title visually while keeping it accessible for screen readers
      */

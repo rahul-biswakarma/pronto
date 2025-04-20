@@ -99,9 +99,9 @@ export const applyTheme = (
     colors: Record<string, string>,
 ) => {
     // Apply each color variable to the document
-    Object.entries(colors).forEach(([name, value]) => {
+    for (const [name, value] of Object.entries(colors)) {
         updateColorVariable(document, name, value);
-    });
+    }
 };
 
 // Function to generate themes using Gemini AI
