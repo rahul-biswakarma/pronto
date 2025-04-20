@@ -62,7 +62,7 @@ export const baseStyle = `transition: outline 0.1s ease, background-color 0.1s e
 
 export const sectionHoveredStyle = "outline: 2px dashed #3b82f6 !important;";
 
-export const sectionSelectedStyle = "outline: 2px dashed #3b82f6 !important;";
+export const sectionSelectedStyle = "outline: 2px solid #3b82f6 !important;";
 
 export const contentHoveredStyle = "outline: 2px dashed #eab308 !important;";
 
