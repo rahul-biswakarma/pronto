@@ -1,4 +1,3 @@
-import { GoogleGenAI } from "@google/genai";
 import { getImageMimeType, getImageTemplateUrl } from "../utils/image-prompts";
 
 // Define interface for the uploaded file
@@ -19,9 +18,6 @@ export const htmlGenPromptGemini = async ({
 }) => {
     // Get image template URL
     const url = getImageTemplateUrl(templateId);
-
-    // Create AI instance
-    const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY });
 
     // Fetch the remote image first
     let imageFile: FileUploadResult | null = null;

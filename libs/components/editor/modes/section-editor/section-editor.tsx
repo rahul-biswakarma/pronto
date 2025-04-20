@@ -260,13 +260,15 @@ const SectionEditor: React.FC = () => {
     return (
         <div className="flex w-[700px]">
             {selectedElement && elementType === "section" && (
-                <div className="w-full flex flex-col gap-2">
+                <div className="w-full flex flex-col gap-1">
                     <div className="flex items-center justify-between bg-blue-400/10 border border-blue-400/20 text-blue-500 p-1 px-3 rounded-xl">
                         <p className="text-sm">
-                            Currently editing section{" "}
+                            Currently editing{" "}
                             {selectedElement.id
                                 .replace("feno-sec-", "")
-                                .replace("-", " ")}
+                                .replace("-", " ")
+                                .replace(/^\w/, (c) => c.toUpperCase())}{" "}
+                            section
                         </p>
                         <Button
                             variant="ghost"

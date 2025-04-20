@@ -58,7 +58,7 @@ export function SectionEditorInput({
             onValueChange={onInputChange}
             isLoading={loading}
             onSubmit={onSubmit}
-            className="w-full max-w-(--breakpoint-md) rounded-lg"
+            className="w-full max-w-(--breakpoint-md) rounded-xl"
         >
             {files.length > 0 && (
                 <div className="flex flex-wrap gap-2 pb-2">
