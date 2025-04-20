@@ -108,8 +108,10 @@ const ContentEditor: React.FC = () => {
     }, [iframeDocument, modeId]);
 
     const handleEditorChange = (html: string) => {
+        const newHtml = html.replace(/^<p>|<\/p>$/g, "");
+
         if (selectedElement && iframeDocument) {
-            selectedElement.innerHTML = html;
+            selectedElement.innerHTML = newHtml;
             onHtmlChange({
                 html: iframeDocument.documentElement.outerHTML,
                 modeId: "content-editor",

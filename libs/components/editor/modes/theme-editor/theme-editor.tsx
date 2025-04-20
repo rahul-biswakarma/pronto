@@ -211,7 +211,7 @@ const PredefinedThemesSection: React.FC<{
                                 <div
                                     className="h-20 rounded-lg bg-muted/50 border border-border/50 mb-2 p-1.5 flex flex-col justify-between relative overflow-hidden"
                                     style={{
-                                        backgroundColor: primaryColor,
+                                        background: `linear-gradient(143deg, ${accentColors[2]} 0%, ${accentColors[3]} 50%, ${accentColors[4]} 100%)`,
                                     }}
                                 >
                                     <div className="flex space-x-1">
