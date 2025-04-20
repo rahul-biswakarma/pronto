@@ -1,7 +1,7 @@
 import logger from "@/libs/utils/logger";
 import { IconDragDrop } from "@tabler/icons-react";
 import type React from "react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { ModerActionRenderer } from "../../_components/moder-action-renderer";
 import { useEditor } from "../../editor.context";
 import type { EditorMode } from "../../types/editor.types";
@@ -56,7 +56,7 @@ const SectionRearrange: React.FC = () => {
     }, [iframeDocument]);
 
     // Initial load and refresh on iframe change
-    useEffect(() => {
+    useLayoutEffect(() => {
         updateSectionsData();
     }, [updateSectionsData]); // iframeDocument dependency is implicit in updateSectionsData
 
