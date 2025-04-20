@@ -37,7 +37,7 @@ export const Moder = () => {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.15 }}
-                    className="rounded-xl overflow-hidden"
+                    className="rounded-xl"
                 >
                     {modes[modeId]?.editorRenderer()}
                 </motion.div>
