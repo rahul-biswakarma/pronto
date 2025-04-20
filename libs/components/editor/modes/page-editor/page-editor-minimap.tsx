@@ -58,22 +58,7 @@ const getSectionsData = (doc: Document): { id: string; name: string }[] => {
 export const PageEditorMinimap = () => {
     const { iframeDocument, onHtmlChange } = useEditor();
     const [hasChanges, setHasChanges] = useState(false);
-    const [sectionsData, setSectionsData] = useState<
-        { id: string; name: string }[]
-    >([]);
     const [items, setItems] = useState(getMockItems());
-
-    // Function to update sections data state from iframe
-    const updateSectionsData = useCallback(() => {
-        if (iframeDocument) {
-            setSectionsData(getSectionsData(iframeDocument));
-        }
-    }, [iframeDocument]);
-
-    // Initial load and refresh on iframe change
-    useEffect(() => {
-        updateSectionsData();
-    }, [updateSectionsData]); // iframeDocument dependency is implicit in updateSectionsData
 
     // Save changes on unmount if changes were made
     useEffect(() => {
@@ -88,47 +73,6 @@ export const PageEditorMinimap = () => {
         };
     }, [hasChanges, iframeDocument, onHtmlChange]);
 
-    // Function called by Minimap to reorder sections in the iframe
-    const handleReorder = useCallback(
-        (newOrderedIds: { id: string; name: string }[]) => {
-            if (!iframeDocument) return;
-
-            const parent = iframeDocument.body; // Or the main container if sections aren't direct children
-            if (!parent) return;
-
-            // Create a map for quick lookup using for...of
-            const sectionMap = new Map<string, HTMLElement>();
-            for (const sec of getAllSections(iframeDocument)) {
-                if (sec.id) {
-                    sectionMap.set(sec.id, sec);
-                }
-            }
-
-            // Re-append sections in the new order using for...of
-            let successfullyReordered = false;
-            for (const id of newOrderedIds) {
-                const sectionElement = sectionMap.get(id.id);
-                if (sectionElement) {
-                    parent.appendChild(sectionElement); // Appending moves the element
-                    successfullyReordered = true;
-                } else {
-                    logger.warn(
-                        `Section with ID "${id}" not found in iframe for reordering.`,
-                    );
-                }
-            }
-
-            if (successfullyReordered) {
-                setHasChanges(true);
-                // Update the minimap state to reflect the potentially filtered/successful reorder
-                // We might not need to call updateSectionsData here if the minimap's internal state
-                // already matches the newOrderedIds accurately. Calling it ensures consistency
-                // if the iframe DOM manipulation failed for some sections.
-                updateSectionsData();
-            }
-        },
-        [iframeDocument, updateSectionsData],
-    );
 
     return (
         <div className="relative" style={{ maxWidth: 400 }}>

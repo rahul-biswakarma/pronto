@@ -1,7 +1,6 @@
 import { SignOut } from "@/libs/components/auth/signout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/libs/ui/avatar";
 import { cn } from "@/libs/utils/misc";
-import type { User } from "@supabase/supabase-js";
 import { IconUserCircle } from "@tabler/icons-react"; // Placeholder icon
 import type React from "react";
 import { useEditor } from "../../editor.context";
@@ -78,11 +77,11 @@ export const UserSettings = () => {
 };
 
 // Register the profile settings mode
-export const ProfileSettingsMode = (user: User): EditorMode => {
+export const ProfileSettingsMode = (): EditorMode => {
     return {
         id: "profile-settings",
         label: "Profile",
         editorRenderer: () => <ProfileSettings />,
-        actionRenderer: (isActive) => <UserSettings />,
+        actionRenderer: () => <UserSettings />,
     };
 };

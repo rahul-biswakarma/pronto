@@ -134,6 +134,8 @@ const SectionEditor: React.FC = () => {
             }
             .${SECTION_SELECTED_CLASS} {
                 ${sectionSelectedStyle}
+                position: relative; /* Needed for pseudo-element positioning */
+                overflow: hidden; /* Contain the pseudo-element */
             }
             .${CONTENT_SELECTED_CLASS} {
                 ${contentSelectedStyle}
@@ -144,6 +146,25 @@ const SectionEditor: React.FC = () => {
 			.${CONTENT_HIGHLIGHT_CLASS}:not(.${CONTENT_SELECTED_CLASS}):hover {
 				${contentHoveredStyle}
             }
+
+			/* Animated Gradient Overlay */
+			@keyframes pulse-gradient {
+				0% { background-position: 0% 50%; }
+				50% { background-position: 100% 50%; }
+				100% { background-position: 0% 50%; }
+			}
+
+			/* Apply animation only when loading class is present */
+			.${SECTION_SELECTED_CLASS}.feno-section-loading::before {
+				content: '';
+				position: absolute;
+				top: 0; left: 0; right: 0; bottom: 0;
+				background: linear-gradient(90deg, rgba(0, 123, 255, 0), rgba(0, 123, 255, 0.2), rgba(0, 123, 255, 0));
+				background-size: 200% 100%;
+				animation: pulse-gradient 3s ease-in-out infinite;
+				pointer-events: none; /* Allow clicks to pass through */
+				z-index: 1; /* Ensure it's above the section content slightly */
+			}
 
         `;
         iframeDocument.head.appendChild(style);
@@ -188,6 +209,8 @@ const SectionEditor: React.FC = () => {
     const handleApplyChanges = async () => {
         if (!selectedElement || !iframeDocument || !prompt.trim()) return;
 
+        // Add loading class to start animation
+        selectedElementRef.current?.classList.add("feno-section-loading");
         setLoading(true);
 
         try {
@@ -233,6 +256,12 @@ const SectionEditor: React.FC = () => {
             console.error("Error modifying section:", error);
         } finally {
             setLoading(false);
+            // Remove loading class to stop animation
+            selectedElementRef.current?.classList.remove(
+                "feno-section-loading",
+            );
+            // Clear the prompt input
+            setPrompt("");
         }
     };
 
@@ -280,6 +309,10 @@ const SectionEditor: React.FC = () => {
                                 );
                                 selectedElement.classList.remove(
                                     CONTENT_SELECTED_CLASS,
+                                );
+                                // Ensure loading class is removed if selection changes mid-load (edge case)
+                                selectedElement.classList.remove(
+                                    "feno-section-loading",
                                 );
                             }}
                             size="icon"

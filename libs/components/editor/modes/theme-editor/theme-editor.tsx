@@ -105,6 +105,7 @@ const PredefinedThemesSection: React.FC<{
         }
     }, []);
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         const container = scrollContainerRef.current;
         checkScroll(); // Initial check

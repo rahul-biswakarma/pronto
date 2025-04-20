@@ -4,9 +4,8 @@ import type {
     UniqueIdentifier,
 } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import { createContext, useContext, useMemo } from "react";
-import type { CSSProperties, PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 
 import "./sortable.css";
 
@@ -27,15 +26,8 @@ const SortableItemContext = createContext<Context>({
 });
 
 export function SortableItem({ children, id }: PropsWithChildren<Props>) {
-    const {
-        attributes,
-        isDragging,
-        listeners,
-        setNodeRef,
-        setActivatorNodeRef,
-        transform,
-        transition,
-    } = useSortable({ id });
+    const { attributes, listeners, setNodeRef, setActivatorNodeRef } =
+        useSortable({ id });
 
     const context = useMemo(
         () => ({
@@ -45,12 +37,6 @@ export function SortableItem({ children, id }: PropsWithChildren<Props>) {
         }),
         [attributes, listeners, setActivatorNodeRef],
     );
-
-    const style: CSSProperties = {
-        opacity: isDragging ? 0.4 : undefined,
-        transform: CSS.Translate.toString(transform),
-        transition,
-    };
 
     return (
         <SortableItemContext.Provider value={context}>
