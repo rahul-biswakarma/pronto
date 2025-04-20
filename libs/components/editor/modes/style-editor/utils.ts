@@ -34,6 +34,7 @@ export function useStyleSelection(
     }, [selectedElement]);
 
     // Set up hover and click handlers in the iframe
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         if (!iframeDocument) return;
 

@@ -11,11 +11,10 @@ export const PageEditor = () => {
                 onSubmit={(): void => {
                     throw new Error("Function not implemented.");
                 }}
-                onInputChange={(value: string): void => {
+                onInputChange={(): void => {
                     throw new Error("Function not implemented.");
                 }}
             />
-            {/* <PageEditorMinimap /> */}
         </div>
     );
 };

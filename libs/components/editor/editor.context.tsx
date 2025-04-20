@@ -46,8 +46,6 @@ export const EditorProvider: React.FC<{
 
     const onHtmlChange = ({
         html,
-        modeId,
-        modeLabel,
     }: {
         html: string;
         modeId: string;

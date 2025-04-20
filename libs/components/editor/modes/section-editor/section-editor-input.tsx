@@ -19,7 +19,7 @@ import { useState } from "react";
 export function SectionEditorInput({
     input,
     loading,
-    onSubmit,
+    onSubmit: onFormSubmit,
     onInputChange,
 }: {
     input: string;
@@ -29,14 +29,6 @@ export function SectionEditorInput({
 }) {
     const [files, setFiles] = useState<File[]>([]);
     const uploadInputRef = useRef<HTMLInputElement>(null);
-
-    const handleSubmit = () => {
-        if (input.trim() || files.length > 0) {
-            setTimeout(() => {
-                setFiles([]);
-            }, 2000);
-        }
-    };
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files) {
@@ -57,7 +49,7 @@ export function SectionEditorInput({
             value={input}
             onValueChange={onInputChange}
             isLoading={loading}
-            onSubmit={onSubmit}
+            onSubmit={onFormSubmit}
             className="w-full max-w-(--breakpoint-md) rounded-xl"
         >
             {files.length > 0 && (
@@ -109,7 +101,7 @@ export function SectionEditorInput({
                         variant="default"
                         size="icon"
                         className="h-8 w-8 rounded-lg "
-                        onClick={onSubmit}
+                        onClick={onFormSubmit}
                     >
                         {loading ? (
                             <IconSquare className="size-5 fill-current animate-pulse" />
