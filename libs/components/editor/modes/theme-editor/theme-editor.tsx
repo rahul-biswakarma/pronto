@@ -404,7 +404,7 @@ const ThemeEditor: React.FC = () => {
     }, [modeId, hasChanges, iframeDocument, onHtmlChange]);
 
     return (
-        <div className="w-[600px] min-h-0">
+        <div className="w-[600px] min-h-0 bg-white border border-gray-200 rounded-xl">
             <div className="flex justify-between items-center p-3">
                 <h3 className="text-sm font-medium">Modify Theme</h3>
                 {predefinedThemes.length === 0 && (

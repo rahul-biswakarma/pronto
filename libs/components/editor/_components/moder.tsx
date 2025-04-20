@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useEditor } from "../editor.context";
 import { SectionEditorMode } from "../modes/section-editor/section-editor";
 import { SectionRearrangeMode } from "../modes/section-rearrange/section-rearrange";
+import { StyleEditorMode } from "../modes/style-editor/style-editor";
 import { ThemeEditorMode } from "../modes/theme-editor/theme-editor";
 import { ProfileSettingsMode } from "../modes/user-setting/user-setting";
 
@@ -17,6 +18,7 @@ export const Moder = () => {
 
         registerMode(SectionEditorMode());
         registerMode(ThemeEditorMode());
+        registerMode(StyleEditorMode());
         registerMode(SectionRearrangeMode());
         registerMode(ProfileSettingsMode(user));
     }, []);
@@ -72,8 +74,6 @@ export const Moder = () => {
                 style={{
                     originY: 1,
                     willChange: "transform",
-                    // boxShadow:
-                    //     "0 2px 8px rgba(0, 0, 0, 0.06), inset 0 2px 2px rgba(255, 255, 255, 0.2)",
                     transformOrigin: "bottom center",
                 }}
                 className="rounded-xl overflow-hidden"

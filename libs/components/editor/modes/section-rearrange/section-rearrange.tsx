@@ -119,7 +119,7 @@ const SectionRearrange: React.FC = () => {
     // The enable/disable and iframe event listeners are removed.
 
     return (
-        <div className="space-y-1 w-[600px]">
+        <div className="space-y-1 w-[600px] bg-[#f5f5f5]">
             <h3 className="text-sm font-medium p-3 pb-0">Section Rearrange</h3>
             <p className="text-xs text-gray-600 px-3 mb-4">
                 Drag and drop section blocks below to rearrange the layout in

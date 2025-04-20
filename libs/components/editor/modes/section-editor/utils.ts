@@ -60,14 +60,10 @@ export const baseStyle = `transition: outline 0.1s ease, background-color 0.1s e
       outline-offset: 1px !important;
       `;
 
-export const sectionHoveredStyle =
-    "outline-color: #3b82f6 !important; outline-style: dashed !important;";
+export const sectionHoveredStyle = "outline: 2px dashed #3b82f6 !important;";
 
-export const sectionSelectedStyle = `outline-color: #3b82f6 !important;
-      outline-style: solid !important;`;
+export const sectionSelectedStyle = "outline: 2px dashed #3b82f6 !important;";
 
-export const contentHoveredStyle =
-    "outline-color: #eab308 !important; outline-style: dashed !important;";
+export const contentHoveredStyle = "outline: 2px dashed #eab308 !important;";
 
-export const contentSelectedStyle = `outline-color: #eab308 !important;
-      outline-style: solid !important;`;
+export const contentSelectedStyle = "outline: 2px solid #eab308 !important;";

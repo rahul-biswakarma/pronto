@@ -1,6 +1,5 @@
 import { Button } from "@/libs/ui/button";
 import { TiptapEditor } from "@/libs/ui/tiptap";
-import {} from "@/libs/ui/tooltip";
 import dataLayer from "@/libs/utils/data-layer";
 import { IconCashEdit, IconX } from "@tabler/icons-react";
 import type React from "react";
