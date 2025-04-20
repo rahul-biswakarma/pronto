@@ -20,9 +20,9 @@ export const ModerActionRenderer = ({
                     size="icon"
                     variant="ghost"
                     className={cn(
-                        "text-foreground rounded-lg cursor-pointer hover:bg-background p-0.5 [&_svg:not([class*='size-'])]:size-[17px] [&_svg]:stroke-[1.2]",
+                        "text-[#444] rounded-lg cursor-pointer hover:bg-background p-0.5 [&_svg:not([class*='size-'])]:size-[17px] [&_svg]:stroke-[1.8]",
                         active &&
-                            "bg-background [&_svg]:stroke-foreground [&_svg]:stroke-[1.6]",
+                            "bg-blue-500/10 [&_svg]:text-blue-700 [&_svg]:stroke-[1.8]",
                     )}
                 >
                     <Icon size={16} />

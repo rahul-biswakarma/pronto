@@ -142,9 +142,9 @@ const PredefinedThemesSection: React.FC<{
     if (themes.length === 0) return null;
 
     return (
-        <div className="px-3 pb-4">
+        <div>
             <div className="flex justify-between items-center">
-                <h4 className="text-xs font-medium text-muted-foreground">
+                <h4 className="text-xs font-medium text-muted-foreground px-3">
                     Predefined Themes
                 </h4>
                 <div className="flex space-x-1">
@@ -170,23 +170,27 @@ const PredefinedThemesSection: React.FC<{
             </div>
 
             {/* Horizontal scroll container */}
-            <div className="relative overflow-hidden">
+            <div className="relative">
                 <div
                     ref={scrollContainerRef}
-                    className="flex space-x-3 overflow-x-auto pb-0 py-4 scrollbar-hide"
+                    className="relative flex space-x-3 overflow-x-auto -mx-4 p-7 pb-2 pt-2 scrollbar-hide"
                     style={{
                         scrollbarWidth: "none" /* Firefox */,
                         msOverflowStyle: "none" /* IE and Edge */,
                     }}
                 >
+                    <style>
+                        {
+                            ".scrollbar-hide::-webkit-scrollbar { display: none; }"
+                        }
+                    </style>
+                    {/* Webkit */}
                     {themes.map((theme) => {
                         const isSelected = selectedThemeName === theme.name;
-
                         const primaryColor =
                             theme.colors["--primary"] ||
                             Object.values(theme.colors)[0] ||
                             "#000000"; // Fallback color
-
                         const accentColors = Object.values(theme.colors)
                             .filter((c) => c !== primaryColor)
                             .slice(0, 3);
@@ -197,19 +201,25 @@ const PredefinedThemesSection: React.FC<{
                                 key={theme.name}
                                 onClick={() => onSelectTheme(theme)}
                                 className={cn(
-                                    "border rounded-lg p-1 w-36 flex-shrink-0 text-left transition-all duration-150 focus:outline-none",
+                                    "border rounded-lg p-1.5 w-36 flex-shrink-0 text-left transition-all duration-150 focus:outline-none",
                                     isSelected
-                                        ? "border-primary"
-                                        : "border-border hover:border-muted-foreground",
+                                        ? "border-blue-700/90 ring-2 ring-blue-700/90 ring-offset-2 ring-offset-background"
+                                        : "border-border hover:border-blue-400 hover:bg-blue-300/10",
                                 )}
                             >
                                 {/* Simplified Preview Area */}
                                 <div
-                                    className="h-20 rounded border mb-2 p-1.5 flex flex-col justify-between relative"
+                                    className="h-20 rounded-lg bg-muted/50 border border-border/50 mb-2 p-1.5 flex flex-col justify-between relative overflow-hidden"
                                     style={{
-                                        background: `linear-gradient(143deg, ${accentColors[0]} 0%, ${accentColors[1]} 50%, ${accentColors[2]} 100%)`,
+                                        backgroundColor: primaryColor,
                                     }}
                                 >
+                                    <div className="flex space-x-1">
+                                        {/* Dots representing window controls */}
+                                        <div className="w-2 h-2 rounded-full bg-red-500/70" />
+                                        <div className="w-2 h-2 rounded-full bg-yellow-500/70" />
+                                        <div className="w-2 h-2 rounded-full bg-green-500/70" />
+                                    </div>
                                     <div className="flex justify-end space-x-1.5">
                                         {accentColors.map((color, idx) => (
                                             <div
@@ -236,13 +246,13 @@ const PredefinedThemesSection: React.FC<{
                             </button>
                         );
                     })}
-                    {canScrollLeft && (
-                        <div className="pointer-events-none absolute inset-y-0 left-0 w-1/5 bg-gradient-to-r from-background" />
-                    )}
-                    {canScrollRight && (
-                        <div className="pointer-events-none absolute inset-y-0 right-0 w-1/5 bg-gradient-to-l from-background" />
-                    )}
                 </div>
+                {canScrollLeft && (
+                    <div className="pointer-events-none absolute inset-y-0 left-0 w-1/5 bg-gradient-to-r from-accent" />
+                )}
+                {canScrollRight && (
+                    <div className="pointer-events-none absolute inset-y-0 right-0 w-1/5 bg-gradient-to-l from-accent" />
+                )}
             </div>
         </div>
     );

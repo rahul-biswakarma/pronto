@@ -1,22 +1,16 @@
-import { Button } from "@/libs/ui/button";
+import { cn } from "@/libs/utils/misc";
 import { motion } from "framer-motion";
-import { Play } from "lucide-react";
 import { useEffect } from "react";
 import { useEditor } from "../editor.context";
 import { ContentEditorMode } from "../modes/content-editor/content-editor";
-import { PageEditorMode } from "../modes/page-editor/page-editor";
 import { SectionEditorMode } from "../modes/section-editor/section-editor";
+import { SectionRearrangeMode } from "../modes/section-rearrange/section-rearrange";
 import { ThemeEditorMode } from "../modes/theme-editor/theme-editor";
+import { ProfileSettingsMode } from "../modes/user-setting/user-setting";
 
 export const Moder = () => {
-    const {
-        modes,
-        setModeId,
-        registerMode,
-        modeId,
-        setPreviewMode,
-        previewMode,
-    } = useEditor();
+    const { modes, setModeId, registerMode, modeId, previewMode, user } =
+        useEditor();
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
@@ -25,13 +19,14 @@ export const Moder = () => {
         registerMode(SectionEditorMode());
         registerMode(ContentEditorMode());
         registerMode(ThemeEditorMode());
-        registerMode(PageEditorMode());
+        registerMode(SectionRearrangeMode());
+        registerMode(ProfileSettingsMode(user));
     }, []);
 
     return (
         <motion.div
             layout
-            className="mx-auto fixed bottom-8 left-1/2 -translate-x-1/2 border bg-accent backdrop-blur-sm p-0.5 rounded-xl max-w-[900px] max-h-fit"
+            className="mx-auto fixed bottom-8 left-1/2 -translate-x-1/2 bg-[#eee] shadow-[0_8px_32px_rgba(0,0,0,0.1)] border border-[#DDD] text-neutral-800 p-1.5 pb-0 rounded-2xl max-w-[min(900px,90vw)] max-h-fit"
             style={{
                 transformOrigin: "bottom center",
                 willChange: "transform",
@@ -79,18 +74,23 @@ export const Moder = () => {
                 style={{
                     originY: 1,
                     willChange: "transform",
+                    boxShadow:
+                        "0 2px 8px rgba(0, 0, 0, 0.06), inset 0 2px 2px rgba(255, 255, 255, 0.2)",
                     transformOrigin: "bottom center",
                 }}
-                className="bg-background rounded-lg overflow-hidden"
+                className="bg-[#f5f5f5] rounded-xl overflow-hidden"
             >
                 {modes[modeId]?.editorRenderer()}
             </motion.div>
-            <motion.div className="w-full flex justify-between" layout>
-                <motion.div className="flex items-center">
+            <motion.div className="w-full flex" layout>
+                <motion.div className="flex items-center w-full">
                     {Object.values(modes).map((mode) => (
                         <motion.div
                             key={mode.id}
-                            className="p-1"
+                            className={cn(
+                                "p-1",
+                                mode.id === "profile-settings" && "ml-auto",
+                            )}
                             onClick={() => setModeId(mode.id)}
                             layout
                             style={{
@@ -114,47 +114,6 @@ export const Moder = () => {
                             {mode.actionRenderer?.(mode.id === modeId)}
                         </motion.div>
                     ))}
-                </motion.div>
-
-                <motion.div
-                    key="play"
-                    layout
-                    initial={{
-                        scale: 0.9,
-                        opacity: 0,
-                        filter: "blur(5px)",
-                    }}
-                    animate={{
-                        scale: 1,
-                        opacity: 1,
-                        filter: "blur(0px)",
-                    }}
-                    exit={{
-                        scale: 0.9,
-                        opacity: 0,
-                        filter: "blur(5px)",
-                    }}
-                    transition={{
-                        duration: 0.3,
-                        ease: "easeOut",
-                    }}
-                    style={{
-                        padding: previewMode ? "4px" : "0px",
-                    }}
-                    onClick={() => {
-                        setPreviewMode(!previewMode);
-                        previewMode
-                            ? setModeId("preview")
-                            : setModeId("section-editor");
-                    }}
-                >
-                    <Button
-                        variant="default"
-                        size="icon"
-                        className="text-background bg-foreground rounded-lg cursor-pointer hover:bg-foreground p-0.5 h-8 w-8"
-                    >
-                        <Play size={16} />
-                    </Button>
                 </motion.div>
             </motion.div>
         </motion.div>

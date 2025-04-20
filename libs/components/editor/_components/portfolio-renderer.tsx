@@ -2,7 +2,6 @@ import type React from "react";
 import { useEffect } from "react";
 import { useEditor } from "../editor.context";
 import { Moder } from "./moder";
-import { Navigation } from "./navigation";
 
 export const PortfolioRenderer: React.FC<{
     portfolioHtml: string;
@@ -33,7 +32,7 @@ export const PortfolioRenderer: React.FC<{
 
     return (
         <div>
-            <Navigation />
+            {/* <Navigation /> */}
             <iframe
                 ref={iframeRef}
                 className="w-screen h-screen"
