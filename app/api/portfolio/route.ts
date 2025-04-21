@@ -1,3 +1,5 @@
+import { createSupabaseServerClient } from "@/libs/supabase/client/server";
+import { supabaseOption } from "@/libs/supabase/config";
 import {
     createErrorResponse,
     createSuccessResponse,
@@ -5,26 +7,30 @@ import {
 } from "@/libs/utils/api-response";
 import { checkAuthentication } from "@/libs/utils/auth";
 import { withCSRFProtection } from "@/libs/utils/csrf";
+import { getFileUrlFromBucket } from "@/libs/utils/supabase-storage";
+import type { NextRequest } from "next/server";
 
 /**
  * GET /api/portfolios - Retrieves the user's portfolio
  */
 export const GET = withErrorHandling(
-    async (_req: Request, requestId: string) => {
+    async (req: NextRequest, requestId: string) => {
         // Check authentication
-        const auth = await checkAuthentication();
-        if (!auth.authenticated) {
-            return auth.errorResponse;
-        }
+        const supabase = await createSupabaseServerClient(supabaseOption);
 
-        const userId = auth.userId;
-        const supabase = auth.supabase;
+        // Get the URL object from the request
+        const url = req.nextUrl;
+
+        // Get the 'domain' query parameter from the URL's search parameters
+        const domain = url.searchParams.get("domain");
 
         // Get only the portfolio URL from the database, not HTML
         const { data, error } = await supabase
             .from("portfolio")
-            .select("*")
-            .eq("user_id", userId);
+            .select("html_s3_path")
+            .eq("domain", domain);
+
+        const htmlUrl = await getFileUrlFromBucket(data?.[0]?.html_s3_path);
 
         if (error) {
             return createErrorResponse(
@@ -34,7 +40,12 @@ export const GET = withErrorHandling(
             );
         }
 
-        return createSuccessResponse(data[0], requestId);
+        return createSuccessResponse(
+            {
+                htmlUrl,
+            },
+            requestId,
+        );
     },
 );
 
@@ -43,7 +54,7 @@ export const GET = withErrorHandling(
  * Protected by CSRF token verification
  */
 export const POST = withErrorHandling(
-    async (req: Request, requestId: string) => {
+    async (req: NextRequest, requestId: string) => {
         const handler = async (validatedReq: Request) => {
             // Check authentication
             const auth = await checkAuthentication();
@@ -57,27 +68,12 @@ export const POST = withErrorHandling(
             // Get the HTML from the request body
             const body = await validatedReq.json();
 
-            const portfolioId = body.id;
-
-            let res = null;
-
-            if (portfolioId) {
-                res = await supabase
-                    .from("portfolio")
-                    .update({
-                        ...(body.content && { content: body.content }),
-                        ...(body.domain && { domain: body.domain }),
-                    })
-                    .eq("id", portfolioId);
-            } else {
-                res = await supabase
-                    .from("portfolio")
-                    .upsert({
-                        ...(body.content && { content: body.content }),
-                        ...(body.domain && { domain: body.domain }),
-                    })
-                    .eq("user_id", userId);
-            }
+            const res = await supabase
+                .from("portfolio")
+                .upsert({
+                    ...(body.content && { content: body.content }),
+                })
+                .eq("user_id", userId);
 
             if (res.error) {
                 return createErrorResponse(

@@ -63,6 +63,7 @@ export const EditorProvider: React.FC<{
                 user,
                 iframeRef,
                 modeId,
+                portfolio,
                 setModeId,
                 portfolioHtml,
                 setPortfolioHtml,

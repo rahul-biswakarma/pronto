@@ -2,6 +2,7 @@ import { cn } from "@/libs/utils/misc";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect } from "react";
 import { useEditor } from "../editor.context";
+import { DeploymentMode } from "../modes/deployment/deployment";
 import { SectionEditorMode } from "../modes/section-editor/section-editor";
 import { SectionRearrangeMode } from "../modes/section-rearrange/section-rearrange";
 import { StyleEditorMode } from "../modes/style-editor/style-editor";
@@ -19,6 +20,7 @@ export const Moder = () => {
         registerMode(ThemeEditorMode());
         registerMode(StyleEditorMode());
         registerMode(SectionRearrangeMode());
+        registerMode(DeploymentMode());
         registerMode(ProfileSettingsMode());
     }, []);
 
@@ -50,7 +52,7 @@ export const Moder = () => {
                             key={mode.id}
                             className={cn(
                                 "p-1",
-                                mode.id === "profile-settings" && "ml-auto",
+                                mode.id === "deployment" && "ml-auto",
                             )}
                             onClick={() => setModeId(mode.id)}
                             initial={{ opacity: 0.7 }}

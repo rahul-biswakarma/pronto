@@ -20,7 +20,12 @@ export async function middleware(request: NextRequest) {
 
         const subdomain = subdomains?.[0];
 
-        if (subdomain && subdomain !== process.env.NEXT_PUBLIC_DOMAIN) {
+        // Also check if it's not an API route before rewriting
+        if (
+            subdomain &&
+            subdomain !== process.env.NEXT_PUBLIC_DOMAIN &&
+            !request.nextUrl.pathname.startsWith("/api")
+        ) {
             return NextResponse.rewrite(
                 new URL(`/preview${request.nextUrl.pathname}`, request.url),
             );

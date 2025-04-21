@@ -331,3 +331,22 @@ export async function updatePortfolioAccess(
         };
     }
 }
+
+export const getFileUrlFromBucket = async (path: string) => {
+    const supabase = createSecureAdminClient();
+    const { data: urlData } = supabase.storage
+        .from(BUCKET_NAME)
+        .getPublicUrl(path);
+
+    console.log("URL Data", urlData);
+    return urlData.publicUrl;
+};
+
+export const updateFileInBucket = async (path: string, content: string) => {
+    const supabase = createSecureAdminClient();
+    const { error } = await supabase.storage
+        .from(BUCKET_NAME)
+        .upload(path, content);
+
+    return error;
+};

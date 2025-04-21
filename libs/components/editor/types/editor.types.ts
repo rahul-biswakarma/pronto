@@ -1,3 +1,4 @@
+import type { Database } from "@/libs/supabase/database.types";
 import type { User } from "@supabase/supabase-js";
 import type { JSX } from "react";
 
@@ -24,6 +25,7 @@ export type EditorContextType = {
     iframeDocument: Document | null;
     setIframeDocument: (doc: Document | null) => void;
 
+    portfolio: Database["public"]["Tables"]["portfolio"]["Row"];
     portfolioHtml: string;
     setPortfolioHtml: (html: string) => void;
 
