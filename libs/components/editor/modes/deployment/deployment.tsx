@@ -1,5 +1,3 @@
-import { createSupabaseBrowserClient } from "@/libs/supabase/client/browser";
-import { supabaseOption } from "@/libs/supabase/config";
 import { Button } from "@/libs/ui/button"; // Assuming Button component exists
 import { Input } from "@/libs/ui/input"; // Assuming Input component exists
 import dataLayer from "@/libs/utils/data-layer";
@@ -13,16 +11,11 @@ import { useEditor } from "../../editor.context";
 const DeploymentEditor = () => {
     const [domain, setDomain] = useState<string | null>(null);
     const [defaultDomain, setDefaultDomain] = useState<string | null>(null);
-    const [isDomainAvailable, setIsDomainAvailable] = useState<boolean>(false);
 
     const [message, setMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
     const { portfolio, iframeDocument } = useEditor();
-
-    console.log("Portfolio", portfolio);
-
-    const supabase = createSupabaseBrowserClient(supabaseOption);
 
     useEffect(() => {
         setDefaultDomain(portfolio.domain ?? null);
@@ -37,13 +30,10 @@ const DeploymentEditor = () => {
             return;
         }
 
-        console.log("Updating domain", domain, portfolio.id);
         const { data } = (await dataLayer.post("/api/portfolios", {
             id: portfolio.id,
             domain: domain,
         })) as { data: { success: boolean } };
-
-        console.log("Data", data);
 
         if (!data?.success) {
             console.error("Supabase update error:");
@@ -128,15 +118,9 @@ const DeploymentEditor = () => {
 export const DeploymentMode = () => ({
     id: "deployment",
     actionRenderer: () => (
-        <button
-            type="button"
-            className={"hover:bg-neutral-200"}
-            aria-label="Deployment Settings"
-        >
-            <Button variant="outline" size="sm">
-                Deploy
-            </Button>
-        </button>
+        <Button variant="outline" size="sm">
+            Deploy
+        </Button>
     ),
     editorRenderer: () => <DeploymentEditor />,
 });

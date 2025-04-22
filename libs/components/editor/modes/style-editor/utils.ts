@@ -145,3 +145,49 @@ export function parsePixelValue(value: string): number {
     const parsed = Number.parseFloat(value);
     return Number.isNaN(parsed) ? 16 : parsed;
 }
+
+// Curated list of Google Fonts + System Fonts
+export const AVAILABLE_FONTS = [
+    // System Fonts
+    "System UI",
+    "Arial",
+    "Helvetica",
+    "Verdana",
+    "Georgia",
+    "Times New Roman",
+    "Courier New",
+    // Google Fonts (add more as needed)
+    "Roboto",
+    "Open Sans",
+    "Lato",
+    "Montserrat",
+    "Poppins",
+    "Source Sans Pro",
+    "Oswald",
+    "Raleway",
+    "Nunito",
+    "Playfair Display",
+    "Merriweather",
+    "Inter",
+];
+
+/**
+ * Load a Google Font into the iframe document
+ */
+export function loadGoogleFont(fontFamily: string, document: Document | null) {
+    if (!document || !fontFamily || AVAILABLE_FONTS.indexOf(fontFamily) < 7) {
+        // Only load Google Fonts (index 7 onwards)
+        return;
+    }
+
+    const fontId = `google-font-${fontFamily.replace(/\s+/g, "-").toLowerCase()}`;
+    if (document.getElementById(fontId)) {
+        return; // Already loaded
+    }
+
+    const link = document.createElement("link");
+    link.id = fontId;
+    link.rel = "stylesheet";
+    link.href = `https://fonts.googleapis.com/css?family=${fontFamily.replace(/\s+/g, "+")}:wght@400;700&display=swap`; // Load regular and bold weights
+    document.head.appendChild(link);
+}

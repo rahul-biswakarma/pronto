@@ -338,7 +338,6 @@ export const getFileUrlFromBucket = async (path: string) => {
         .from(BUCKET_NAME)
         .getPublicUrl(path);
 
-    console.log("URL Data", urlData);
     return urlData.publicUrl;
 };
 

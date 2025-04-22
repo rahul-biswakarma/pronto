@@ -89,5 +89,6 @@ export default function Home() {
         return <p>No content available.</p>;
     }
 
+    // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
     return <div dangerouslySetInnerHTML={{ __html: htmlContent }} />;
 }

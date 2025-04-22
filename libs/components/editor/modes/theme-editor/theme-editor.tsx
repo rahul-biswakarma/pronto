@@ -1,456 +1,150 @@
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from "@/libs/ui/accordion";
 import { Button } from "@/libs/ui/button";
-import { Separator } from "@/libs/ui/separator";
-import { cn } from "@/libs/utils/misc";
-import {
-    IconBrandGoogle,
-    IconCheck,
-    IconChevronLeft,
-    IconChevronRight,
-    IconPalette,
-} from "@tabler/icons-react";
-import type React from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { ModerActionRenderer } from "../../_components/moder-action-renderer";
+import { IconPalette } from "@tabler/icons-react";
+import { useEffect, useState } from "react";
 import { useEditor } from "../../editor.context";
 import type { EditorMode } from "../../types/editor.types";
+import { GenerateThemeButton } from "./components/generate-theme-button";
+import { PredefinedThemesSection } from "./components/predefined-themes-section";
+import { ThemeCustomization } from "./components/theme-customization";
+import type { ColorVariable, Theme } from "./types";
 import {
     applyTheme,
     extractColorVariables,
-    formatColorVariable,
-    generateThemesWithGemini,
     updateColorVariable,
 } from "./utils";
 
-interface ColorVariable {
-    name: string;
-    value: string;
-    displayName: string;
-}
-
-interface Theme {
-    name: string;
-    colors: Record<string, string>;
-}
-
-// Separate component for theme customization section
-const ThemeCustomization: React.FC<{
-    colorVariables: ColorVariable[];
-    onColorChange: (name: string, value: string) => void;
-}> = ({ colorVariables, onColorChange }) => {
-    if (colorVariables.length === 0) return null;
-
-    return (
-        <Accordion type="single" collapsible className="w-full px-1.5 pb-1">
-            <AccordionItem value="customize-colors" className="border-b-0">
-                <AccordionTrigger className="py-2 px-1.5 text-xs cursor-pointer hover:no-underline rounded-md hover:bg-muted transition-colors font-medium text-muted-foreground [&[data-state=open]>svg]:rotate-180">
-                    Customize Theme
-                    {/* Keep the chevron, remove default rotation if needed */}
-                </AccordionTrigger>
-                <AccordionContent className="pt-2 pb-1 px-1.5">
-                    {colorVariables.map((variable) => (
-                        <div
-                            key={variable.name}
-                            className="flex items-center justify-between gap-4 py-1.5 hover:bg-muted/30 border-b last:border-b-0 first:border-t px-1.5"
-                        >
-                            <div className="flex items-center gap-2 flex-1 min-w-0">
-                                <span className="text-xs truncate font-medium">
-                                    {variable.displayName}
-                                </span>
-                            </div>
-                            {/* Keep the color input separate */}
-                            <div className="relative h-6 w-8 border rounded overflow-hidden flex-shrink-0">
-                                <input
-                                    type="color"
-                                    value={variable.value}
-                                    onChange={(e) =>
-                                        onColorChange(
-                                            variable.name,
-                                            e.target.value,
-                                        )
-                                    }
-                                    className="absolute object-cover scale-200 w-full h-full cursor-pointer border-none appearance-none bg-transparent"
-                                    title={`Select color for ${variable.displayName}`}
-                                />
-                            </div>
-                        </div>
-                    ))}
-                </AccordionContent>
-            </AccordionItem>
-        </Accordion>
-    );
-};
-
-// Extracted component for Predefined Themes section
-const PredefinedThemesSection: React.FC<{
-    themes: Theme[];
-    selectedThemeName: string | null;
-    onSelectTheme: (theme: Theme) => void;
-}> = ({ themes, selectedThemeName, onSelectTheme }) => {
-    const scrollContainerRef = useRef<HTMLDivElement>(null);
-    const [canScrollLeft, setCanScrollLeft] = useState(false);
-    const [canScrollRight, setCanScrollRight] = useState(false);
-
-    const checkScroll = useCallback(() => {
-        const container = scrollContainerRef.current;
-        if (container) {
-            const { scrollLeft, scrollWidth, clientWidth } = container;
-            setCanScrollLeft(scrollLeft > 0);
-            setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1); // -1 for potential rounding issues
-        }
-    }, []);
-
-    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-    useEffect(() => {
-        const container = scrollContainerRef.current;
-        checkScroll(); // Initial check
-
-        container?.addEventListener("scroll", checkScroll);
-        window.addEventListener("resize", checkScroll);
-
-        // Use ResizeObserver for more robust content change detection
-        let resizeObserver: ResizeObserver | null = null;
-        if (container && typeof ResizeObserver !== "undefined") {
-            resizeObserver = new ResizeObserver(checkScroll);
-            resizeObserver.observe(container);
-        }
-
-        return () => {
-            container?.removeEventListener("scroll", checkScroll);
-            window.removeEventListener("resize", checkScroll);
-            if (resizeObserver && container) {
-                resizeObserver.unobserve(container);
-            }
-        };
-    }, [checkScroll, themes]); // Re-run if themes change
-
-    const scroll = (direction: "left" | "right") => {
-        const container = scrollContainerRef.current;
-        if (container) {
-            const scrollAmount = container.clientWidth * 0.8; // Scroll by 80% of visible width
-            container.scrollBy({
-                left: direction === "left" ? -scrollAmount : scrollAmount,
-                behavior: "smooth",
-            });
-        }
-    };
-
-    if (themes.length === 0) return null;
-
-    return (
-        <div>
-            <div className="flex justify-between items-center">
-                <h4 className="text-xs font-medium text-muted-foreground px-3">
-                    Predefined Themes
-                </h4>
-                <div className="flex space-x-1">
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => scroll("left")}
-                        disabled={!canScrollLeft}
-                        className="h-6 w-6 disabled:opacity-30"
-                    >
-                        <IconChevronLeft size={16} />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => scroll("right")}
-                        disabled={!canScrollRight}
-                        className="h-6 w-6 disabled:opacity-30"
-                    >
-                        <IconChevronRight size={16} />
-                    </Button>
-                </div>
-            </div>
-
-            {/* Horizontal scroll container */}
-            <div className="relative">
-                <div
-                    ref={scrollContainerRef}
-                    className="relative flex space-x-3 overflow-x-auto -mx-4 p-7 pb-2 pt-2 scrollbar-hide"
-                    style={{
-                        scrollbarWidth: "none" /* Firefox */,
-                        msOverflowStyle: "none" /* IE and Edge */,
-                    }}
-                >
-                    <style>
-                        {
-                            ".scrollbar-hide::-webkit-scrollbar { display: none; }"
-                        }
-                    </style>
-                    {/* Webkit */}
-                    {themes.map((theme) => {
-                        const isSelected = selectedThemeName === theme.name;
-                        const primaryColor =
-                            theme.colors["--primary"] ||
-                            Object.values(theme.colors)[0] ||
-                            "#000000"; // Fallback color
-                        const accentColors = Object.values(theme.colors)
-                            .filter((c) => c !== primaryColor)
-                            .slice(0, 3);
-
-                        return (
-                            <button
-                                type="button"
-                                key={theme.name}
-                                onClick={() => onSelectTheme(theme)}
-                                className={cn(
-                                    "border rounded-lg p-1.5 w-36 flex-shrink-0 text-left transition-all duration-150 focus:outline-none",
-                                    isSelected
-                                        ? "border-blue-700/90 ring-2 ring-blue-700/90 ring-offset-2 ring-offset-background"
-                                        : "border-border hover:border-blue-400 hover:bg-blue-300/10",
-                                )}
-                            >
-                                {/* Simplified Preview Area */}
-                                <div
-                                    className="h-20 rounded-lg bg-muted/50 border border-border/50 mb-2 p-1.5 flex flex-col justify-between relative overflow-hidden"
-                                    style={{
-                                        background: `linear-gradient(143deg, ${accentColors[2]} 0%, ${accentColors[3]} 50%, ${accentColors[4]} 100%)`,
-                                    }}
-                                >
-                                    <div className="flex space-x-1">
-                                        {/* Dots representing window controls */}
-                                        <div className="w-2 h-2 rounded-full bg-red-500/70" />
-                                        <div className="w-2 h-2 rounded-full bg-yellow-500/70" />
-                                        <div className="w-2 h-2 rounded-full bg-green-500/70" />
-                                    </div>
-                                    <div className="flex justify-end space-x-1.5">
-                                        {accentColors.map((color, idx) => (
-                                            <div
-                                                key={`${theme.name}-accent-${color}-${idx}`}
-                                                className="w-4 h-4 rounded border border-background/50"
-                                                style={{
-                                                    backgroundColor: color,
-                                                }}
-                                            />
-                                        ))}
-                                    </div>
-                                </div>
-                                <div className="flex items-center justify-between mt-1">
-                                    <span className="text-xs font-medium truncate">
-                                        {theme.name}
-                                    </span>
-                                    {isSelected && (
-                                        <IconCheck
-                                            size={16}
-                                            className="text-primary flex-shrink-0"
-                                        />
-                                    )}
-                                </div>
-                            </button>
-                        );
-                    })}
-                </div>
-                {canScrollLeft && (
-                    <div className="pointer-events-none absolute inset-y-0 left-0 w-1/5 bg-gradient-to-r from-white" />
-                )}
-                {canScrollRight && (
-                    <div className="pointer-events-none absolute inset-y-0 right-0 w-1/5 bg-gradient-to-l from-white" />
-                )}
-            </div>
-        </div>
-    );
-};
-
-// Theme Editor component
 const ThemeEditor: React.FC = () => {
-    const { iframeDocument, onHtmlChange, modeId, iframeRef } = useEditor();
+    const { iframeDocument, onHtmlChange, onCssVarsChange } = useEditor();
     const [colorVariables, setColorVariables] = useState<ColorVariable[]>([]);
-    const [originalColors, setOriginalColors] = useState<
-        Record<string, string>
-    >({});
-    const [hasChanges, setHasChanges] = useState(false);
-    const [predefinedThemes, setPredefinedThemes] = useState<Theme[]>([]);
+    const [themes, setThemes] = useState<Theme[]>([]);
     const [selectedThemeName, setSelectedThemeName] = useState<string | null>(
         null,
     );
-    const [isGeneratingThemes, setIsGeneratingThemes] = useState(false);
+    const [initialColorVariables, setInitialColorVariables] = useState<
+        ColorVariable[]
+    >([]);
+    const [isGenerating, setIsGenerating] = useState(false);
 
-    // Load color variables from the document
+    // Extract color variables from iframe document on first load
     useEffect(() => {
-        if (!iframeRef.current) return;
-        const variables = extractColorVariables(iframeRef.current);
-
-        // Store original colors for comparison
-        const originalColorsMap: Record<string, string> = {};
-        for (const variable of variables) {
-            originalColorsMap[variable.name] = variable.value;
-        }
-        setOriginalColors(originalColorsMap);
-
-        setColorVariables(
-            variables.map((variable) => ({
-                ...variable,
-                displayName: formatColorVariable(variable.name),
-            })),
-        );
-
-        // Load saved themes from localStorage
-        try {
-            const savedThemes = localStorage.getItem("feno-predefined-themes");
-            if (savedThemes) {
-                setPredefinedThemes(JSON.parse(savedThemes));
-            }
-        } catch (error) {
-            console.error("Error loading themes from localStorage:", error);
-        }
-    }, [iframeRef]);
-
-    // Handle color change
-    const handleColorChange = useCallback(
-        (name: string, value: string) => {
-            if (!iframeDocument) return;
-
-            // Update in the iframe
-            updateColorVariable(iframeDocument, name, value);
-
-            // Update in our state
-            setColorVariables((prev) =>
-                prev.map((variable) =>
-                    variable.name === name ? { ...variable, value } : variable,
-                ),
-            );
-
-            // Mark that we have changes
-            if (originalColors[name] !== value) {
-                setHasChanges(true);
-            } else {
-                // Check if we still have other changes
-                const stillHasChanges = colorVariables.some(
-                    (variable) =>
-                        originalColors[variable.name] !== variable.value &&
-                        variable.name !== name,
-                );
-                setHasChanges(stillHasChanges);
-            }
-        },
-        [iframeDocument, originalColors, colorVariables],
-    );
-
-    // Generate themes using Gemini
-    const handleGenerateThemes = async () => {
-        if (!colorVariables.length || !iframeDocument) return;
-
-        setIsGeneratingThemes(true);
-
-        try {
-            // Prepare current theme colors
-            const currentTheme = colorVariables.reduce(
-                (acc, variable) => {
-                    acc[variable.name] = variable.value;
-                    return acc;
-                },
-                {} as Record<string, string>,
-            );
-
-            // Generate themes
-            const themes = await generateThemesWithGemini(currentTheme);
-
-            // Save to localStorage
-            localStorage.setItem(
-                "feno-predefined-themes",
-                JSON.stringify(themes),
-            );
-
-            // Update state
-            setPredefinedThemes(themes);
-        } catch (error) {
-            console.error("Error generating themes:", error);
-            alert("Failed to generate themes. Please try again later.");
-        } finally {
-            setIsGeneratingThemes(false);
-        }
-    };
-
-    // Apply a predefined theme
-    const handleApplyTheme = (theme: Theme) => {
         if (!iframeDocument) return;
 
-        // Apply the theme to the document
-        applyTheme(iframeDocument, theme.colors);
+        const extractedVars = extractColorVariables(iframeDocument);
+        setColorVariables(extractedVars);
+        setInitialColorVariables(extractedVars);
+    }, [iframeDocument]);
 
-        // Set as selected
-        setSelectedThemeName(theme.name);
-
-        // Update our state
-        setColorVariables((prev) =>
-            prev.map((variable) => ({
-                ...variable,
-                value: theme.colors[variable.name] || variable.value,
-            })),
+    // Handle color variable change
+    const handleColorChange = (name: string, value: string) => {
+        const updatedVariables = colorVariables.map((variable) =>
+            variable.name === name ? { ...variable, value } : variable,
         );
+        setColorVariables(updatedVariables);
 
-        // Mark that we have changes
-        setHasChanges(true);
+        if (iframeDocument) {
+            // Apply the color change to the iframe
+            updateColorVariable(iframeDocument, name, value);
+
+            // Mark changes
+            onCssVarsChange(
+                updatedVariables.reduce(
+                    (acc, v) => {
+                        acc[v.name] = v.value;
+                        return acc;
+                    },
+                    {} as Record<string, string>,
+                ),
+            );
+        }
     };
 
-    // Save changes when exiting the theme editor
-    useEffect(() => {
-        // If we're leaving the theme editor and have changes
-        if (modeId !== "theme-editor" && hasChanges && iframeDocument) {
+    // Handle theme selection
+    const handleSelectTheme = (theme: Theme) => {
+        if (iframeDocument) {
+            setSelectedThemeName(theme.name);
+            // Update color variables state with theme colors
+            const updatedVariables = colorVariables.map((variable) => {
+                const themeValue = theme.colors[variable.name];
+                return themeValue
+                    ? { ...variable, value: themeValue }
+                    : variable;
+            });
+            setColorVariables(updatedVariables);
+
+            // Apply theme to iframe
+            applyTheme(iframeDocument, theme.colors);
+
+            // Mark changes
+            onCssVarsChange(theme.colors);
+        }
+    };
+
+    // Handle theme generation
+    const handleGenerateThemesStarted = () => {
+        setIsGenerating(true);
+    };
+
+    const handleGenerateThemesComplete = (newThemes: Theme[]) => {
+        setThemes(newThemes);
+        setIsGenerating(false);
+    };
+
+    // Handle apply changes (save)
+    const handleApplyChanges = () => {
+        if (iframeDocument) {
             onHtmlChange({
                 html: iframeDocument.documentElement.outerHTML,
                 modeId: "theme-editor",
                 modeLabel: "Theme Editor",
             });
-            setHasChanges(false);
         }
-    }, [modeId, hasChanges, iframeDocument, onHtmlChange]);
+    };
 
     return (
-        <div className="w-[600px] min-h-0 bg-white border border-gray-200 rounded-xl">
-            <div className="flex justify-between items-center p-3">
-                <h3 className="text-sm font-medium">Modify Theme</h3>
-                {predefinedThemes.length === 0 && (
+        <div className="flex flex-col h-full gap-2">
+            <div className="space-y-2 p-2">
+                <div className="flex items-center justify-between pb-1">
+                    <h3 className="text-sm font-medium leading-none">
+                        Theme Editor
+                    </h3>
                     <Button
-                        onClick={handleGenerateThemes}
-                        disabled={isGeneratingThemes}
-                        className="flex items-center gap-2"
                         size="sm"
+                        variant="outline"
+                        onClick={handleApplyChanges}
+                        className="h-7 text-xs rounded-lg"
                     >
-                        <IconBrandGoogle size={16} />
-                        {isGeneratingThemes
-                            ? "Generating..."
-                            : "Generate Themes"}
+                        Apply Changes
                     </Button>
-                )}
+                </div>
+
+                <ThemeCustomization
+                    colorVariables={colorVariables}
+                    onColorChange={handleColorChange}
+                />
+
+                <PredefinedThemesSection
+                    themes={themes}
+                    selectedThemeName={selectedThemeName}
+                    onSelectTheme={handleSelectTheme}
+                />
+
+                <GenerateThemeButton
+                    initialColorVariables={initialColorVariables}
+                    isGenerating={isGenerating}
+                    onGenerateStarted={handleGenerateThemesStarted}
+                    onGenerateComplete={handleGenerateThemesComplete}
+                />
             </div>
-
-            <PredefinedThemesSection
-                themes={predefinedThemes}
-                selectedThemeName={selectedThemeName}
-                onSelectTheme={handleApplyTheme}
-            />
-
-            <Separator className="my-1" />
-
-            <ThemeCustomization
-                colorVariables={colorVariables}
-                onColorChange={handleColorChange}
-            />
         </div>
     );
 };
 
-// Register the theme editor mode
+// Export theme editor mode
 export const ThemeEditorMode = (): EditorMode => {
     return {
         id: "theme-editor",
-        label: "Theme Editor",
-        editorRenderer: () => <ThemeEditor />,
-        actionRenderer: (isActive: boolean) => (
-            <ModerActionRenderer
-                icon={IconPalette}
-                label="Theme Editor"
-                active={isActive}
-            />
-        ),
+        name: "Theme Editor",
+        icon: IconPalette,
+        component: ThemeEditor,
     };
 };
