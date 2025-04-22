@@ -46,43 +46,43 @@ export const htmlGenPromptGemini = async ({
 
 I'm showing you a screenshot of a portfolio website design as a visual reference only.
 Your task is to generate a COMPLETE, polished, and highly detailed HTML document (with
-embedded CSS) that closely matches the layout and styling of the screenshot, but uses
+embedded CSS and Tailwind CSS) that closely matches the layout and styling of the screenshot, but uses
 ONLY the provided content.
 
 REQUIREMENTS:
-1. Structure & Modules:
-   - Break the HTML into multiple modules (sections), each with a unique id (e.g., "feno-sec-intro",
-     "feno-sec-about", etc.).
-   - Also include a data-section-type attribute (e.g., data-section-type="about").
-   - Omit any sections from the screenshot that are not used by the content.
+1. CSS, Tailwind & Styling:
+   - Include Tailwind CSS in the head:
+     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+   - Use Tailwind CSS classes as much as possible for styling.
+   - Place additional CSS within a single <style> block in the <head>.
+   - Define two base color variables: "--feno-color-hue" and "--feno-color-saturation", then derive all other
+     color variables from these (e.g., "--feno-color-primary: hsl(var(--feno-color-hue), var(--feno-color-saturation), 50%);").
+   - Define font families as CSS variables with the prefix "--feno-font-family-" (e.g., "--feno-font-family-primary",
+     "--feno-font-family-heading") and reference these variables in the CSS / tailwindcss.
+   - Use CSS variables in Tailwind classes with square bracket notation, like: bg-[var(--feno-color-bg)] or text-[var(--feno-text-primary)].
+   - Do NOT use tailwind.config or attempt to override default Tailwind values - always use the CSS variable approach with square bracket notation instead.
 
-2. CSS & Styling:
-   - Place ALL CSS within a single <style> block in the <head>. Do not use external stylesheets.
-   - Define all colors as CSS variables with the prefix "--feno-color-", and then reference
-     these variables throughout the CSS (e.g., "color: var(--feno-color-primary);").
-   - Minimize inline styles: only use them if absolutely necessary for small dynamic tweaks.
-   - For theme consistency, define key font families, font sizes, and spacing as CSS variables when
-     appropriate (e.g., --feno-font-primary, --feno-spacing-base).
-
-3. Layout & Visual Consistency:
-   - Replicate the screenshot's layout, structure, and visual design details. Strive to be
-     pixel perfect for included modules.
+2. Layout & Visual Consistency:
+   - Replicate the screenshot's layout, structure, and visual design details using Tailwind classes.
    - Make the layout responsive across major breakpoints (desktop, tablet, mobile).
-   - Implement any relevant hover transitions for interactive elements in your CSS.
+   - Implement any relevant hover transitions for interactive elements using Tailwind's hover classes.
+   - Pay special attention to spacing and padding between elements to match the design shared; use Tailwind spacing utilities (p-*, m-*, gap-*) consistently.
 
-4. Content Usage:
+3. Content Usage:
    - Only include data provided in "${content}". Do not invent or import extraneous text.
+   - Be selective and only use the resume data that is strictly relevant to each section - the resume data is not curated and may contain unnecessary information or pdf styling info.
    - If a design element in the screenshot (e.g., a testimonial section) has no corresponding
      data, omit it gracefully from the final HTML.
 
-5. Icons:
+4. Icons:
    - For any icons, use Tabler Icons by including this stylesheet in the <head> section:
      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" />
    - Use icons with the format: <i class="ti ti-[icon-name]"></i>, for example <i class="ti ti-home"></i>
 
-6. Final Output:
+5. Final Output:
    - Return the complete HTML document, starting with <!DOCTYPE html>, including a properly
-     formatted <head> (with <style> block) and <body>.
+     formatted <head> (with <style> block, Tailwind script, and icon stylesheet) and <body>.
+   - Make sure output is visually accurate to the screenshot provided and logically make sense as a portfolio website that people would want to visit.
    - Do not include placeholder text or screenshot text. Reference the screenshot design ONLY
      for layout/style.
 
