@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useEditor } from "../editor.context";
 import { DeploymentMode } from "../modes/deployment/deployment";
 import { PageEditorMode } from "../modes/page-editor/page-editor";
-import { SectionRearrangeMode } from "../modes/section-rearrange/section-rearrange";
+
 import { ThemeEditorMode } from "../modes/theme-editor/theme-editor";
 import { ProfileSettingsMode } from "../modes/user-setting/user-setting";
 
@@ -13,11 +13,8 @@ export const Moder = () => {
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
-        if (modeId === "preview") return;
-
         registerMode(PageEditorMode());
         registerMode(ThemeEditorMode());
-        registerMode(SectionRearrangeMode());
         registerMode(DeploymentMode());
         registerMode(ProfileSettingsMode());
     }, []);

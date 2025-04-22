@@ -1,7 +1,7 @@
 import { Button } from "@/libs/ui/button";
 import { IconCashEdit } from "@tabler/icons-react";
 import type React from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { useEditor } from "../../editor.context";
 import type { EditorMode } from "../../types/editor.types";
 import { SectionHighlighting } from "./components/section-highlighting";
@@ -18,13 +18,6 @@ const PageEditor: React.FC = () => {
     const [selectedElement, setSelectedElement] = useState<HTMLElement | null>(
         null,
     );
-
-    const selectedElementRef = useRef<HTMLElement | null>(null);
-
-    // Update ref when selectedElement changes
-    useEffect(() => {
-        selectedElementRef.current = selectedElement;
-    }, [selectedElement]);
 
     // Handle prompt change
     const handlePromptChange = useCallback((value: string) => {
@@ -48,14 +41,16 @@ const PageEditor: React.FC = () => {
         <div className="flex h-full w-full flex-col gap-2 min-w-[500px] max-w-[500px]">
             <SectionHighlighting
                 modeId={modeId}
+                selectedElement={selectedElement}
                 iframeDocument={iframeDocument}
-                selectedElementRef={selectedElementRef}
                 setSelectedElement={setSelectedElement}
                 setPrompt={setPrompt}
+                isGenerating={loading}
             />
 
             {selectedElement && (
                 <StyleControls
+                    isGenerating={loading}
                     selectedElement={selectedElement}
                     iframeDocument={iframeDocument}
                     setSelectedElement={setSelectedElement}
@@ -72,14 +67,12 @@ const PageEditor: React.FC = () => {
                         selectedElement &&
                         prompt.trim() &&
                         !loading &&
-                        modifySection(
+                        modifySection({
                             selectedElement,
-                            selectedElementRef,
                             prompt,
                             setLoading,
-                            setSelectedElement,
                             setPrompt,
-                        )
+                        })
                     }
                     inputChangeHandler={handlePromptChange}
                 />

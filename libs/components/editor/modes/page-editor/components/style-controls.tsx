@@ -18,6 +18,7 @@ interface StyleControlsProps {
         property: keyof React.CSSProperties,
         value: string,
     ) => void;
+    isGenerating: boolean;
 }
 
 export const StyleControls: React.FC<StyleControlsProps> = ({
@@ -25,6 +26,7 @@ export const StyleControls: React.FC<StyleControlsProps> = ({
     iframeDocument,
     setSelectedElement,
     onStyleChange,
+    isGenerating,
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [styles, setStyles] = useState<React.CSSProperties>({});
@@ -122,6 +124,7 @@ export const StyleControls: React.FC<StyleControlsProps> = ({
     return (
         <div className="w-full flex flex-col gap-4 feno-mod-container">
             <StyleElementSelector
+                isGenerating={isGenerating}
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}
                 selectedElement={selectedElement}
