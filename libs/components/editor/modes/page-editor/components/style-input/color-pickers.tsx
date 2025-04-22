@@ -31,68 +31,79 @@ export const ColorPickers: React.FC<ColorPickersProps> = ({
     useClickOutside(textColorPickerRef, () => setShowTextColorPicker(false));
 
     return (
-        <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-2">
-                {/* Text Color */}
-                <div className="flex items-center gap-1.5 relative">
-                    <label
-                        htmlFor="textColor"
-                        className="text-[var(--feno-text-2)]"
-                    >
-                        Text
-                    </label>
-                    <Button
-                        id="textColor"
-                        variant="outline"
-                        className="h-7 w-12 border border-gray-200 rounded-md hover:border-gray-300 transition-colors"
-                        style={{ backgroundColor: styles.color }}
-                        onClick={() => setShowTextColorPicker(true)}
-                        aria-label="Select text color"
-                    />
-                    {showTextColorPicker && (
-                        <div
-                            ref={textColorPickerRef}
-                            className="absolute right-0 top-full mt-1.5 z-10 bg-white p-1 rounded-xl shadow-lg border border-[var(--feno-interactive-resting-border)]"
-                        >
-                            <HexColorPicker
-                                color={rgbToHex(styles.color || "rgb(0, 0, 0)")}
-                                onChange={(color) =>
-                                    onStyleChange("color", color)
-                                }
-                            />
-                        </div>
-                    )}
+        <div className="flex flex-col gap-2">
+            <div className="text-lg font-medium text-[var(--feno-text-1)]">
+                Color
+            </div>
+
+            <div className="flex flex-col gap-1">
+                {/* Text Color Row */}
+                <div className="flex justify-between items-center">
+                    <div className="text-base text-[var(--feno-text-1)]">
+                        Text color
+                    </div>
+                    <div className="relative">
+                        <Button
+                            id="textColor"
+                            variant="outline"
+                            className="h-8 w-32 border border-[var(--feno-border-1)] rounded-lg hover:border-[var(--feno-border-2)] transition-colors"
+                            style={{ backgroundColor: styles.color }}
+                            onClick={() =>
+                                setShowTextColorPicker(!showTextColorPicker)
+                            }
+                            aria-label="Select text color"
+                        />
+                        {showTextColorPicker && (
+                            <div
+                                ref={textColorPickerRef}
+                                className="absolute right-0 top-full mt-1.5 z-10 bg-white p-1 rounded-lg shadow-lg border border-[var(--feno-border-1)]"
+                            >
+                                <HexColorPicker
+                                    color={rgbToHex(
+                                        styles.color || "rgb(0, 0, 0)",
+                                    )}
+                                    onChange={(color) =>
+                                        onStyleChange("color", color)
+                                    }
+                                />
+                            </div>
+                        )}
+                    </div>
                 </div>
 
-                {/* Background Color */}
-                <div className="flex items-center gap-1.5 relative">
-                    <label htmlFor="bgColor" className="text-xs text-gray-600">
+                {/* Background Color Row */}
+                <div className="flex justify-between items-center">
+                    <div className="text-base text-[var(--feno-text-1)]">
                         Background
-                    </label>
-                    <Button
-                        id="bgColor"
-                        variant="outline"
-                        className="h-7 w-12 border border-gray-200 rounded-md hover:border-gray-300 transition-colors"
-                        style={{ backgroundColor: styles.backgroundColor }}
-                        onClick={() => setShowBgColorPicker(!showBgColorPicker)}
-                        aria-label="Select background color"
-                    />
-                    {showBgColorPicker && (
-                        <div
-                            ref={bgColorPickerRef}
-                            className="absolute right-0 top-full mt-1.5 z-10 bg-white p-2.5 rounded-md shadow-lg border border-gray-200"
-                        >
-                            <HexColorPicker
-                                color={rgbToHex(
-                                    styles.backgroundColor ||
-                                        "rgba(0, 0, 0, 0)",
-                                )}
-                                onChange={(color) =>
-                                    onStyleChange("backgroundColor", color)
-                                }
-                            />
-                        </div>
-                    )}
+                    </div>
+                    <div className="relative">
+                        <Button
+                            id="bgColor"
+                            variant="outline"
+                            className="h-8 w-32 border border-[var(--feno-border-1)] rounded-lg hover:border-[var(--feno-border-2)] transition-colors"
+                            style={{ backgroundColor: styles.backgroundColor }}
+                            onClick={() =>
+                                setShowBgColorPicker(!showBgColorPicker)
+                            }
+                            aria-label="Select background color"
+                        />
+                        {showBgColorPicker && (
+                            <div
+                                ref={bgColorPickerRef}
+                                className="absolute right-0 top-full mt-1.5 z-10 bg-white p-2 rounded-lg shadow-lg border border-gray-200"
+                            >
+                                <HexColorPicker
+                                    color={rgbToHex(
+                                        styles.backgroundColor ||
+                                            "rgba(0, 0, 0, 0)",
+                                    )}
+                                    onChange={(color) =>
+                                        onStyleChange("backgroundColor", color)
+                                    }
+                                />
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

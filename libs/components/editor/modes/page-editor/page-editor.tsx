@@ -51,7 +51,7 @@ const PageEditor: React.FC = () => {
     );
 
     return (
-        <div className="flex h-full w-full flex-col gap-2 min-w-[600px] max-w-[600px]">
+        <div className="flex h-full w-full flex-col gap-2 min-w-[500px] max-w-[500px]">
             <SectionHighlighting
                 modeId={modeId}
                 iframeDocument={iframeDocument}

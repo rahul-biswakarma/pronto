@@ -63,7 +63,7 @@ export function SectionEditorInput({
                     disabled={loading}
                     variant="custom"
                     className={clsx(
-                        "border bg-[var(--feno-interactive-resting-bg)] hover:bg-[var(--feno-interactive-hover-bg)] border-[var(--feno-interactive-resting-border)] hover:border-[var(--feno-interactive-hover-border)] text-[var(--feno-text-2)]",
+                        "border bg-[var(--feno-interactive-resting-bg)] hover:bg-[var(--feno-interactive-hovered-bg)] border-[var(--feno-interactive-resting-border)] hover:border-[var(--feno-interactive-hovered-border)] text-[var(--feno-text-2)]",
                         loading &&
                             "text-[var(--feno-text-3)] cursor-not-allowed",
                     )}

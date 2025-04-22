@@ -19,6 +19,7 @@ const buttonVariants = cva(
                     "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
                 ghost: "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent",
                 link: "text-primary underline-offset-4 hover:underline",
+                feno: "border bg-[var(--feno-interactive-resting-bg)] hover:bg-[var(--feno-interactive-hovered-bg)] border-[var(--feno-interactive-resting-border)] hover:border-[var(--feno-interactive-hovered-border)] text-[var(--feno-text-2)]",
                 custom: "",
             },
             size: {
