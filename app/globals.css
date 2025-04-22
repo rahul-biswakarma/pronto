@@ -191,18 +191,17 @@
 }
 
 .tiptap p.is-editor-empty:first-child::before {
-    color: var(--feno-text-placeholder);
-    content: attr(data-placeholder);
-    float: left;
-    height: 0;
-    pointer-events: none;
-}
+        color: var(--feno-text-placeholder);
+        content: attr(data-placeholder);
+        float: left;
+        height: 0;
+        pointer-events: none;
+        font-size: 14px;
+    }
 
-@layer base {
     * {
         @apply border-border outline-ring/50 text-[14px] text-[var(--feno-text-1)];
     }
     body {
         @apply bg-background text-foreground;
     }
-}

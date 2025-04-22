@@ -51,7 +51,7 @@ const PageEditor: React.FC = () => {
     );
 
     return (
-        <div className="flex h-full w-full flex-col feno-mod-container min-w-[600px] max-w-[600px]">
+        <div className="flex h-full w-full flex-col gap-2 min-w-[600px] max-w-[600px]">
             <SectionHighlighting
                 modeId={modeId}
                 iframeDocument={iframeDocument}
@@ -70,27 +70,29 @@ const PageEditor: React.FC = () => {
                 />
             )}
 
-            <SectionEditorInput
-                input={prompt}
-                loading={loading}
-                placeholder="Edit section content..."
-                onSubmit={() =>
-                    selectedElement &&
-                    prompt.trim() &&
-                    !loading &&
-                    modifySection(
-                        selectedElement,
-                        selectedElementRef,
-                        sectionHtml,
-                        prompt,
-                        sectionId,
-                        setLoading,
-                        setHasChanges,
-                        setSelectedElement,
-                    )
-                }
-                onInputChange={handlePromptChange}
-            />
+            <div className="feno-mod-container">
+                <SectionEditorInput
+                    input={prompt}
+                    loading={loading}
+                    placeholder="Edit section content..."
+                    onSubmit={() =>
+                        selectedElement &&
+                        prompt.trim() &&
+                        !loading &&
+                        modifySection(
+                            selectedElement,
+                            selectedElementRef,
+                            sectionHtml,
+                            prompt,
+                            sectionId,
+                            setLoading,
+                            setHasChanges,
+                            setSelectedElement,
+                        )
+                    }
+                    onInputChange={handlePromptChange}
+                />
+            </div>
         </div>
     );
 };

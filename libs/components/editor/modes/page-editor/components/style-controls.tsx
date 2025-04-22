@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { BorderControls } from "./style-input/border-controls";
 import { ColorPickers } from "./style-input/color-pickers";
 import { FontControls } from "./style-input/font-controls";
+import { SpacingControls } from "./style-input/spacing-controls";
 import { StyleElementSelector } from "./style-input/style-element-selector";
 import { loadGoogleFont } from "./style-input/style-utils";
 
@@ -46,6 +47,16 @@ export const StyleControls: React.FC<StyleControlsProps> = ({
                 borderWidth: computedStyle.borderWidth,
                 borderStyle: computedStyle.borderStyle,
                 borderColor: computedStyle.borderColor,
+                // Add margin properties
+                marginTop: computedStyle.marginTop,
+                marginRight: computedStyle.marginRight,
+                marginBottom: computedStyle.marginBottom,
+                marginLeft: computedStyle.marginLeft,
+                // Add padding properties
+                paddingTop: computedStyle.paddingTop,
+                paddingRight: computedStyle.paddingRight,
+                paddingBottom: computedStyle.paddingBottom,
+                paddingLeft: computedStyle.paddingLeft,
             });
             // Preload the initial font if it's a Google Font
             loadGoogleFont(initialFontFamily, iframeDocument);
@@ -106,7 +117,7 @@ export const StyleControls: React.FC<StyleControlsProps> = ({
     }
 
     return (
-        <div className="w-full flex flex-col gap-2">
+        <div className="w-full flex flex-col gap-2 feno-mod-container p-3">
             <StyleElementSelector
                 selectedElement={selectedElement}
                 iframeDocument={iframeDocument}
@@ -120,13 +131,21 @@ export const StyleControls: React.FC<StyleControlsProps> = ({
                 setShowBgColorPicker={setShowBgColorPicker}
                 showTextColorPicker={showTextColorPicker}
                 setShowTextColorPicker={setShowTextColorPicker}
-                showBorderColorPicker={showBorderColorPicker}
-                setShowBorderColorPicker={setShowBorderColorPicker}
+            />
+
+            <SpacingControls
+                styles={styles}
+                onStyleChange={handleStyleChange}
             />
 
             <FontControls styles={styles} onStyleChange={handleStyleChange} />
 
-            <BorderControls styles={styles} onStyleChange={handleStyleChange} />
+            <BorderControls
+                styles={styles}
+                onStyleChange={handleStyleChange}
+                showBorderColorPicker={showBorderColorPicker}
+                setShowBorderColorPicker={setShowBorderColorPicker}
+            />
         </div>
     );
 };

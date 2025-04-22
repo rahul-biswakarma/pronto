@@ -1,4 +1,15 @@
-import { AVAILABLE_FONTS, parsePixelValue } from "./style-utils";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/libs/ui/dropdown";
+import { IconChevronDown } from "@tabler/icons-react";
+import {
+    AVAILABLE_FONTS,
+    AVAILABLE_FONT_WEIGHTS,
+    parsePixelValue,
+} from "./style-utils";
 
 interface FontControlsProps {
     styles: React.CSSProperties;
@@ -13,15 +24,38 @@ export const FontControls: React.FC<FontControlsProps> = ({
     onStyleChange,
 }) => {
     return (
-        <div className="flex flex-col gap-3 border border-gray-200 rounded-xl shadow-sm bg-white p-3 relative">
-            <h3 className="text-sm font-medium mb-1">Typography</h3>
+        <div className="flex items-center justify-between gap-2 rounded-md py-1.5">
+            <label
+                htmlFor="fontSize"
+                className="text-sm text-gray-600 font-medium"
+            >
+                Font
+            </label>
+            <div className="flex items-center gap-2">
+                <DropdownMenu>
+                    <DropdownMenuTrigger className="outline-none">
+                        <div className="flex items-center gap-1 h-7 px-2 rounded-md border border-gray-200 hover:border-gray-300 transition-colors">
+                            <span className="text-[14px]">
+                                {styles.fontFamily || "System UI"}
+                            </span>
+                            <IconChevronDown className="ml-1 h-3.5 w-3.5 opacity-70" />
+                        </div>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="min-w-[180px] max-h-[260px] overflow-y-auto">
+                        {AVAILABLE_FONTS.map((font) => (
+                            <DropdownMenuItem
+                                onClick={() =>
+                                    onStyleChange("fontFamily", font)
+                                }
+                                key={font}
+                            >
+                                {font}
+                            </DropdownMenuItem>
+                        ))}
+                    </DropdownMenuContent>
+                </DropdownMenu>
 
-            {/* Font Size */}
-            <div className="flex items-center justify-between">
-                <label htmlFor="fontSize" className="text-xs text-gray-600">
-                    Font Size
-                </label>
-                <div className="relative">
+                <div className="relative flex items-center border border-gray-200 rounded-md overflow-hidden">
                     <input
                         id="fontSize"
                         type="number"
@@ -31,59 +65,38 @@ export const FontControls: React.FC<FontControlsProps> = ({
                         onChange={(e) =>
                             onStyleChange("fontSize", e.target.value)
                         }
-                        className="w-24 h-6 border border-gray-300 rounded px-1 pr-5 text-xs"
+                        className="w-14 h-7 px-2 text-[14px] outline-none focus:ring-1 focus:ring-gray-300"
                         min="1"
                     />
-                    <span className="absolute right-1 top-1/2 -translate-y-1/2 text-xs text-gray-400 pointer-events-none">
+                    <span className="text-gray-400 pr-2 pointer-events-none">
                         px
                     </span>
                 </div>
-            </div>
 
-            {/* Font Weight */}
-            <div className="flex items-center justify-between">
-                <label htmlFor="fontWeight" className="text-xs text-gray-600">
-                    Weight
-                </label>
-                <select
-                    id="fontWeight"
-                    value={styles.fontWeight || "400"}
-                    onChange={(e) =>
-                        onStyleChange("fontWeight", e.target.value)
-                    }
-                    className="w-24 h-6 border border-gray-300 rounded px-1 text-xs bg-white"
-                >
-                    <option value="100">Thin</option>
-                    <option value="200">Extra Light</option>
-                    <option value="300">Light</option>
-                    <option value="400">Normal</option>
-                    <option value="500">Medium</option>
-                    <option value="600">Semi Bold</option>
-                    <option value="700">Bold</option>
-                    <option value="800">Extra Bold</option>
-                    <option value="900">Black</option>
-                </select>
-            </div>
-
-            {/* Font Family */}
-            <div className="flex items-center justify-between">
-                <label htmlFor="fontFamily" className="text-xs text-gray-600">
-                    Font
-                </label>
-                <select
-                    id="fontFamily"
-                    value={styles.fontFamily || "System UI"}
-                    onChange={(e) =>
-                        onStyleChange("fontFamily", e.target.value)
-                    }
-                    className="w-24 h-6 border border-gray-300 rounded px-1 text-xs bg-white"
-                >
-                    {AVAILABLE_FONTS.map((font) => (
-                        <option key={font} value={font}>
-                            {font}
-                        </option>
-                    ))}
-                </select>
+                <DropdownMenu>
+                    <DropdownMenuTrigger className="outline-none">
+                        <div className="flex items-center gap-1 h-7 px-2 rounded-md border border-gray-200 hover:border-gray-300 transition-colors">
+                            <span className="text-[14px]">
+                                {AVAILABLE_FONT_WEIGHTS.find(
+                                    (font) => font.value === styles.fontWeight,
+                                )?.label || "Regular"}
+                            </span>
+                            <IconChevronDown className="ml-1 h-3.5 w-3.5 opacity-70" />
+                        </div>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="min-w-[120px]">
+                        {AVAILABLE_FONT_WEIGHTS.map((font) => (
+                            <DropdownMenuItem
+                                onClick={() =>
+                                    onStyleChange("fontWeight", font.value)
+                                }
+                                key={font.value}
+                            >
+                                {font.label}
+                            </DropdownMenuItem>
+                        ))}
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
         </div>
     );
