@@ -5,7 +5,6 @@ import type { JSX } from "react";
 export type EditorMode = {
     id: string;
     label?: string;
-
     actionRenderer?: (isActive: boolean) => JSX.Element;
     editorRenderer: () => JSX.Element;
 };

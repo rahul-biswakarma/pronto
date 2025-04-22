@@ -14,7 +14,7 @@ import {
 } from "./utils";
 
 const ThemeEditor: React.FC = () => {
-    const { iframeDocument, onHtmlChange, onCssVarsChange } = useEditor();
+    const { iframeDocument, onHtmlChange } = useEditor();
     const [colorVariables, setColorVariables] = useState<ColorVariable[]>([]);
     const [themes, setThemes] = useState<Theme[]>([]);
     const [selectedThemeName, setSelectedThemeName] = useState<string | null>(
@@ -44,17 +44,6 @@ const ThemeEditor: React.FC = () => {
         if (iframeDocument) {
             // Apply the color change to the iframe
             updateColorVariable(iframeDocument, name, value);
-
-            // Mark changes
-            onCssVarsChange(
-                updatedVariables.reduce(
-                    (acc, v) => {
-                        acc[v.name] = v.value;
-                        return acc;
-                    },
-                    {} as Record<string, string>,
-                ),
-            );
         }
     };
 
@@ -73,9 +62,6 @@ const ThemeEditor: React.FC = () => {
 
             // Apply theme to iframe
             applyTheme(iframeDocument, theme.colors);
-
-            // Mark changes
-            onCssVarsChange(theme.colors);
         }
     };
 
@@ -143,8 +129,16 @@ const ThemeEditor: React.FC = () => {
 export const ThemeEditorMode = (): EditorMode => {
     return {
         id: "theme-editor",
-        name: "Theme Editor",
-        icon: IconPalette,
-        component: ThemeEditor,
+        label: "Theme Editor",
+        actionRenderer: (isActive) => (
+            <Button
+                variant="ghost"
+                size="icon"
+                className={isActive ? "bg-blue-500/10 text-blue-700" : ""}
+            >
+                <IconPalette className="size-[17px] stroke-[1.8]" />
+            </Button>
+        ),
+        editorRenderer: () => <ThemeEditor />,
     };
 };

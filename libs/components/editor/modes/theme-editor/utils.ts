@@ -58,16 +58,16 @@ export const extractCssVariables = (html: string) => {
     return colorVariables;
 };
 
-export const extractColorVariables = (iframeRef: HTMLIFrameElement) => {
+export const extractColorVariables = (doc: Document) => {
     try {
-        const htmlString = iframeRef.contentDocument?.documentElement.outerHTML;
+        const htmlString = doc.documentElement.outerHTML;
         if (!htmlString) {
-            console.error("Could not access iframe content");
+            console.error("Could not access document content");
             return [];
         }
         return extractCssVariables(htmlString);
     } catch (error) {
-        console.error("Error accessing iframe content:", error);
+        console.error("Error accessing document content:", error);
         return [];
     }
 };
