@@ -122,7 +122,7 @@ export const StyleControls: React.FC<StyleControlsProps> = ({
     }
 
     return (
-        <div className="w-full flex flex-col gap-4 feno-mod-container">
+        <div className="w-full flex flex-col gap-4 feno-mod-container overflow-hidden">
             <StyleElementSelector
                 isGenerating={isGenerating}
                 isOpen={isOpen}

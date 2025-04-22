@@ -36,7 +36,12 @@ export const StyleElementSelector: React.FC<StyleElementSelectorProps> = ({
         parentElement !== iframeDocument?.documentElement;
 
     return (
-        <div className="flex items-center justify-between border-b border-[var(--feno-border-1)] p-3">
+        <div
+            className={cn(
+                "flex items-center justify-between border-b border-[var(--feno-border-1)] p-3",
+                !isOpen && "!border-b-0",
+            )}
+        >
             <div className="flex items-center gap-1">
                 <p className="text-sm font-medium">
                     <code className="rounded text">{tagName}</code>

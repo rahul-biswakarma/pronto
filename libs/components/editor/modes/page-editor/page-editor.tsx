@@ -38,7 +38,7 @@ const PageEditor: React.FC = () => {
     );
 
     return (
-        <div className="flex h-full w-full flex-col gap-2 min-w-[500px] max-w-[500px]">
+        <div className="flex h-full w-full flex-col gap-1.5 min-w-[500px] max-w-[500px]">
             <SectionHighlighting
                 modeId={modeId}
                 selectedElement={selectedElement}
