@@ -12,7 +12,6 @@ interface SectionHighlightingProps {
     iframeDocument: Document | null;
     modeId: string;
     selectedElementRef: React.RefObject<HTMLElement | null>;
-    setSectionHtml: (html: string) => void;
     setSelectedElement: (element: HTMLElement | null) => void;
     setPrompt: (prompt: string) => void;
 }
@@ -21,7 +20,6 @@ export const SectionHighlighting: React.FC<SectionHighlightingProps> = ({
     iframeDocument,
     modeId,
     selectedElementRef,
-    setSectionHtml,
     setSelectedElement,
     setPrompt,
 }) => {
@@ -117,7 +115,6 @@ export const SectionHighlighting: React.FC<SectionHighlightingProps> = ({
         iframeDocument,
         modeId,
         selectedElementRef,
-        setSectionHtml,
         setSelectedElement,
         setPrompt,
     ]);

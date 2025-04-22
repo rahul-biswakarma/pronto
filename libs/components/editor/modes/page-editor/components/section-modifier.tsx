@@ -15,19 +15,15 @@ interface ModifySectionResponse {
 export async function modifySection(
     selectedElement: HTMLElement,
     selectedElementRef: React.RefObject<HTMLElement | null>,
-    sectionHtml: string,
     prompt: string,
-    sectionId: string,
     setLoading: (loading: boolean) => void,
-    setHasChanges: (hasChanges: boolean) => void,
     setSelectedElement: (element: HTMLElement | null) => void,
+    setPrompt: (prompt: string) => void,
 ) {
     if (!selectedElement || !prompt.trim()) return;
 
     // Add loading class to start animation
-    selectedElementRef.current?.classList.add(
-        PAGE_EDITOR_SECTION_LOADING_CLASS,
-    );
+    selectedElement.classList.add(PAGE_EDITOR_SECTION_LOADING_CLASS);
     setLoading(true);
 
     try {
@@ -35,9 +31,8 @@ export async function modifySection(
         const response = await dataLayer.post<ModifySectionResponse>(
             "/api/portfolios/modify-section",
             {
-                sectionHtml,
+                sectionHtml: selectedElement.innerHTML,
                 prompt,
-                sectionId,
             },
         );
 
@@ -51,17 +46,13 @@ export async function modifySection(
             const newElement = tempContainer.firstElementChild as HTMLElement;
 
             if (newElement) {
-                // Ensure the new element has the same ID
-                newElement.id = selectedElementRef.current.id;
-
                 // Replace the old element with the new one
                 selectedElementRef.current.replaceWith(newElement);
 
                 // Update selected element reference
                 setSelectedElement(newElement);
 
-                // Mark that changes were made
-                setHasChanges(true);
+                setPrompt("");
             }
         }
     } catch (error) {
