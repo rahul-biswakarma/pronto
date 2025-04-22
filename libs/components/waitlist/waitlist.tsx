@@ -57,8 +57,8 @@ export const NewsLetter = () => {
     return (
         <div className="text-[16px] flex flex-col gap-2">
             <form
-                className="flex h-10 items-center justify-between gap-2 overflow-hidden rounded-sm bg-accent shadow-border 
-           focus-within:border-gray-800 focus-within:outline-none focus-within:ring-2 
+                className="flex h-10 items-center justify-between gap-2 overflow-hidden rounded-sm bg-accent shadow-border
+           focus-within:border-gray-800 focus-within:outline-none focus-within:ring-2
            focus-within:ring-black/20 focus-within:ring-offset-0"
                 onSubmit={(e) => {
                     handleSubmit(e);
@@ -80,8 +80,8 @@ export const NewsLetter = () => {
                 <button
                     type="submit"
                     className="mr-1 h-[30px] w-[150px]
-                    rounded-[4px] bg-background 
-                    dark:text-primary px-1.5 text-sm font-medium outline-none 
+                    rounded-[4px] bg-background
+                    dark:text-primary px-1.5 text-sm font-medium outline-none
                     focus:outline-tertiary md:px-3.5"
                 >
                     <span className="flex font-extralight items-center justify-center">

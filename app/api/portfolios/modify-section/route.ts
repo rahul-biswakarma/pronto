@@ -1,4 +1,4 @@
-import { getGeminiClient } from "@/libs/utils/ai-client";
+import { getGeminiClient } from "@/libs/utils/ai/ai-client";
 import {
     createErrorResponse,
     createSuccessResponse,

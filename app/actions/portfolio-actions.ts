@@ -1,6 +1,6 @@
 "use server";
-import { htmlGenPromptGemini } from "@/libs/constants/html-gen-prompt-gemini";
-import { getGeminiClient } from "@/libs/utils/ai-client";
+import { getGeminiClient } from "@/libs/utils/ai/ai-client";
+import { htmlGenPromptGemini } from "@/libs/utils/ai/html-gen-prompt-gemini";
 import { checkAuthentication } from "@/libs/utils/auth";
 import { uploadPortfolioFileInBucket } from "@/libs/utils/supabase-storage";
 

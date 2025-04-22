@@ -1,4 +1,4 @@
-import { getImageMimeType, getImageTemplateUrl } from "../utils/image-prompts";
+import { getImageMimeType, getImageTemplateUrl } from "./image-prompts";
 
 // Define interface for the uploaded file
 interface FileUploadResult {
