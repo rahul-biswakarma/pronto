@@ -6,12 +6,13 @@ import { useEditor } from "../../editor.context";
 import type { EditorMode } from "../../types/editor.types";
 import { SectionHighlighting } from "./components/section-highlighting";
 import { modifySection } from "./components/section-modifier";
-import { SectionEditorInput } from "./section-editor-input";
-import {} from "./utils";
+import { StyleControls } from "./components/style-controls";
+import { SectionEditorInput } from "./page-editor-input";
 
 // Section Editor component
-const SectionEditor: React.FC = () => {
-    const { iframeDocument, onHtmlChange, modeId } = useEditor();
+const PageEditor: React.FC = () => {
+    const { iframeDocument, modeId } = useEditor();
+
     const [prompt, setPrompt] = useState<string>("");
     const [loading, setLoading] = useState(false);
     const [hasChanges, setHasChanges] = useState(false);
@@ -20,9 +21,7 @@ const SectionEditor: React.FC = () => {
     const [selectedElement, setSelectedElement] = useState<HTMLElement | null>(
         null,
     );
-    const [elementType, setElementType] = useState<"section" | "text" | null>(
-        null,
-    );
+
     const selectedElementRef = useRef<HTMLElement | null>(null);
 
     // Update ref when selectedElement changes
@@ -35,48 +34,41 @@ const SectionEditor: React.FC = () => {
         setPrompt(value);
     }, []);
 
-    // Reset selection
-    const handleReset = useCallback(() => {
-        if (selectedElementRef.current) {
-            // Clean up selection
-            selectedElementRef.current.classList.remove(
-                "feno-section-editor-selected",
-            );
-            selectedElementRef.current.classList.remove(
-                "feno-content-selected",
-            );
-            selectedElementRef.current.classList.remove("feno-section-loading");
-        }
-        setSelectedElement(null);
-        setElementType(null);
-        setPrompt("");
-    }, []);
+    const handleDirectStyleChange = useCallback(
+        (
+            element: HTMLElement,
+            property: keyof React.CSSProperties,
+            value: string,
+        ) => {
+            // Apply style directly to the element
+            // biome-ignore lint/suspicious/noExplicitAny: Need to access style properties dynamically
+            (element.style as any)[property] = value;
 
-    // Handle HTML change and save
-    const handleSaveChanges = useCallback(() => {
-        if (hasChanges && iframeDocument) {
-            onHtmlChange({
-                html: iframeDocument.documentElement.outerHTML,
-                modeId: "section-editor",
-                modeLabel: "Edit Sections",
-            });
-            setHasChanges(false);
-        }
-    }, [hasChanges, iframeDocument, onHtmlChange]);
+            // Mark changes
+            setHasChanges(true);
+        },
+        [],
+    );
 
     return (
         <div className="flex h-full w-full flex-col feno-mod-container min-w-[600px] max-w-[600px]">
-            {/* Apply highlighting and event handlers to iframe */}
             <SectionHighlighting
-                iframeDocument={iframeDocument}
                 modeId={modeId}
+                iframeDocument={iframeDocument}
                 selectedElementRef={selectedElementRef}
-                setSectionId={setSectionId}
                 setSectionHtml={setSectionHtml}
                 setSelectedElement={setSelectedElement}
-                setElementType={setElementType}
                 setPrompt={setPrompt}
             />
+
+            {selectedElement && (
+                <StyleControls
+                    selectedElement={selectedElement}
+                    iframeDocument={iframeDocument}
+                    setSelectedElement={setSelectedElement}
+                    onStyleChange={handleDirectStyleChange}
+                />
+            )}
 
             <SectionEditorInput
                 input={prompt}
@@ -104,7 +96,7 @@ const SectionEditor: React.FC = () => {
 };
 
 // Export the editor mode
-export const SectionEditorMode = (): EditorMode => {
+export const PageEditorMode = (): EditorMode => {
     return {
         id: "section-editor",
         label: "Edit Sections",
@@ -117,6 +109,6 @@ export const SectionEditorMode = (): EditorMode => {
                 <IconCashEdit className="size-[17px] stroke-[1.8]" />
             </Button>
         ),
-        editorRenderer: () => <SectionEditor />,
+        editorRenderer: () => <PageEditor />,
     };
 };

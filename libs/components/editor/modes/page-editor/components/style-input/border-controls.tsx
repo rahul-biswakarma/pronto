@@ -1,4 +1,4 @@
-import { parsePixelValue } from "../utils";
+import { parsePixelValue } from "./style-utils";
 
 interface BorderControlsProps {
     styles: React.CSSProperties;

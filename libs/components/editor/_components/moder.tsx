@@ -3,9 +3,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect } from "react";
 import { useEditor } from "../editor.context";
 import { DeploymentMode } from "../modes/deployment/deployment";
-import { SectionEditorMode } from "../modes/section-editor/section-editor";
+import { PageEditorMode } from "../modes/page-editor/page-editor";
 import { SectionRearrangeMode } from "../modes/section-rearrange/section-rearrange";
-import { StyleEditorMode } from "../modes/style-editor/style-editor";
 import { ThemeEditorMode } from "../modes/theme-editor/theme-editor";
 import { ProfileSettingsMode } from "../modes/user-setting/user-setting";
 
@@ -16,9 +15,8 @@ export const Moder = () => {
     useEffect(() => {
         if (modeId === "preview") return;
 
-        registerMode(SectionEditorMode());
+        registerMode(PageEditorMode());
         registerMode(ThemeEditorMode());
-        registerMode(StyleEditorMode());
         registerMode(SectionRearrangeMode());
         registerMode(DeploymentMode());
         registerMode(ProfileSettingsMode());

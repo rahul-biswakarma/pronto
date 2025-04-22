@@ -1,10 +1,10 @@
 import type React from "react";
 import { useCallback, useEffect, useState } from "react";
-import { BorderControls } from "./components/border-controls";
-import { ColorPickers } from "./components/color-pickers";
-import { FontControls } from "./components/font-controls";
-import { StyleElementSelector } from "./components/style-element-selector";
-import { loadGoogleFont } from "./utils";
+import { BorderControls } from "./style-input/border-controls";
+import { ColorPickers } from "./style-input/color-pickers";
+import { FontControls } from "./style-input/font-controls";
+import { StyleElementSelector } from "./style-input/style-element-selector";
+import { loadGoogleFont } from "./style-input/style-utils";
 
 interface StyleControlsProps {
     selectedElement: HTMLElement | null;

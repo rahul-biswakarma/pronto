@@ -1,6 +1,6 @@
 import { Button } from "@/libs/ui/button";
 import { IconCornerLeftUp, IconX } from "@tabler/icons-react";
-import { STYLE_SELECTED_CLASS } from "../utils";
+import { PAGE_EDITOR_SELECTED_ELEMENT_CLASS } from "../../utils";
 
 interface StyleElementSelectorProps {
     selectedElement: HTMLElement;
@@ -39,9 +39,11 @@ export const StyleElementSelector: React.FC<StyleElementSelectorProps> = ({
                     onClick={() => {
                         if (canSelectParent && parentElement) {
                             selectedElement.classList.remove(
-                                STYLE_SELECTED_CLASS,
+                                PAGE_EDITOR_SELECTED_ELEMENT_CLASS,
                             );
-                            parentElement.classList.add(STYLE_SELECTED_CLASS);
+                            parentElement.classList.add(
+                                PAGE_EDITOR_SELECTED_ELEMENT_CLASS,
+                            );
                             setSelectedElement(parentElement);
                         }
                     }}
@@ -52,7 +54,9 @@ export const StyleElementSelector: React.FC<StyleElementSelectorProps> = ({
                 <Button
                     variant="ghost"
                     onClick={() => {
-                        selectedElement.classList.remove(STYLE_SELECTED_CLASS);
+                        selectedElement.classList.remove(
+                            PAGE_EDITOR_SELECTED_ELEMENT_CLASS,
+                        );
                         setSelectedElement(null);
                     }}
                     size="icon"

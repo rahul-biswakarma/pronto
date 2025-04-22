@@ -1,4 +1,5 @@
 import dataLayer from "@/libs/utils/data-layer";
+import { PAGE_EDITOR_SECTION_LOADING_CLASS } from "../utils";
 
 interface ModifySectionResponse {
     modifiedHtml: string;
@@ -24,7 +25,9 @@ export async function modifySection(
     if (!selectedElement || !prompt.trim()) return;
 
     // Add loading class to start animation
-    selectedElementRef.current?.classList.add("feno-section-loading");
+    selectedElementRef.current?.classList.add(
+        PAGE_EDITOR_SECTION_LOADING_CLASS,
+    );
     setLoading(true);
 
     try {

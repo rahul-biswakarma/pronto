@@ -1,4 +1,4 @@
-import { AVAILABLE_FONTS, parsePixelValue } from "../utils";
+import { AVAILABLE_FONTS, parsePixelValue } from "./style-utils";
 
 interface FontControlsProps {
     styles: React.CSSProperties;

@@ -1,8 +1,8 @@
+import { useClickOutside } from "@/libs/hooks/use-outside-click";
 import { Button } from "@/libs/ui/button";
 import { useRef } from "react";
 import { HexColorPicker } from "react-colorful";
-import { useClickOutside } from "../hooks/use-click-outside";
-import { rgbToHex } from "../utils";
+import { rgbToHex } from "./style-utils";
 
 interface ColorPickersProps {
     styles: React.CSSProperties;
