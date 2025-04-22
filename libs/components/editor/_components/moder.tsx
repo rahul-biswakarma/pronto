@@ -26,7 +26,7 @@ export const Moder = () => {
 
     return (
         <motion.div
-            className="mx-auto fixed bottom-8 left-1/2 -translate-x-1/2 bg-[#eee] shadow-[0_8px_32px_rgba(0,0,0,0.1)] border border-[#DDD] text-neutral-800 p-1.5 pb-0 rounded-2xl max-w-[min(900px,90vw)] max-h-fit"
+            className="mx-auto fixed bottom-8 left-1/2 -translate-x-1/2 bg-[var(--feno-surface-2)] shadow-[var(--feno-floating-shadow)] border border-[var(--feno-border-1)] p-1.5 pb-0 rounded-2xl max-w-[min(900px,90vw)] max-h-fit"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2 }}

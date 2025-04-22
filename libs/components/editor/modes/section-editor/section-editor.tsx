@@ -70,7 +70,7 @@ const SectionEditor: React.FC = () => {
     }, [hasChanges, iframeDocument, onHtmlChange]);
 
     return (
-        <div className="flex h-full w-full flex-col">
+        <div className="flex h-full w-full flex-col feno-mod-container">
             <div className="flex flex-col space-y-4 p-4">
                 <h2 className="text-xl font-semibold">Section Editor</h2>
                 <p className="text-sm text-gray-500">
