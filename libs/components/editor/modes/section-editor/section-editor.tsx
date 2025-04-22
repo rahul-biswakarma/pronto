@@ -1,16 +1,11 @@
 import { Button } from "@/libs/ui/button";
-import { TiptapEditor } from "@/libs/ui/tiptap";
-import { IconCashEdit, IconX } from "@tabler/icons-react";
+import { IconCashEdit } from "@tabler/icons-react";
 import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useEditor } from "../../editor.context";
 import type { EditorMode } from "../../types/editor.types";
-import { SectionActionPanel } from "./components/section-action-panel";
 import { SectionHighlighting } from "./components/section-highlighting";
-import {
-    handleEditorChange,
-    modifySection,
-} from "./components/section-modifier";
+import { modifySection } from "./components/section-modifier";
 import { SectionEditorInput } from "./section-editor-input";
 import {} from "./utils";
 
@@ -70,83 +65,40 @@ const SectionEditor: React.FC = () => {
     }, [hasChanges, iframeDocument, onHtmlChange]);
 
     return (
-        <div className="flex h-full w-full flex-col feno-mod-container">
-            <div className="flex flex-col space-y-4 p-4">
-                <h2 className="text-xl font-semibold">Section Editor</h2>
-                <p className="text-sm text-gray-500">
-                    Click on any section or text to edit it with AI.
-                </p>
+        <div className="flex h-full w-full flex-col feno-mod-container min-w-[600px] max-w-[600px]">
+            {/* Apply highlighting and event handlers to iframe */}
+            <SectionHighlighting
+                iframeDocument={iframeDocument}
+                modeId={modeId}
+                selectedElementRef={selectedElementRef}
+                setSectionId={setSectionId}
+                setSectionHtml={setSectionHtml}
+                setSelectedElement={setSelectedElement}
+                setElementType={setElementType}
+                setPrompt={setPrompt}
+            />
 
-                {/* Apply highlighting and event handlers to iframe */}
-                <SectionHighlighting
-                    iframeDocument={iframeDocument}
-                    modeId={modeId}
-                    selectedElementRef={selectedElementRef}
-                    setSectionId={setSectionId}
-                    setSectionHtml={setSectionHtml}
-                    setSelectedElement={setSelectedElement}
-                    setElementType={setElementType}
-                    setPrompt={setPrompt}
-                />
-
-                {selectedElement && (
-                    <div className="flex flex-col space-y-4">
-                        <div className="flex items-center justify-between">
-                            <h3 className="text-lg font-medium">
-                                {elementType === "section"
-                                    ? "Section Selected"
-                                    : "Text Selected"}
-                            </h3>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={handleReset}
-                            >
-                                <IconX className="mr-1 size-4" /> Cancel
-                            </Button>
-                        </div>
-
-                        <SectionEditorInput
-                            input={prompt}
-                            loading={loading}
-                            onSubmit={() =>
-                                selectedElement &&
-                                prompt.trim() &&
-                                !loading &&
-                                modifySection(
-                                    selectedElement,
-                                    selectedElementRef,
-                                    sectionHtml,
-                                    prompt,
-                                    sectionId,
-                                    setLoading,
-                                    setHasChanges,
-                                    setSelectedElement,
-                                )
-                            }
-                            onInputChange={handlePromptChange}
-                        />
-
-                        {elementType === "text" && (
-                            <TiptapEditor
-                                initialContent={selectedElement.innerHTML}
-                                onChange={(html) =>
-                                    handleEditorChange(
-                                        html,
-                                        selectedElement,
-                                        setHasChanges,
-                                    )
-                                }
-                            />
-                        )}
-                    </div>
-                )}
-
-                <SectionActionPanel
-                    hasChanges={hasChanges}
-                    onSave={handleSaveChanges}
-                />
-            </div>
+            <SectionEditorInput
+                input={prompt}
+                loading={loading}
+                placeholder="Edit section content..."
+                onSubmit={() =>
+                    selectedElement &&
+                    prompt.trim() &&
+                    !loading &&
+                    modifySection(
+                        selectedElement,
+                        selectedElementRef,
+                        sectionHtml,
+                        prompt,
+                        sectionId,
+                        setLoading,
+                        setHasChanges,
+                        setSelectedElement,
+                    )
+                }
+                onInputChange={handlePromptChange}
+            />
         </div>
     );
 };

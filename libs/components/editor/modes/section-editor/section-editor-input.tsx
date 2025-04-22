@@ -1,116 +1,80 @@
 "use client";
 
 import { Button } from "@/libs/ui/button";
-import {
-    PromptInput,
-    PromptInputAction,
-    PromptInputActions,
-    PromptInputTextarea,
-} from "@/libs/ui/prompt-input";
-import {
-    IconArrowUp,
-    IconPaperclip,
-    IconSquare,
-    IconX,
-} from "@tabler/icons-react";
-import { useRef } from "react";
-import { useState } from "react";
+import { IconLoader, IconSend2 } from "@tabler/icons-react";
+import { Document } from "@tiptap/extension-document";
+import { Paragraph } from "@tiptap/extension-paragraph";
+import Placeholder from "@tiptap/extension-placeholder";
+import { Text } from "@tiptap/extension-text";
+import { EditorContent, useEditor } from "@tiptap/react";
+import clsx from "clsx";
+import { useEffect, useRef } from "react";
 
-export function SectionEditorInput({
-    input,
-    loading,
-    onSubmit: onFormSubmit,
-    onInputChange,
-}: {
+type SectionEditorInputProps = {
+    placeholder: string;
     input: string;
     loading: boolean;
     onSubmit: () => void;
     onInputChange: (value: string) => void;
-}) {
-    const [files, setFiles] = useState<File[]>([]);
-    const uploadInputRef = useRef<HTMLInputElement>(null);
+};
 
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files) {
-            const newFiles = Array.from(event.target.files);
-            setFiles((prev) => [...prev, ...newFiles]);
-        }
-    };
+export function SectionEditorInput({
+    placeholder,
+    input,
+    loading,
+    onSubmit: onFormSubmit,
+    onInputChange,
+}: SectionEditorInputProps) {
+    const editorContainerRef = useRef<HTMLDivElement>(null);
 
-    const handleRemoveFile = (index: number) => {
-        setFiles((prev) => prev.filter((_, i) => i !== index));
-        if (uploadInputRef?.current) {
-            uploadInputRef.current.value = "";
+    const editor = useEditor({
+        extensions: [
+            Document,
+            Paragraph,
+            Text,
+            Placeholder.configure({
+                placeholder,
+            }),
+        ],
+        content: input || "<p></p>",
+        autofocus: true,
+        editable: true,
+        injectCSS: false,
+        onUpdate: ({ editor }) => {
+            onInputChange(editor.getText());
+        },
+    });
+
+    useEffect(() => {
+        if (editor && input !== editor.getText()) {
+            editor.commands.setContent(input || "<p></p>");
         }
-    };
+    }, [input, editor]);
 
     return (
-        <PromptInput
-            value={input}
-            onValueChange={onInputChange}
-            isLoading={loading}
-            onSubmit={onFormSubmit}
-            className="w-full max-w-(--breakpoint-md) rounded-xl"
+        <div
+            className="page-editor-input p-3 pr-2 pb-2 flex flex-col gap-2"
+            ref={editorContainerRef}
         >
-            {files.length > 0 && (
-                <div className="flex flex-wrap gap-2 pb-2">
-                    {files.map((file, index) => (
-                        <div
-                            key={file.name}
-                            className="bg-secondary flex items-center gap-2 rounded-lg pl-3 text-sm"
-                        >
-                            <span className="max-w-[120px] truncate">
-                                {file.name}
-                            </span>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleRemoveFile(index)}
-                                className="hover:bg-secondary/50 rounded-full p-1"
-                            >
-                                <IconX className="size-4" />
-                            </Button>
-                        </div>
-                    ))}
-                </div>
-            )}
-
-            <PromptInputTextarea placeholder="Ask me anything..." />
-
-            <PromptInputActions className="flex items-center justify-between gap-2 pt-2">
-                <PromptInputAction tooltip="Attach files">
-                    <label
-                        htmlFor="file-upload"
-                        className="hover:bg-secondary-foreground/10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-2xl"
-                    >
-                        <input
-                            type="file"
-                            multiple
-                            onChange={handleFileChange}
-                            className="hidden"
-                            id="file-upload"
-                        />
-                        <IconPaperclip className="size-5 !text-black/70" />
-                    </label>
-                </PromptInputAction>
-
-                <PromptInputAction
-                    tooltip={loading ? "Stop generation" : "Send message"}
+            <EditorContent className="w-full text-[14px]" editor={editor} />
+            <div className="flex items-center justify-end">
+                <Button
+                    size="icon"
+                    disabled={loading}
+                    variant="custom"
+                    className={clsx(
+                        "border bg-[var(--feno-interactive-resting-bg)] hover:bg-[var(--feno-interactive-hover-bg)] border-[var(--feno-interactive-resting-border)] hover:border-[var(--feno-interactive-hover-border)] text-[var(--feno-text-2)]",
+                        loading &&
+                            "text-[var(--feno-text-3)] cursor-not-allowed",
+                    )}
                 >
-                    <Button
-                        variant="default"
-                        size="icon"
-                        className="h-8 w-8 rounded-lg "
-                        onClick={onFormSubmit}
-                    >
-                        {loading ? (
-                            <IconSquare className="size-5 fill-current animate-pulse" />
-                        ) : (
-                            <IconArrowUp className="size-5 rotate-45 !text-white" />
-                        )}
-                    </Button>
-                </PromptInputAction>
-            </PromptInputActions>
-        </PromptInput>
+                    {loading ? (
+                        <IconLoader className="animate-spin" size={16} />
+                    ) : (
+                        <IconSend2 />
+                    )}
+                </Button>
+            </div>
+        </div>
     );
 }
