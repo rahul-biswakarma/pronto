@@ -14,16 +14,16 @@ type SectionEditorInputProps = {
     placeholder: string;
     input: string;
     loading: boolean;
-    onSubmit: () => void;
-    onInputChange: (value: string) => void;
+    submitHandler: () => void;
+    inputChangeHandler: (value: string) => void;
 };
 
 export function SectionEditorInput({
     placeholder,
     input,
     loading,
-    onSubmit: onFormSubmit,
-    onInputChange,
+    submitHandler,
+    inputChangeHandler,
 }: SectionEditorInputProps) {
     const editorContainerRef = useRef<HTMLDivElement>(null);
 
@@ -41,7 +41,7 @@ export function SectionEditorInput({
         editable: true,
         injectCSS: false,
         onUpdate: ({ editor }) => {
-            onInputChange(editor.getText());
+            inputChangeHandler(editor.getText());
         },
     });
 
@@ -61,9 +61,10 @@ export function SectionEditorInput({
                 <Button
                     size="icon"
                     disabled={loading}
+                    onClick={submitHandler}
                     variant="custom"
                     className={clsx(
-                        "border bg-[var(--feno-interactive-resting-bg)] hover:bg-[var(--feno-interactive-hover-bg)] border-[var(--feno-interactive-resting-border)] hover:border-[var(--feno-interactive-hover-border)] text-[var(--feno-text-2)]",
+                        "border bg-[var(--feno-interactive-resting-bg)] hover:bg-[var(--feno-interactive-hovered-bg)] border-[var(--feno-interactive-resting-border)] hover:border-[var(--feno-interactive-hovered-border)] text-[var(--feno-text-2)]",
                         loading &&
                             "text-[var(--feno-text-3)] cursor-not-allowed",
                     )}

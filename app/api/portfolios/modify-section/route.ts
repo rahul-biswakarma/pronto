@@ -23,7 +23,7 @@ export const POST = withErrorHandling(
             // Get the HTML from the request body
             const body = await validatedReq.json();
 
-            if (!body.sectionHtml || !body.prompt || !body.sectionId) {
+            if (!body.sectionHtml || !body.prompt) {
                 return createErrorResponse(
                     "Missing required fields",
                     requestId,
@@ -50,9 +50,8 @@ ${body.sectionHtml}
 
 Please implement the requested changes while maintaining:
 1. The same HTML structure whenever possible
-2. The original section ID: "${body.sectionId}"
-3. Any important classes or data attributes
-4. The overall style and formatting
+2. Any important classes or data attributes
+3. The overall style and formatting
 
 For any icons, please use Tabler Icons with this stylesheet:
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" />

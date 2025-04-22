@@ -1,4 +1,3 @@
-import { IconArrowLeft, IconArrowUp } from "@tabler/icons-react";
 import { useCallback } from "react";
 
 interface SpacingControlsProps {
@@ -36,43 +35,49 @@ export const SpacingControls: React.FC<SpacingControlsProps> = ({
         [onStyleChange, parseValue],
     );
 
+    const resetValue = useCallback((handler: (value: string) => void) => {
+        handler("0");
+    }, []);
+
     const SpacingInput = useCallback(
         ({
             value,
             onChange,
-            icon,
-            label,
             id,
         }: {
             value: string;
             onChange: (value: string) => void;
-            icon: React.ReactNode;
-            label: string;
             id: string;
         }) => {
             return (
-                <div className="flex items-center gap-1.5">
-                    <label htmlFor={id} className="text-xs text-gray-600">
-                        {label}
-                    </label>
-                    <div className="relative flex items-center border border-gray-200 rounded-md overflow-hidden">
-                        {icon}
+                <div className="relative flex items-center">
+                    <div className="relative w-36 h-8 border border-[var(--feno-border-1)] rounded-lg flex items-center overflow-hidden">
                         <input
                             id={id}
                             type="number"
                             min="0"
                             value={parseValue(value)}
                             onChange={(e) => onChange(e.target.value)}
-                            className="w-14 h-7 px-2 text-[14px] outline-none focus:ring-1 focus:ring-gray-300"
+                            className="w-full h-full px-3 text-base outline-none"
                         />
-                        <span className="text-gray-400 pr-2 pointer-events-none">
+                        <span className="text-[var(--feno-text-2)] mr-2 pointer-events-none absolute right-0">
                             px
                         </span>
+                        {/* {parseValue(value) > 0 && (
+                            <button
+                                type="button"
+                                className="absolute right-2 p-1 text-[var(--feno-text-2)]"
+                                onClick={() => resetValue(onChange)}
+                                aria-label="Clear value"
+                            >
+                                <IconX size={16} />
+                            </button>
+                        )} */}
                     </div>
                 </div>
             );
         },
-        [parseValue],
+        [parseValue, resetValue],
     );
 
     const getMarginValue = (direction: string): string => {
@@ -88,88 +93,60 @@ export const SpacingControls: React.FC<SpacingControlsProps> = ({
     };
 
     return (
-        <div className="flex flex-col gap-3">
-            {/* Margin X, Y in single row */}
-            <div className="flex items-center justify-between gap-2 rounded-md py-1.5">
-                <span
-                    id="margin-label"
-                    className="text-sm text-gray-600 font-medium"
-                >
-                    Margin
-                </span>
-                <div className="flex items-center gap-2">
-                    <SpacingInput
-                        id="margin-x"
-                        label="X"
-                        value={getMarginValue("Left")}
-                        onChange={(value) => {
-                            handleMarginChange("Left", value);
-                            handleMarginChange("Right", value);
-                        }}
-                        icon={
-                            <IconArrowLeft
-                                size={12}
-                                className="ml-2 text-gray-500"
-                            />
-                        }
-                    />
-                    <SpacingInput
-                        id="margin-y"
-                        label="Y"
-                        value={getMarginValue("Top")}
-                        onChange={(value) => {
-                            handleMarginChange("Top", value);
-                            handleMarginChange("Bottom", value);
-                        }}
-                        icon={
-                            <IconArrowUp
-                                size={12}
-                                className="ml-2 text-gray-500"
-                            />
-                        }
-                    />
-                </div>
+        <div className="flex flex-col gap-2">
+            <div className="text-lg font-medium text-[var(--feno-text-1)]">
+                Spacing
             </div>
 
-            {/* Padding X, Y in single row */}
-            <div className="flex items-center justify-between gap-2 rounded-md py-1.5">
-                <span
-                    id="padding-label"
-                    className="text-sm text-gray-600 font-medium"
-                >
-                    Padding
-                </span>
-                <div className="flex items-center gap-2">
-                    <SpacingInput
-                        id="padding-x"
-                        label="X"
-                        value={getPaddingValue("Left")}
-                        onChange={(value) => {
-                            handlePaddingChange("Left", value);
-                            handlePaddingChange("Right", value);
-                        }}
-                        icon={
-                            <IconArrowLeft
-                                size={12}
-                                className="ml-2 text-gray-500"
-                            />
-                        }
-                    />
-                    <SpacingInput
-                        id="padding-y"
-                        label="Y"
-                        value={getPaddingValue("Top")}
-                        onChange={(value) => {
-                            handlePaddingChange("Top", value);
-                            handlePaddingChange("Bottom", value);
-                        }}
-                        icon={
-                            <IconArrowUp
-                                size={12}
-                                className="ml-2 text-gray-500"
-                            />
-                        }
-                    />
+            <div className="flex flex-col gap-2">
+                {/* Margin Row */}
+                <div className="flex justify-between items-center">
+                    <div className="text-base text-[var(--feno-text-1)]">
+                        Margin
+                    </div>
+                    <div className="flex gap-2">
+                        <SpacingInput
+                            id="margin-x"
+                            value={getMarginValue("Left")}
+                            onChange={(value) => {
+                                handleMarginChange("Left", value);
+                                handleMarginChange("Right", value);
+                            }}
+                        />
+                        <SpacingInput
+                            id="margin-y"
+                            value={getMarginValue("Top")}
+                            onChange={(value) => {
+                                handleMarginChange("Top", value);
+                                handleMarginChange("Bottom", value);
+                            }}
+                        />
+                    </div>
+                </div>
+
+                {/* Padding Row */}
+                <div className="flex justify-between items-center">
+                    <div className="text-base text-[var(--feno-text-1)]">
+                        Padding
+                    </div>
+                    <div className="flex gap-2">
+                        <SpacingInput
+                            id="padding-x"
+                            value={getPaddingValue("Left")}
+                            onChange={(value) => {
+                                handlePaddingChange("Left", value);
+                                handlePaddingChange("Right", value);
+                            }}
+                        />
+                        <SpacingInput
+                            id="padding-y"
+                            value={getPaddingValue("Top")}
+                            onChange={(value) => {
+                                handlePaddingChange("Top", value);
+                                handlePaddingChange("Bottom", value);
+                            }}
+                        />
+                    </div>
                 </div>
             </div>
         </div>

@@ -116,10 +116,10 @@
     --feno-minimal-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.03);
 
     --feno-interactive-resting-bg: #f6f6f6;
-    --feno-interactive-hover-bg: #f0f0f0;
+    --feno-interactive-hovered-bg: #f0f0f0;
 
     --feno-interactive-resting-border: transparent;
-    --feno-interactive-hover-border: #dddddd;
+    --feno-interactive-hovered-border: #dddddd;
 
     --feno-text-1: #272727;
     --feno-text-2: #6c757d;
@@ -199,9 +199,21 @@
         font-size: 14px;
     }
 
-    * {
-        @apply border-border outline-ring/50 text-[14px] text-[var(--feno-text-1)];
-    }
-    body {
-        @apply bg-background text-foreground;
-    }
+* {
+    @apply border-border outline-ring/50 text-[14px];
+}
+body {
+    @apply bg-background text-foreground;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}

@@ -1,3 +1,5 @@
+import { Separator } from "@/libs/ui/separator";
+import { cn } from "@/libs/utils/misc";
 import type React from "react";
 import { useCallback, useEffect, useState } from "react";
 import { BorderControls } from "./style-input/border-controls";
@@ -24,6 +26,7 @@ export const StyleControls: React.FC<StyleControlsProps> = ({
     setSelectedElement,
     onStyleChange,
 }) => {
+    const [isOpen, setIsOpen] = useState(false);
     const [styles, setStyles] = useState<React.CSSProperties>({});
     const [showBgColorPicker, setShowBgColorPicker] = useState(false);
     const [showTextColorPicker, setShowTextColorPicker] = useState(false);
@@ -117,35 +120,53 @@ export const StyleControls: React.FC<StyleControlsProps> = ({
     }
 
     return (
-        <div className="w-full flex flex-col gap-2 feno-mod-container p-3">
+        <div className="w-full flex flex-col gap-4 feno-mod-container">
             <StyleElementSelector
+                isOpen={isOpen}
+                setIsOpen={setIsOpen}
                 selectedElement={selectedElement}
                 iframeDocument={iframeDocument}
                 setSelectedElement={setSelectedElement}
             />
 
-            <ColorPickers
-                styles={styles}
-                onStyleChange={handleStyleChange}
-                showBgColorPicker={showBgColorPicker}
-                setShowBgColorPicker={setShowBgColorPicker}
-                showTextColorPicker={showTextColorPicker}
-                setShowTextColorPicker={setShowTextColorPicker}
-            />
+            <div
+                className={cn(
+                    "flex flex-col gap-4 p-3 pt-0 pb-3.5",
+                    !isOpen && "hidden",
+                )}
+            >
+                <ColorPickers
+                    styles={styles}
+                    onStyleChange={handleStyleChange}
+                    showBgColorPicker={showBgColorPicker}
+                    setShowBgColorPicker={setShowBgColorPicker}
+                    showTextColorPicker={showTextColorPicker}
+                    setShowTextColorPicker={setShowTextColorPicker}
+                />
 
-            <SpacingControls
-                styles={styles}
-                onStyleChange={handleStyleChange}
-            />
+                <Separator />
 
-            <FontControls styles={styles} onStyleChange={handleStyleChange} />
+                <SpacingControls
+                    styles={styles}
+                    onStyleChange={handleStyleChange}
+                />
 
-            <BorderControls
-                styles={styles}
-                onStyleChange={handleStyleChange}
-                showBorderColorPicker={showBorderColorPicker}
-                setShowBorderColorPicker={setShowBorderColorPicker}
-            />
+                <Separator />
+
+                <FontControls
+                    styles={styles}
+                    onStyleChange={handleStyleChange}
+                />
+
+                <Separator />
+
+                <BorderControls
+                    styles={styles}
+                    onStyleChange={handleStyleChange}
+                    showBorderColorPicker={showBorderColorPicker}
+                    setShowBorderColorPicker={setShowBorderColorPicker}
+                />
+            </div>
         </div>
     );
 };

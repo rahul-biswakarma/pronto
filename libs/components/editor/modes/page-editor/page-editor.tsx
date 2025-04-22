@@ -15,9 +15,6 @@ const PageEditor: React.FC = () => {
 
     const [prompt, setPrompt] = useState<string>("");
     const [loading, setLoading] = useState(false);
-    const [hasChanges, setHasChanges] = useState(false);
-    const [sectionId, setSectionId] = useState<string>("");
-    const [sectionHtml, setSectionHtml] = useState<string>("");
     const [selectedElement, setSelectedElement] = useState<HTMLElement | null>(
         null,
     );
@@ -43,20 +40,16 @@ const PageEditor: React.FC = () => {
             // Apply style directly to the element
             // biome-ignore lint/suspicious/noExplicitAny: Need to access style properties dynamically
             (element.style as any)[property] = value;
-
-            // Mark changes
-            setHasChanges(true);
         },
         [],
     );
 
     return (
-        <div className="flex h-full w-full flex-col gap-2 min-w-[600px] max-w-[600px]">
+        <div className="flex h-full w-full flex-col gap-2 min-w-[500px] max-w-[500px]">
             <SectionHighlighting
                 modeId={modeId}
                 iframeDocument={iframeDocument}
                 selectedElementRef={selectedElementRef}
-                setSectionHtml={setSectionHtml}
                 setSelectedElement={setSelectedElement}
                 setPrompt={setPrompt}
             />
@@ -75,22 +68,20 @@ const PageEditor: React.FC = () => {
                     input={prompt}
                     loading={loading}
                     placeholder="Edit section content..."
-                    onSubmit={() =>
+                    submitHandler={() =>
                         selectedElement &&
                         prompt.trim() &&
                         !loading &&
                         modifySection(
                             selectedElement,
                             selectedElementRef,
-                            sectionHtml,
                             prompt,
-                            sectionId,
                             setLoading,
-                            setHasChanges,
                             setSelectedElement,
+                            setPrompt,
                         )
                     }
-                    onInputChange={handlePromptChange}
+                    inputChangeHandler={handlePromptChange}
                 />
             </div>
         </div>
