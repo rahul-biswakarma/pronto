@@ -1,3 +1,5 @@
+import { commonColorVariablePrefix } from "./components/utils";
+
 export const extractCssVariables = (html: string) => {
     const colorVariables: Array<{ name: string; value: string }> = [];
 
@@ -22,7 +24,10 @@ export const extractCssVariables = (html: string) => {
         }
 
         // Find all --feno-color- variables
-        const varRegex = /--feno-color-[^:\s]+\s*:\s*[^;]+/g;
+        const varRegex = new RegExp(
+            `(${commonColorVariablePrefix}[^:\\s]+)\\s*:\\s*([^;]+)`,
+            "g",
+        );
         const cssColorVariables = allCssContent.match(varRegex) || [];
 
         // Also search for variables directly in the HTML (might be inline styles)
@@ -34,10 +39,14 @@ export const extractCssVariables = (html: string) => {
 
         // Extract name-value pairs
         for (const variable of allMatches) {
-            const parts = variable.split(":");
-            if (parts.length === 2) {
-                const name = parts[0].trim();
-                const value = parts[1].trim();
+            const match = variable.match(
+                new RegExp(
+                    `(${commonColorVariablePrefix}[^:\\s]+)\\s*:\\s*([^;]+)`,
+                ),
+            );
+            if (match && match.length >= 3) {
+                const name = match[1].trim();
+                const value = match[2].trim();
                 if (name && value) {
                     uniqueVars.set(name, value);
                 }
@@ -49,6 +58,7 @@ export const extractCssVariables = (html: string) => {
             ...Array.from(uniqueVars.entries()).map(([name, value]) => ({
                 name,
                 value,
+                label: formatColorVariable(name),
             })),
         );
     } catch (error) {
@@ -83,7 +93,7 @@ export const updateColorVariable = (
 export const formatColorVariable = (variable: string) => {
     // Extract meaningful names from --feno-color- variables
     return variable
-        .replace(/^--feno-color-/, "") // Remove the prefix
+        .replace(new RegExp(`^${commonColorVariablePrefix}`), "") // Remove the prefix
         .replace(/-/g, " ") // Replace dashes with spaces
         .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize first letter of each word
 };
