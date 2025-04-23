@@ -10,6 +10,16 @@ type PortfolioActionResult = {
     error?: string;
 };
 
+function emailToUsername(email: string) {
+    const localPart = email.split('@')[0];
+    return localPart
+        .toLowerCase()
+        .replace(/[._+]/g, '-')      // Replace . _ + with hyphen
+        .replace(/[^a-z0-9-]/g, '')  // Remove other non-alphanumerics
+        .replace(/-+/g, '-')         // Replace multiple hyphens with single
+        .replace(/^-|-$/g, '');      // Trim hyphens at start/end
+}
+
 export async function generatePortfolioAction({
     content,
     templateId,
@@ -28,6 +38,7 @@ export async function generatePortfolioAction({
 
     const supabase = auth.supabase;
     const userId = auth.userId;
+    const domain = emailToUsername(auth.user?.email ?? "");
 
     let portfolioId: string | undefined;
 
@@ -37,6 +48,7 @@ export async function generatePortfolioAction({
             .insert({
                 user_id: userId,
                 content,
+                domain,
             })
             .select("id")
             .single();
