@@ -14,6 +14,7 @@ interface StyleElementSelectorProps {
     selectedElement: HTMLElement;
     iframeDocument: Document | null;
     setSelectedElement: (element: HTMLElement | null) => void;
+    isGenerating: boolean;
 }
 
 /**
@@ -25,6 +26,7 @@ export const StyleElementSelector: React.FC<StyleElementSelectorProps> = ({
     selectedElement,
     iframeDocument,
     setSelectedElement,
+    isGenerating,
 }) => {
     const tagName = selectedElement.tagName.toLowerCase();
     const parentElement = selectedElement.parentElement;
@@ -34,7 +36,12 @@ export const StyleElementSelector: React.FC<StyleElementSelectorProps> = ({
         parentElement !== iframeDocument?.documentElement;
 
     return (
-        <div className="flex items-center justify-between border-b border-[var(--feno-border-1)] p-3">
+        <div
+            className={cn(
+                "flex items-center justify-between border-b border-[var(--feno-border-1)] p-3",
+                !isOpen && "!border-b-0",
+            )}
+        >
             <div className="flex items-center gap-1">
                 <p className="text-sm font-medium">
                     <code className="rounded text">{tagName}</code>
@@ -85,10 +92,15 @@ export const StyleElementSelector: React.FC<StyleElementSelectorProps> = ({
                     </TooltipContent>
                 </Tooltip>
                 <Tooltip delayDuration={500}>
-                    <TooltipTrigger disabled={!canSelectParent}>
+                    <TooltipTrigger disabled={!canSelectParent || isGenerating}>
                         <div
-                            className="size-6 flex items-center justify-center hover:bg-[var(--feno-interactive-hovered-bg)] hover:border-[var(--feno-interactive-hovered-border)] rounded-lg"
+                            className={cn(
+                                "size-6 flex items-center justify-center hover:bg-[var(--feno-interactive-hovered-bg)] hover:border-[var(--feno-interactive-hovered-border)] rounded-lg",
+                                isGenerating &&
+                                    "cursor-not-allowed text-[var(--feno-text-3)]",
+                            )}
                             onClick={() => {
+                                if (isGenerating) return;
                                 selectedElement.classList.remove(
                                     PAGE_EDITOR_SELECTED_ELEMENT_CLASS,
                                 );

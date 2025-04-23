@@ -1,10 +1,10 @@
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from "@/libs/ui/accordion";
+import { Button } from "@/libs/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/libs/ui/tooltip";
+import { useEffect, useRef, useState } from "react";
+import { HexColorPicker } from "react-colorful";
+import { rgbToHex } from "../../page-editor/components/style-input/style-utils";
 import type { ColorVariable } from "../types";
+import { hueVariableName, saturationVariableName } from "./utils";
 
 interface ThemeCustomizationProps {
     colorVariables: ColorVariable[];
@@ -18,43 +18,77 @@ export const ThemeCustomization: React.FC<ThemeCustomizationProps> = ({
     colorVariables,
     onColorChange,
 }) => {
+    const [openColorPicker, setOpenColorPicker] = useState<string | null>(null);
+    const colorPickerRef = useRef<HTMLDivElement>(null);
+
+    // Handle clicks outside the color picker to close it
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                colorPickerRef.current &&
+                !colorPickerRef.current.contains(event.target as Node)
+            ) {
+                setOpenColorPicker(null);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
+    // Early return after hooks are declared
     if (colorVariables.length === 0) return null;
 
+    console.log(colorVariables);
+
     return (
-        <Accordion type="single" collapsible className="w-full px-1.5 pb-1">
-            <AccordionItem value="customize-colors" className="border-b-0">
-                <AccordionTrigger className="py-2 px-1.5 text-xs cursor-pointer hover:no-underline rounded-md hover:bg-muted transition-colors font-medium text-muted-foreground [&[data-state=open]>svg]:rotate-180">
-                    Customize Theme
-                </AccordionTrigger>
-                <AccordionContent className="pt-2 pb-1 px-1.5">
-                    {colorVariables.map((variable) => (
-                        <div
-                            key={variable.name}
-                            className="flex items-center justify-between gap-4 py-1.5 hover:bg-muted/30 border-b last:border-b-0 first:border-t px-1.5"
-                        >
-                            <div className="flex items-center gap-2 flex-1 min-w-0">
-                                <span className="text-xs truncate font-medium">
-                                    {variable.displayName}
-                                </span>
-                            </div>
-                            <div className="relative h-6 w-8 border rounded overflow-hidden flex-shrink-0">
-                                <input
-                                    type="color"
-                                    value={variable.value}
-                                    onChange={(e) =>
-                                        onColorChange(
-                                            variable.name,
-                                            e.target.value,
+        <div className="flex flex-wrap gap-2 flex-1/3">
+            {colorVariables
+                .filter(
+                    (variable) =>
+                        variable.name !== hueVariableName &&
+                        variable.name !== saturationVariableName,
+                )
+                .map((variable) => (
+                    <div key={variable.name} className="relative">
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    id={`color-button-${variable.name}`}
+                                    variant="outline"
+                                    className="h-8 w-32 border border-[var(--feno-border-1)] rounded-lg hover:border-[var(--feno-border-2)] transition-colors"
+                                    style={{ backgroundColor: variable.value }}
+                                    onClick={() =>
+                                        setOpenColorPicker(
+                                            openColorPicker === variable.name
+                                                ? null
+                                                : variable.name,
                                         )
                                     }
-                                    className="absolute object-cover scale-200 w-full h-full cursor-pointer border-none appearance-none bg-transparent"
-                                    title={`Select color for ${variable.displayName}`}
+                                    aria-label={`Select ${variable.name} color`}
+                                />
+                            </TooltipTrigger>
+                            <TooltipContent>{variable.label}</TooltipContent>
+                        </Tooltip>
+                        {openColorPicker === variable.name && (
+                            <div
+                                ref={colorPickerRef}
+                                className="absolute right-0 top-full mt-1.5 z-10 bg-white p-1 rounded-lg shadow-lg border border-[var(--feno-border-1)]"
+                            >
+                                <HexColorPicker
+                                    color={rgbToHex(
+                                        variable.value || "rgb(0, 0, 0)",
+                                    )}
+                                    onChange={(color) =>
+                                        onColorChange(variable.name, color)
+                                    }
                                 />
                             </div>
-                        </div>
-                    ))}
-                </AccordionContent>
-            </AccordionItem>
-        </Accordion>
+                        )}
+                    </div>
+                ))}
+        </div>
     );
 };

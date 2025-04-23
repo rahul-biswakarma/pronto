@@ -11,17 +11,19 @@ import {
 interface SectionHighlightingProps {
     iframeDocument: Document | null;
     modeId: string;
-    selectedElementRef: React.RefObject<HTMLElement | null>;
+    selectedElement: HTMLElement | null;
     setSelectedElement: (element: HTMLElement | null) => void;
     setPrompt: (prompt: string) => void;
+    isGenerating: boolean;
 }
 
 export const SectionHighlighting: React.FC<SectionHighlightingProps> = ({
     iframeDocument,
     modeId,
-    selectedElementRef,
+    selectedElement,
     setSelectedElement,
     setPrompt,
+    isGenerating,
 }) => {
     // Set up hover and click handlers in the iframe
     // biome-ignore lint/correctness/useExhaustiveDependencies: we need modeId for cleanup when different mode is selected
@@ -30,21 +32,24 @@ export const SectionHighlighting: React.FC<SectionHighlightingProps> = ({
 
         // Event handler for mouse over elements
         const handleMouseOver = (e: MouseEvent) => {
+            if (isGenerating) return;
             const target = e.target as HTMLElement;
             target.classList.add(PAGE_EDITOR_HOVER_ELEMENT_CLASS);
         };
 
         // Event handler for mouse out
         const handleMouseOut = (e: MouseEvent) => {
+            if (isGenerating) return;
             const target = e.target as HTMLElement;
             target.classList.remove(PAGE_EDITOR_HOVER_ELEMENT_CLASS);
         };
 
         // Event handler for clicking elements
         const handleClick = (e: MouseEvent) => {
+            if (isGenerating) return;
             e.preventDefault();
             const target = e.target as HTMLElement;
-            selectedElementRef.current?.classList.remove(
+            selectedElement?.classList.remove(
                 PAGE_EDITOR_SELECTED_ELEMENT_CLASS,
             );
             target.classList.add(PAGE_EDITOR_SELECTED_ELEMENT_CLASS);
@@ -114,9 +119,10 @@ export const SectionHighlighting: React.FC<SectionHighlightingProps> = ({
     }, [
         iframeDocument,
         modeId,
-        selectedElementRef,
+        selectedElement,
         setSelectedElement,
         setPrompt,
+        isGenerating,
     ]);
 
     return null; // This component doesn't render anything, it just adds event handlers

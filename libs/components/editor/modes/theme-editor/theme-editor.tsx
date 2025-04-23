@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import { useEditor } from "../../editor.context";
 import type { EditorMode } from "../../types/editor.types";
 import { GenerateThemeButton } from "./components/generate-theme-button";
+import { HueSaturationControls } from "./components/hue-saturation-controls";
 import { PredefinedThemesSection } from "./components/predefined-themes-section";
 import { ThemeCustomization } from "./components/theme-customization";
+import { hueVariableName, saturationVariableName } from "./components/utils";
 import type { ColorVariable, Theme } from "./types";
 import {
     applyTheme,
@@ -14,7 +16,7 @@ import {
 } from "./utils";
 
 const ThemeEditor: React.FC = () => {
-    const { iframeDocument, onHtmlChange } = useEditor();
+    const { iframeDocument } = useEditor();
     const [colorVariables, setColorVariables] = useState<ColorVariable[]>([]);
     const [themes, setThemes] = useState<Theme[]>([]);
     const [selectedThemeName, setSelectedThemeName] = useState<string | null>(
@@ -47,6 +49,33 @@ const ThemeEditor: React.FC = () => {
         }
     };
 
+    // Handle hue and saturation changes
+    const handleHueChange = (value: number) => {
+        if (iframeDocument) {
+            updateColorVariable(
+                iframeDocument,
+                hueVariableName,
+                value.toString(),
+            );
+            // Re-extract variables to update the UI
+            const variables = extractColorVariables(iframeDocument);
+            setColorVariables(variables);
+        }
+    };
+
+    const handleSaturationChange = (value: number) => {
+        if (iframeDocument) {
+            updateColorVariable(
+                iframeDocument,
+                saturationVariableName,
+                value.toString(),
+            );
+            // Re-extract variables to update the UI
+            const variables = extractColorVariables(iframeDocument);
+            setColorVariables(variables);
+        }
+    };
+
     // Handle theme selection
     const handleSelectTheme = (theme: Theme) => {
         if (iframeDocument) {
@@ -75,52 +104,32 @@ const ThemeEditor: React.FC = () => {
         setIsGenerating(false);
     };
 
-    // Handle apply changes (save)
-    const handleApplyChanges = () => {
-        if (iframeDocument) {
-            onHtmlChange({
-                html: iframeDocument.documentElement.outerHTML,
-                modeId: "theme-editor",
-                modeLabel: "Theme Editor",
-            });
-        }
-    };
-
     return (
-        <div className="flex flex-col h-full gap-2">
-            <div className="space-y-2 p-2">
-                <div className="flex items-center justify-between pb-1">
-                    <h3 className="text-sm font-medium leading-none">
-                        Theme Editor
-                    </h3>
-                    <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={handleApplyChanges}
-                        className="h-7 text-xs rounded-lg"
-                    >
-                        Apply Changes
-                    </Button>
-                </div>
+        <div className="flex flex-col h-full gap-2 feno-mod-container overflow-hidden min-w-[500px] max-w-[500px] p-3">
+            <h3 className="text-sm font-medium leading-none">Theme Editor</h3>
 
-                <ThemeCustomization
-                    colorVariables={colorVariables}
-                    onColorChange={handleColorChange}
-                />
+            <HueSaturationControls
+                onHueChange={handleHueChange}
+                onSaturationChange={handleSaturationChange}
+            />
 
-                <PredefinedThemesSection
-                    themes={themes}
-                    selectedThemeName={selectedThemeName}
-                    onSelectTheme={handleSelectTheme}
-                />
+            <ThemeCustomization
+                colorVariables={colorVariables}
+                onColorChange={handleColorChange}
+            />
 
-                <GenerateThemeButton
-                    initialColorVariables={initialColorVariables}
-                    isGenerating={isGenerating}
-                    onGenerateStarted={handleGenerateThemesStarted}
-                    onGenerateComplete={handleGenerateThemesComplete}
-                />
-            </div>
+            <PredefinedThemesSection
+                themes={themes}
+                selectedThemeName={selectedThemeName}
+                onSelectTheme={handleSelectTheme}
+            />
+
+            <GenerateThemeButton
+                initialColorVariables={initialColorVariables}
+                isGenerating={isGenerating}
+                onGenerateStarted={handleGenerateThemesStarted}
+                onGenerateComplete={handleGenerateThemesComplete}
+            />
         </div>
     );
 };
