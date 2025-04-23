@@ -55,8 +55,8 @@ REQUIREMENTS:
      <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
    - Use Tailwind CSS classes as much as possible for styling.
    - Place additional CSS within a single <style> block in the <head>.
-   - Define two base color variables: "--feno-color-hue" and "--feno-color-saturation", then derive all other
-     color variables from these (e.g., "--feno-color-primary: hsl(var(--feno-color-hue), var(--feno-color-saturation), 50%);").
+   - Define two base color variables: "--feno-color-hue" and "--feno-color-chroma", then derive all other
+     color variables from these using the OKLCH color model (e.g., "--feno-color-primary: oklch(0.7 var(--feno-color-chroma) var(--feno-color-hue));").
    - Define font families as CSS variables with the prefix "--feno-font-family-" (e.g., "--feno-font-family-primary",
      "--feno-font-family-heading") and reference these variables in the CSS / tailwindcss.
    - Use CSS variables in Tailwind classes with square bracket notation, like: bg-[var(--feno-color-bg)] or text-[var(--feno-text-primary)].
