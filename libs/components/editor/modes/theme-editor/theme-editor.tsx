@@ -75,32 +75,13 @@ const ThemeEditor: React.FC = () => {
         setIsGenerating(false);
     };
 
-    // Handle apply changes (save)
-    const handleApplyChanges = () => {
-        if (iframeDocument) {
-            onHtmlChange({
-                html: iframeDocument.documentElement.outerHTML,
-                modeId: "theme-editor",
-                modeLabel: "Theme Editor",
-            });
-        }
-    };
-
     return (
-        <div className="flex flex-col h-full gap-2">
+        <div className="flex flex-col h-full gap-2 feno-mod-container overflow-hidden min-w-[500px] max-w-[500px]">
             <div className="space-y-2 p-2">
                 <div className="flex items-center justify-between pb-1">
                     <h3 className="text-sm font-medium leading-none">
                         Theme Editor
                     </h3>
-                    <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={handleApplyChanges}
-                        className="h-7 text-xs rounded-lg"
-                    >
-                        Apply Changes
-                    </Button>
                 </div>
 
                 <ThemeCustomization
