@@ -10,6 +10,7 @@ export type EditorMode = {
 };
 
 export type EditorContextType = {
+    dls: Record<string, any>;
     user: User;
     portfolioId: string;
 
