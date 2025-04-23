@@ -41,8 +41,6 @@ export const ThemeCustomization: React.FC<ThemeCustomizationProps> = ({
     // Early return after hooks are declared
     if (colorVariables.length === 0) return null;
 
-    console.log(colorVariables);
-
     return (
         <div className="flex flex-wrap gap-2 flex-1/3">
             {colorVariables

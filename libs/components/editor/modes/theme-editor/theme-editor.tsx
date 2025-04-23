@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/libs/ui/button";
 import { IconPalette } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
@@ -6,7 +8,6 @@ import type { EditorMode } from "../../types/editor.types";
 import { GenerateThemeButton } from "./components/generate-theme-button";
 import { HueSaturationControls } from "./components/hue-chorma-controls";
 import { PredefinedThemesSection } from "./components/predefined-themes-section";
-import { ThemeCustomization } from "./components/theme-customization";
 import { chromaVariableName, hueVariableName } from "./components/utils";
 import type { ColorVariable, Theme } from "./types";
 import {
@@ -111,11 +112,6 @@ const ThemeEditor: React.FC = () => {
             <HueSaturationControls
                 onHueChange={handleHueChange}
                 onSaturationChange={handleSaturationChange}
-            />
-
-            <ThemeCustomization
-                colorVariables={colorVariables}
-                onColorChange={handleColorChange}
             />
 
             <PredefinedThemesSection
