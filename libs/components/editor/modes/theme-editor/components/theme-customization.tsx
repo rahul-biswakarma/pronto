@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { HexColorPicker } from "react-colorful";
 import { rgbToHex } from "../../page-editor/components/style-input/style-utils";
 import type { ColorVariable } from "../types";
-import { hueVariableName, saturationVariableName } from "./utils";
+import { chromaVariableName, hueVariableName } from "./utils";
 
 interface ThemeCustomizationProps {
     colorVariables: ColorVariable[];
@@ -49,7 +49,7 @@ export const ThemeCustomization: React.FC<ThemeCustomizationProps> = ({
                 .filter(
                     (variable) =>
                         variable.name !== hueVariableName &&
-                        variable.name !== saturationVariableName,
+                        variable.name !== chromaVariableName,
                 )
                 .map((variable) => (
                     <div key={variable.name} className="relative">

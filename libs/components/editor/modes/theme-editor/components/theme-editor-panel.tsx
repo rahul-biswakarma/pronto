@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import type { ColorVariable } from "../types";
 import { extractColorVariables, updateColorVariable } from "../utils";
-import { HueSaturationControls } from "./hue-saturation-controls";
+import { HueSaturationControls } from "./hue-chorma-controls";
 import { ThemeCustomization } from "./theme-customization";
-import { hueVariableName, saturationVariableName } from "./utils";
+import { chromaVariableName, hueVariableName } from "./utils";
 
 interface ThemeEditorPanelProps {
     initialTheme?: Record<string, string>;
@@ -35,11 +35,7 @@ export const ThemeEditorPanel: React.FC<ThemeEditorPanelProps> = ({
 
     const handleSaturationChange = (value: number) => {
         if (typeof document !== "undefined") {
-            updateColorVariable(
-                document,
-                saturationVariableName,
-                value.toString(),
-            );
+            updateColorVariable(document, chromaVariableName, value.toString());
             // Re-extract variables to update the UI
             const variables = extractColorVariables(document);
             setColorVariables(variables);

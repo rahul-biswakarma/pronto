@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { useEditor } from "../../editor.context";
 import type { EditorMode } from "../../types/editor.types";
 import { GenerateThemeButton } from "./components/generate-theme-button";
-import { HueSaturationControls } from "./components/hue-saturation-controls";
+import { HueSaturationControls } from "./components/hue-chorma-controls";
 import { PredefinedThemesSection } from "./components/predefined-themes-section";
 import { ThemeCustomization } from "./components/theme-customization";
-import { hueVariableName, saturationVariableName } from "./components/utils";
+import { chromaVariableName, hueVariableName } from "./components/utils";
 import type { ColorVariable, Theme } from "./types";
 import {
     applyTheme,
@@ -67,7 +67,7 @@ const ThemeEditor: React.FC = () => {
         if (iframeDocument) {
             updateColorVariable(
                 iframeDocument,
-                saturationVariableName,
+                chromaVariableName,
                 value.toString(),
             );
             // Re-extract variables to update the UI
