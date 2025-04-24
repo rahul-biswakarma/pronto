@@ -7,6 +7,7 @@ import {
     IconChevronUp,
     IconPalette,
 } from "@tabler/icons-react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useEditor } from "../../editor.context";
 import type { EditorMode } from "../../types/editor.types";
@@ -112,53 +113,67 @@ const ThemeEditor: React.FC = () => {
     };
 
     return (
-        <div className="flex h-full w-full flex-col gap-1.5 min-w-[500px] max-w-[500px]">
-            <div className="feno-mod-container flex flex-col gap-2">
-                <PredefinedThemesSection
-                    themes={themes}
-                    selectedThemeName={selectedThemeName}
-                    onSelectTheme={handleSelectTheme}
-                />
-
-                {!hasStoredThemes && (
-                    <GenerateThemeButton
-                        initialColorVariables={initialColorVariables}
-                        isGenerating={isGenerating}
-                        onGenerateStarted={handleGenerateThemesStarted}
-                        onGenerateComplete={handleGenerateThemesComplete}
+        <AnimatePresence>
+            <div className="flex h-full w-full flex-col gap-1.5 min-w-[500px] max-w-[500px]">
+                <div className="feno-mod-container flex flex-col gap-2">
+                    <PredefinedThemesSection
+                        themes={themes}
+                        selectedThemeName={selectedThemeName}
+                        onSelectTheme={handleSelectTheme}
                     />
-                )}
-            </div>
 
-            <div className="feno-mod-container flex flex-col gap-1">
-                <div
-                    onClick={() =>
-                        setShowAdvancedControls(!showAdvancedControls)
-                    }
-                    className={cn(
-                        "flex justify-between items-center p-3 px-4 text-xs font-medium text-[var(--feno-text-1)]  border-[var(--feno-border-1)]",
-                        showAdvancedControls && "border-b",
-                    )}
-                >
-                    Advanced Controls
-                    <div className="size-6 flex items-center justify-center hover:bg-[var(--feno-interactive-hovered-bg)] hover:border-[var(--feno-interactive-hovered-border)] rounded-lg">
-                        {!showAdvancedControls ? (
-                            <IconChevronUp className="size-4" />
-                        ) : (
-                            <IconChevronDown className="size-4" />
-                        )}
-                    </div>
-                </div>
-                {showAdvancedControls && (
-                    <div className="p-3 px-4">
-                        <HueSaturationControls
-                            onHueChange={handleHueChange}
-                            onSaturationChange={handleSaturationChange}
+                    {!hasStoredThemes && (
+                        <GenerateThemeButton
+                            initialColorVariables={initialColorVariables}
+                            isGenerating={isGenerating}
+                            onGenerateStarted={handleGenerateThemesStarted}
+                            onGenerateComplete={handleGenerateThemesComplete}
                         />
+                    )}
+                </div>
+
+                <div className="feno-mod-container flex flex-col gap-1">
+                    <div
+                        onClick={() =>
+                            setShowAdvancedControls(!showAdvancedControls)
+                        }
+                        className={cn(
+                            "flex justify-between items-center p-3 px-4 text-xs font-medium text-[var(--feno-text-1)]  border-[var(--feno-border-1)]",
+                            showAdvancedControls && "border-b",
+                        )}
+                    >
+                        Advanced Controls
+                        <div className="size-6 flex items-center justify-center hover:bg-[var(--feno-interactive-hovered-bg)] hover:border-[var(--feno-interactive-hovered-border)] rounded-lg">
+                            {!showAdvancedControls ? (
+                                <IconChevronUp className="size-4" />
+                            ) : (
+                                <IconChevronDown className="size-4" />
+                            )}
+                        </div>
                     </div>
-                )}
+                    <AnimatePresence>
+                        {showAdvancedControls && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.2, ease: "easeOut" }}
+                                className="overflow-hidden"
+                            >
+                                <div className="p-3 px-4">
+                                    <HueSaturationControls
+                                        onHueChange={handleHueChange}
+                                        onSaturationChange={
+                                            handleSaturationChange
+                                        }
+                                    />
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
             </div>
-        </div>
+        </AnimatePresence>
     );
 };
 
