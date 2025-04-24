@@ -118,8 +118,12 @@ const DeploymentEditor = () => {
 export const DeploymentMode = () => ({
     id: "deployment",
     actionRenderer: () => (
-        <Button variant="outline" size="sm">
-            Deploy
+        <Button
+            variant="custom"
+            size="sm"
+            className="border border-[var(--feno-border-1)] hover:border-[var(--feno-border-2)] hover:bg-[var(--feno-surface-1)]"
+        >
+            Publish
         </Button>
     ),
     editorRenderer: () => <DeploymentEditor />,

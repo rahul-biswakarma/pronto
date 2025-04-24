@@ -1,5 +1,7 @@
 "use client";
+import { Button } from "@/libs/ui/button";
 import { TiptapEditor } from "@/libs/ui/tiptap/tiptap-editor";
+import { cn } from "@/libs/utils/misc";
 import { IconEdit } from "@tabler/icons-react";
 import DOMPurify from "dompurify";
 import { motion } from "framer-motion";
@@ -238,15 +240,15 @@ export const ContentEditorMode = () => {
         id: "content-editor",
         label: "Content Editor",
         actionRenderer: (isActive: boolean) => (
-            <div
-                className={`flex items-center gap-1 px-2 py-1 rounded-lg cursor-pointer transition-colors ${
-                    isActive
-                        ? "bg-[var(--feno-accent)] text-white"
-                        : "hover:bg-[var(--feno-surface-3)]"
-                }`}
+            <Button
+                variant="custom"
+                size="icon"
+                className={cn("feno-mode-button", {
+                    "feno-mode-active-button": isActive,
+                })}
             >
                 <IconEdit size={16} />
-            </div>
+            </Button>
         ),
         editorRenderer: () => <ContentEditor />,
     };

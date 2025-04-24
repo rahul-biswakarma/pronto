@@ -10,7 +10,7 @@ const ProfileSettings: React.FC = () => {
     const { user } = useEditor();
 
     return (
-        <div className="p-6 space-y-8 w-full bg-card min-w-[600px] text-card-foreground rounded-lg shadow">
+        <div className="p-6 space-y-8 w-full bg-card min-w-[500px] text-card-foreground rounded-lg shadow">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4 w-full">
                     <div className="relative group">

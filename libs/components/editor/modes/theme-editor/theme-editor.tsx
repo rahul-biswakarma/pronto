@@ -169,9 +169,11 @@ export const ThemeEditorMode = (): EditorMode => {
         label: "Theme Editor",
         actionRenderer: (isActive) => (
             <Button
-                variant="ghost"
+                variant="custom"
                 size="icon"
-                className={isActive ? "bg-blue-500/10 text-blue-700" : ""}
+                className={cn("feno-mode-button", {
+                    "feno-mode-active-button": isActive,
+                })}
             >
                 <IconPalette className="size-[17px] stroke-[1.8]" />
             </Button>

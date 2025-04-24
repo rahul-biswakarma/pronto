@@ -42,12 +42,12 @@ export const Moder = () => {
             </AnimatePresence>
 
             <motion.div className="w-full flex">
-                <div className="flex items-center w-full">
+                <div className="flex items-center w-full gap-1">
                     {Object.values(modes).map((mode) => (
                         <motion.div
                             key={mode.id}
                             className={cn(
-                                "p-1",
+                                "py-1",
                                 mode.id === "deployment" && "ml-auto",
                             )}
                             onClick={() => setModeId(mode.id)}

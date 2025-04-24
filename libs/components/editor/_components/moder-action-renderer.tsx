@@ -18,11 +18,9 @@ export const ModerActionRenderer = ({
             <TooltipTrigger asChild>
                 <Button
                     size="icon"
-                    variant="ghost"
+                    variant="custom"
                     className={cn(
-                        "text-[#444] rounded-lg cursor-pointer hover:bg-background p-0.5 [&_svg:not([class*='size-'])]:size-[17px] [&_svg]:stroke-[1.8]",
-                        active &&
-                            "bg-blue-500/10 [&_svg]:text-blue-700 [&_svg]:stroke-[1.8] hover:bg-red-100",
+                        "rounded-lg cursor-pointer hover:bg-background p-0 [&_svg:not([class*='size-'])]:size-[17px] [&_svg]:stroke-[1.8]",
                     )}
                 >
                     <Icon size={16} />
