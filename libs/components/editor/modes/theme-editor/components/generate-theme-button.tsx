@@ -1,5 +1,4 @@
 import { Button } from "@/libs/ui/button";
-import { IconBrandGoogle } from "@tabler/icons-react";
 import type { ColorVariable, Theme } from "../types";
 import { generateThemesWithGemini } from "../utils";
 
@@ -53,11 +52,10 @@ export const GenerateThemeButton: React.FC<GenerateThemeButtonProps> = ({
         <Button
             onClick={handleGenerateThemes}
             disabled={isGenerating || initialColorVariables.length === 0}
-            className="w-full mt-3 flex items-center justify-center gap-1 text-xs"
+            className="w-full mt-3 flex items-center justify-center gap-1 text-xs border border-[var(--feno-border-1)] rounded-lg hover:border-[var(--feno-border-1)] hover:bg-[var(--feno-interactive-hover-bg)]"
             size="sm"
-            variant="outline"
+            variant="custom"
         >
-            <IconBrandGoogle size={14} />
             {isGenerating ? "Generating..." : "Generate with AI"}
         </Button>
     );

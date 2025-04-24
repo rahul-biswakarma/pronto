@@ -79,15 +79,23 @@ export const PredefinedThemesSection: React.FC<
         }
     };
 
-    if (themes.length === 0) return null;
-
     return (
         <div className="w-full">
-            <div className="flex justify-between items-center p-3 px-4 pb-0">
+            <div
+                className={cn(
+                    "flex justify-between items-center p-3 px-4 pb-0",
+                    themes.length === 0 && "pt-0",
+                )}
+            >
                 <p className="text-xs font-medium text-[var(--feno-text-1)]">
                     Themes
                 </p>
-                <div className="flex space-x-1">
+                <div
+                    className={cn(
+                        "flex space-x-1",
+                        themes.length === 0 && "hidden",
+                    )}
+                >
                     <Button
                         variant="ghost"
                         size="sm"
@@ -109,7 +117,7 @@ export const PredefinedThemesSection: React.FC<
                 </div>
             </div>
             {/* Horizontal scroll container */}
-            <div className="relative">
+            <div className={cn("relative", themes.length === 0 && "hidden")}>
                 <div
                     ref={scrollContainerRef}
                     className="flex gap-4 overflow-x-auto p-4 scrollbar-hide"

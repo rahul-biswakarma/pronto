@@ -115,7 +115,12 @@ const ThemeEditor: React.FC = () => {
     return (
         <AnimatePresence>
             <div className="flex h-full w-full flex-col gap-1.5 min-w-[500px] max-w-[500px]">
-                <div className="feno-mod-container flex flex-col gap-2">
+                <div
+                    className={cn(
+                        "feno-mod-container flex flex-col gap-2",
+                        !hasStoredThemes && "flex-row items-center",
+                    )}
+                >
                     <PredefinedThemesSection
                         themes={themes}
                         selectedThemeName={selectedThemeName}
@@ -123,12 +128,16 @@ const ThemeEditor: React.FC = () => {
                     />
 
                     {!hasStoredThemes && (
-                        <GenerateThemeButton
-                            initialColorVariables={initialColorVariables}
-                            isGenerating={isGenerating}
-                            onGenerateStarted={handleGenerateThemesStarted}
-                            onGenerateComplete={handleGenerateThemesComplete}
-                        />
+                        <div className="pb-3 px-4">
+                            <GenerateThemeButton
+                                initialColorVariables={initialColorVariables}
+                                isGenerating={isGenerating}
+                                onGenerateStarted={handleGenerateThemesStarted}
+                                onGenerateComplete={
+                                    handleGenerateThemesComplete
+                                }
+                            />
+                        </div>
                     )}
                 </div>
 
