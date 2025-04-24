@@ -20,9 +20,23 @@ export const Moder = () => {
         registerMode(ProfileSettingsMode());
     }, []);
 
+    const handleModeClick = (id: string) => {
+        // If clicking on the already active mode, deselect it
+        if (id === modeId) {
+            setModeId("");
+        } else {
+            setModeId(id);
+        }
+    };
+
     return (
         <motion.div
-            className="mx-auto fixed bottom-8 feno-font-wrapper left-1/2 -translate-x-1/2 bg-[var(--feno-surface-2)] shadow-[var(--feno-floating-shadow)] border border-[var(--feno-border-1)] p-1.5 pb-0 rounded-2xl max-w-[min(900px,90vw)] max-h-fit"
+            className={cn(
+                "mx-auto fixed bottom-8 feno-font-wrapper left-1/2 -translate-x-1/2 bg-[var(--feno-surface-2)] shadow-[var(--feno-floating-shadow)] border border-[var(--feno-border-1)] p-1.5 pb-0 rounded-2xl max-w-[min(900px,90vw)] max-h-fit",
+                {
+                    "pb-1.5": !modeId,
+                },
+            )}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2 }}
@@ -47,10 +61,13 @@ export const Moder = () => {
                         <motion.div
                             key={mode.id}
                             className={cn(
-                                "py-1",
+                                modeId !== "" && "py-1.5",
                                 mode.id === "deployment" && "ml-auto",
+                                mode.id === "deployment" &&
+                                    modeId === "" &&
+                                    "ml-2 border-l border-[var(--feno-border-1)] pl-5",
                             )}
-                            onClick={() => setModeId(mode.id)}
+                            onClick={() => handleModeClick(mode.id)}
                             initial={{ opacity: 0.7 }}
                             animate={{ opacity: 1 }}
                             transition={{ duration: 0.1 }}

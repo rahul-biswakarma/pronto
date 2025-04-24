@@ -33,7 +33,7 @@ export const EditorProvider: React.FC<{
 }) => {
     const iframeRef = useRef<HTMLIFrameElement>(null);
 
-    const [modeId, setModeId] = useState<string>("section-editor");
+    const [modeId, setModeId] = useState<string>("");
     const [modes, setModes] = useState<Record<string, EditorMode>>({});
     const [previewMode, setPreviewMode] = useState<boolean>(true);
     const [portfolioHtml, setPortfolioHtml] = useState<string>(html);
