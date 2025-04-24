@@ -137,6 +137,14 @@ export const PredefinedThemesSection: React.FC<
                         const textLightness = "0.55"; // Text and UI elements - softer appearance
                         const lineLightness = "0.75"; // Border color - more subtle
 
+                        // Generate color variants for the boxes
+                        const colorVariants = [
+                            { l: "0.85", c: chroma * 1.2 }, // Lighter variant
+                            { l: "0.75", c: chroma * 1.5 }, // Medium-light variant
+                            { l: "0.65", c: chroma * 1.8 }, // Medium-dark variant
+                            { l: "0.55", c: chroma * 2.0 }, // Darker variant
+                        ];
+
                         return (
                             <button
                                 type="button"
@@ -151,118 +159,29 @@ export const PredefinedThemesSection: React.FC<
                             >
                                 {/* Theme card preview */}
                                 <div className="relative p-1 pb-2 w-full flex flex-col">
-                                    {/* Phone/App preview mockup */}
+                                    {/* Phone/App preview mockup with gradient */}
                                     <div
-                                        className="rounded-lg w-full h-24 p-2 mb-1 border overflow-hidden flex flex-col gap-1"
+                                        className="relative rounded-lg w-full h-24 p-2 mb-1 border overflow-hidden flex flex-col gap-1"
                                         style={{
-                                            backgroundColor: `oklch(${contentLightness} ${chroma} ${hue})`,
+                                            background: `linear-gradient(135deg, oklch(${contentLightness} ${chroma * 0.8} ${hue}) 0%, oklch(${
+                                                Number(contentLightness) - 0.03
+                                            } ${chroma * 1.2} ${
+                                                Number(hue) + 5
+                                            }) 100%)`,
                                             borderColor: `oklch(${lineLightness} ${chroma} ${hue})`,
                                         }}
                                     >
-                                        {/* Status bar */}
-                                        <div className="flex justify-between items-center w-full">
-                                            <div
-                                                className="w-8 h-1 rounded-sm"
-                                                style={{
-                                                    backgroundColor: `oklch(${textLightness} ${chroma} ${hue})`,
-                                                }}
-                                            />
-                                            <div className="flex gap-1">
+                                        {/* Color variant boxes - bottom right */}
+                                        <div className="absolute bottom-2 right-2 flex gap-1">
+                                            {colorVariants.map((variant) => (
                                                 <div
-                                                    className="w-1 h-1 rounded-full"
+                                                    key={variant.l + variant.c}
+                                                    className="w-5 h-2.5 rounded-sm shadow-sm"
                                                     style={{
-                                                        backgroundColor: `oklch(${textLightness} ${chroma} ${hue})`,
+                                                        backgroundColor: `oklch(${variant.l} ${variant.c} ${hue})`,
                                                     }}
                                                 />
-                                                <div
-                                                    className="w-1 h-1 rounded-full"
-                                                    style={{
-                                                        backgroundColor: `oklch(${textLightness} ${chroma} ${hue})`,
-                                                    }}
-                                                />
-                                                <div
-                                                    className="w-1 h-1 rounded-full"
-                                                    style={{
-                                                        backgroundColor: `oklch(${textLightness} ${chroma} ${hue})`,
-                                                    }}
-                                                />
-                                            </div>
-                                        </div>
-
-                                        {/* Content area */}
-                                        <div className="flex gap-2 items-start">
-                                            <div
-                                                className="w-8 h-8 rounded"
-                                                style={{
-                                                    backgroundColor: `oklch(0.6 ${chroma} ${hue})`,
-                                                }}
-                                            />
-                                            <div className="flex-1 flex flex-col gap-1">
-                                                <div
-                                                    className="w-full h-1 rounded-sm"
-                                                    style={{
-                                                        backgroundColor: `oklch(${textLightness} ${chroma} ${hue})`,
-                                                    }}
-                                                />
-                                                <div
-                                                    className="w-full h-1 rounded-sm"
-                                                    style={{
-                                                        backgroundColor: `oklch(${textLightness} ${chroma} ${hue})`,
-                                                    }}
-                                                />
-                                                <div
-                                                    className="w-3/4 h-1 rounded-sm"
-                                                    style={{
-                                                        backgroundColor: `oklch(${textLightness} ${chroma} ${hue})`,
-                                                    }}
-                                                />
-                                            </div>
-                                        </div>
-
-                                        {/* List area */}
-                                        <div className="mt-auto flex flex-col gap-1">
-                                            <div className="flex justify-between">
-                                                <div
-                                                    className="w-10 h-1 rounded-sm"
-                                                    style={{
-                                                        backgroundColor: `oklch(${textLightness} ${chroma} ${hue})`,
-                                                    }}
-                                                />
-                                                <div
-                                                    className="w-2 h-1 rounded-sm"
-                                                    style={{
-                                                        backgroundColor: `oklch(${textLightness} ${chroma} ${hue})`,
-                                                    }}
-                                                />
-                                            </div>
-                                            <div className="flex justify-between">
-                                                <div
-                                                    className="w-8 h-1 rounded-sm"
-                                                    style={{
-                                                        backgroundColor: `oklch(${textLightness} ${chroma} ${hue})`,
-                                                    }}
-                                                />
-                                                <div
-                                                    className="w-2 h-1 rounded-sm"
-                                                    style={{
-                                                        backgroundColor: `oklch(${textLightness} ${chroma} ${hue})`,
-                                                    }}
-                                                />
-                                            </div>
-                                            <div className="flex justify-between">
-                                                <div
-                                                    className="w-12 h-1 rounded-sm"
-                                                    style={{
-                                                        backgroundColor: `oklch(${textLightness} ${chroma} ${hue})`,
-                                                    }}
-                                                />
-                                                <div
-                                                    className="w-2 h-1 rounded-sm"
-                                                    style={{
-                                                        backgroundColor: `oklch(${textLightness} ${chroma} ${hue})`,
-                                                    }}
-                                                />
-                                            </div>
+                                            ))}
                                         </div>
                                     </div>
 

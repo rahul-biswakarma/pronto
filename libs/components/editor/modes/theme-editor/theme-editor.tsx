@@ -132,18 +132,16 @@ const ThemeEditor: React.FC = () => {
 
             <div className="feno-mod-container flex flex-col gap-1">
                 <div
+                    onClick={() =>
+                        setShowAdvancedControls(!showAdvancedControls)
+                    }
                     className={cn(
-                        "flex justify-between items-center p-3 text-xs font-medium text-[var(--feno-text-1)]  border-[var(--feno-border-1)]",
+                        "flex justify-between items-center p-3 px-4 text-xs font-medium text-[var(--feno-text-1)]  border-[var(--feno-border-1)]",
                         showAdvancedControls && "border-b",
                     )}
                 >
                     Advanced Controls
-                    <div
-                        className="size-6 flex items-center justify-center hover:bg-[var(--feno-interactive-hovered-bg)] hover:border-[var(--feno-interactive-hovered-border)] rounded-lg"
-                        onClick={() =>
-                            setShowAdvancedControls(!showAdvancedControls)
-                        }
-                    >
+                    <div className="size-6 flex items-center justify-center hover:bg-[var(--feno-interactive-hovered-bg)] hover:border-[var(--feno-interactive-hovered-border)] rounded-lg">
                         {!showAdvancedControls ? (
                             <IconChevronUp className="size-4" />
                         ) : (
