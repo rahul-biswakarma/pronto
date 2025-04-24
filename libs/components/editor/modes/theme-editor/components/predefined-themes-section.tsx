@@ -86,8 +86,8 @@ export const PredefinedThemesSection: React.FC<
     if (themes.length === 0) return null;
 
     return (
-        <div className="w-full ">
-            <div className="flex justify-between items-center border-b border-[var(--feno-border-2)] p-3 px-4">
+        <div className="w-full">
+            <div className="flex justify-between items-center p-3 px-4 pb-0">
                 <p className="text-xs font-medium text-[var(--feno-text-1)]">
                     Themes
                 </p>
@@ -153,7 +153,7 @@ export const PredefinedThemesSection: React.FC<
                             >
                                 {/* Theme preview */}
                                 <div
-                                    className="h-16 rounded bg-muted/50 border border-border/50 mb-1 p-1 flex flex-col justify-between relative overflow-hidden"
+                                    className="h-18 rounded bg-muted/50 border border-border/50 mb-1 p-1 flex flex-col justify-between relative overflow-hidden"
                                     style={{
                                         background: `linear-gradient(143deg, ${accentColors[0] || "#f0f0f0"} 0%, ${accentColors[1] || "#e0e0e0"} 50%, ${accentColors[2] || "#d0d0d0"} 100%)`,
                                     }}

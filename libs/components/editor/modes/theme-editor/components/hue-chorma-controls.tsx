@@ -94,7 +94,7 @@ export const HueSaturationControls: React.FC<HueSaturationControlsProps> = ({
         <div className="w-full">
             <div className="flex gap-4">
                 {/* Hue slider */}
-                <div className="flex-1">
+                <div className="flex flex-col flex-1 gap-2">
                     <Label
                         htmlFor="hue-slider"
                         className="text-xs font-medium mb-1 block text-[var(--feno-text-1)]"
@@ -124,7 +124,7 @@ export const HueSaturationControls: React.FC<HueSaturationControlsProps> = ({
                 </div>
 
                 {/* Chroma slider */}
-                <div className="flex-1">
+                <div className="flex flex-col flex-1 gap-2">
                     <Label
                         htmlFor="chroma-slider"
                         className="text-xs font-medium mb-1 block text-[var(--feno-text-1)]"

@@ -1,7 +1,12 @@
 "use client";
 
 import { Button } from "@/libs/ui/button";
-import { IconPalette } from "@tabler/icons-react";
+import { cn } from "@/libs/utils/misc";
+import {
+    IconChevronDown,
+    IconChevronUp,
+    IconPalette,
+} from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { useEditor } from "../../editor.context";
 import type { EditorMode } from "../../types/editor.types";
@@ -19,6 +24,8 @@ import {
 
 const ThemeEditor: React.FC = () => {
     const { iframeDocument } = useEditor();
+
+    const [showAdvancedControls, setShowAdvancedControls] = useState(false);
     const [colorVariables, setColorVariables] = useState<ColorVariable[]>([]);
     const [themes, setThemes] = useState<Theme[]>([]);
     const [selectedThemeName, setSelectedThemeName] = useState<string | null>(
@@ -124,15 +131,34 @@ const ThemeEditor: React.FC = () => {
             </div>
 
             <div className="feno-mod-container flex flex-col gap-1">
-                <div className="p-3 px-4 text-xs font-medium text-[var(--feno-text-1)] border-b border-[var(--feno-border-1)]">
+                <div
+                    className={cn(
+                        "flex justify-between items-center p-3 text-xs font-medium text-[var(--feno-text-1)]  border-[var(--feno-border-1)]",
+                        showAdvancedControls && "border-b",
+                    )}
+                >
                     Advanced Controls
+                    <div
+                        className="size-6 flex items-center justify-center hover:bg-[var(--feno-interactive-hovered-bg)] hover:border-[var(--feno-interactive-hovered-border)] rounded-lg"
+                        onClick={() =>
+                            setShowAdvancedControls(!showAdvancedControls)
+                        }
+                    >
+                        {!showAdvancedControls ? (
+                            <IconChevronUp className="size-4" />
+                        ) : (
+                            <IconChevronDown className="size-4" />
+                        )}
+                    </div>
                 </div>
-                <div className="p-3 px-4">
-                    <HueSaturationControls
-                        onHueChange={handleHueChange}
-                        onSaturationChange={handleSaturationChange}
-                    />
-                </div>
+                {showAdvancedControls && (
+                    <div className="p-3 px-4">
+                        <HueSaturationControls
+                            onHueChange={handleHueChange}
+                            onSaturationChange={handleSaturationChange}
+                        />
+                    </div>
+                )}
             </div>
         </div>
     );
