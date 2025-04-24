@@ -1,6 +1,4 @@
 "use client";
-
-import type { Database } from "@/libs/supabase/database.types";
 import type { User } from "@supabase/supabase-js";
 import type React from "react";
 import { createContext, useContext, useRef, useState } from "react";
@@ -19,25 +17,30 @@ export const useEditor = () => {
 export const EditorProvider: React.FC<{
   user: User;
   children: React.ReactNode;
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  dls: any;
   html: string;
-  portfolio: Database["public"]["Tables"]["portfolio"]["Row"];
-  dls: Record<string, any>;
+  domain: string;
+  activeRoute: string;
+  routes: { [key: string]: string };
   onHtmlChange?: (updatedHtml: string) => void;
 }> = ({
   user,
-  portfolio,
   children,
   html,
   dls,
+  domain,
+  activeRoute: currentActiveRoute,
+  routes,
   onHtmlChange: externalHtmlChangeHandler,
 }) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
-
   const [modeId, setModeId] = useState<string>("section-editor");
   const [modes, setModes] = useState<Record<string, EditorMode>>({});
   const [previewMode, setPreviewMode] = useState<boolean>(true);
-  const [portfolioHtml, setPortfolioHtml] = useState<string>(html);
   const [iframeDocument, setIframeDocument] = useState<Document | null>(null);
+  const [activeRoute, setActiveRoute] = useState<string>(currentActiveRoute);
+  const [portfolioHtml, setPortfolioHtml] = useState<string>(html);
 
   const registerMode = (mode: EditorMode) => {
     setModes((prevModes) => ({
@@ -64,18 +67,27 @@ export const EditorProvider: React.FC<{
       value={{
         dls,
         user,
+        domain,
         iframeRef,
+        // Editor state MOdes
+        modes,
         modeId,
-        portfolio,
         setModeId,
+        // Editor state Routes
+        routes,
+        activeRoute,
+        setActiveRoute,
+        // Editor state Portfolio
         portfolioHtml,
         setPortfolioHtml,
-        modes,
-        portfolioId: portfolio.id,
+        // Editor state Register Mode
         registerMode,
+        // Editor state Iframe Document
         iframeDocument,
         setIframeDocument,
+        // Editor state On HTML Change
         onHtmlChange,
+        // Editor state Preview Mode
         previewMode,
         setPreviewMode,
       }}
