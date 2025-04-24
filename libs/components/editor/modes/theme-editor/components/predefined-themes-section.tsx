@@ -1,10 +1,6 @@
 import { Button } from "@/libs/ui/button";
 import { cn } from "@/libs/utils/misc";
-import {
-    IconCheck,
-    IconChevronLeft,
-    IconChevronRight,
-} from "@tabler/icons-react";
+import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Theme } from "../types";
 import { getThemesFromStorage } from "../utils";
@@ -116,7 +112,7 @@ export const PredefinedThemesSection: React.FC<
             <div className="relative">
                 <div
                     ref={scrollContainerRef}
-                    className="flex gap-2 overflow-x-auto p-4 scrollbar-hide"
+                    className="flex gap-4 overflow-x-auto p-4 scrollbar-hide"
                     style={{
                         scrollbarWidth: "none" /* Firefox */,
                         msOverflowStyle: "none" /* IE and Edge */,
@@ -130,14 +126,16 @@ export const PredefinedThemesSection: React.FC<
 
                     {themes.map((theme) => {
                         const isSelected = selectedThemeName === theme.name;
-                        const primaryColor =
-                            theme.colors["--primary"] ||
-                            Object.values(theme.colors)[0] ||
-                            "#000000"; // Fallback color
+                        const hue = theme.colors["--feno-color-hue"] || "210";
+                        const chroma =
+                            Number.parseFloat(
+                                theme.colors["--feno-color-chroma"] || "0.05",
+                            ) * 0.7; // Reduce chroma for softer colors
 
-                        const accentColors = Object.values(theme.colors)
-                            .filter((c) => c !== primaryColor)
-                            .slice(0, 3);
+                        // Use consistent values for all themes instead of light/dark distinction
+                        const contentLightness = "0.97"; // Background of the preview
+                        const textLightness = "0.55"; // Text and UI elements - softer appearance
+                        const lineLightness = "0.75"; // Border color - more subtle
 
                         return (
                             <button
@@ -145,46 +143,133 @@ export const PredefinedThemesSection: React.FC<
                                 key={theme.name}
                                 onClick={() => onSelectTheme(theme)}
                                 className={cn(
-                                    "border rounded-md p-1 w-32 flex-shrink-0 text-left transition-all focus:outline-none",
+                                    "border rounded-xl w-36 flex-shrink-0 overflow-hidden transition-all focus:outline-none",
                                     isSelected
-                                        ? "border-blue-700/90 ring-1 ring-blue-700"
+                                        ? "ring-2 ring-blue-500"
                                         : "border-border hover:border-blue-400",
                                 )}
                             >
-                                {/* Theme preview */}
-                                <div
-                                    className="h-18 rounded bg-muted/50 border border-border/50 mb-1 p-1 flex flex-col justify-between relative overflow-hidden"
-                                    style={{
-                                        background: `linear-gradient(143deg, ${accentColors[0] || "#f0f0f0"} 0%, ${accentColors[1] || "#e0e0e0"} 50%, ${accentColors[2] || "#d0d0d0"} 100%)`,
-                                    }}
-                                >
-                                    <div className="flex space-x-1">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-red-500/70" />
-                                        <div className="w-1.5 h-1.5 rounded-full bg-yellow-500/70" />
-                                        <div className="w-1.5 h-1.5 rounded-full bg-green-500/70" />
-                                    </div>
-                                    <div className="flex justify-end gap-1">
-                                        {accentColors.map((color, idx) => (
+                                {/* Theme card preview */}
+                                <div className="relative p-1 pb-2 w-full flex flex-col">
+                                    {/* Phone/App preview mockup */}
+                                    <div
+                                        className="rounded-lg w-full h-24 p-2 mb-1 border overflow-hidden flex flex-col gap-1"
+                                        style={{
+                                            backgroundColor: `oklch(${contentLightness} ${chroma} ${hue})`,
+                                            borderColor: `oklch(${lineLightness} ${chroma} ${hue})`,
+                                        }}
+                                    >
+                                        {/* Status bar */}
+                                        <div className="flex justify-between items-center w-full">
                                             <div
-                                                key={`${theme.name}-accent-${idx}`}
-                                                className="w-3 h-3 rounded border border-background/50"
+                                                className="w-8 h-1 rounded-sm"
                                                 style={{
-                                                    backgroundColor: color,
+                                                    backgroundColor: `oklch(${textLightness} ${chroma} ${hue})`,
                                                 }}
                                             />
-                                        ))}
+                                            <div className="flex gap-1">
+                                                <div
+                                                    className="w-1 h-1 rounded-full"
+                                                    style={{
+                                                        backgroundColor: `oklch(${textLightness} ${chroma} ${hue})`,
+                                                    }}
+                                                />
+                                                <div
+                                                    className="w-1 h-1 rounded-full"
+                                                    style={{
+                                                        backgroundColor: `oklch(${textLightness} ${chroma} ${hue})`,
+                                                    }}
+                                                />
+                                                <div
+                                                    className="w-1 h-1 rounded-full"
+                                                    style={{
+                                                        backgroundColor: `oklch(${textLightness} ${chroma} ${hue})`,
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Content area */}
+                                        <div className="flex gap-2 items-start">
+                                            <div
+                                                className="w-8 h-8 rounded"
+                                                style={{
+                                                    backgroundColor: `oklch(0.6 ${chroma} ${hue})`,
+                                                }}
+                                            />
+                                            <div className="flex-1 flex flex-col gap-1">
+                                                <div
+                                                    className="w-full h-1 rounded-sm"
+                                                    style={{
+                                                        backgroundColor: `oklch(${textLightness} ${chroma} ${hue})`,
+                                                    }}
+                                                />
+                                                <div
+                                                    className="w-full h-1 rounded-sm"
+                                                    style={{
+                                                        backgroundColor: `oklch(${textLightness} ${chroma} ${hue})`,
+                                                    }}
+                                                />
+                                                <div
+                                                    className="w-3/4 h-1 rounded-sm"
+                                                    style={{
+                                                        backgroundColor: `oklch(${textLightness} ${chroma} ${hue})`,
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* List area */}
+                                        <div className="mt-auto flex flex-col gap-1">
+                                            <div className="flex justify-between">
+                                                <div
+                                                    className="w-10 h-1 rounded-sm"
+                                                    style={{
+                                                        backgroundColor: `oklch(${textLightness} ${chroma} ${hue})`,
+                                                    }}
+                                                />
+                                                <div
+                                                    className="w-2 h-1 rounded-sm"
+                                                    style={{
+                                                        backgroundColor: `oklch(${textLightness} ${chroma} ${hue})`,
+                                                    }}
+                                                />
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <div
+                                                    className="w-8 h-1 rounded-sm"
+                                                    style={{
+                                                        backgroundColor: `oklch(${textLightness} ${chroma} ${hue})`,
+                                                    }}
+                                                />
+                                                <div
+                                                    className="w-2 h-1 rounded-sm"
+                                                    style={{
+                                                        backgroundColor: `oklch(${textLightness} ${chroma} ${hue})`,
+                                                    }}
+                                                />
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <div
+                                                    className="w-12 h-1 rounded-sm"
+                                                    style={{
+                                                        backgroundColor: `oklch(${textLightness} ${chroma} ${hue})`,
+                                                    }}
+                                                />
+                                                <div
+                                                    className="w-2 h-1 rounded-sm"
+                                                    style={{
+                                                        backgroundColor: `oklch(${textLightness} ${chroma} ${hue})`,
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-xs truncate">
+
+                                    {/* Theme name */}
+                                    <span className="text-xs">
                                         {theme.name}
                                     </span>
-                                    {isSelected && (
-                                        <IconCheck
-                                            size={12}
-                                            className="text-primary flex-shrink-0"
-                                        />
-                                    )}
                                 </div>
                             </button>
                         );
