@@ -23,18 +23,6 @@ export const POST = withErrorHandling(
                 );
             }
 
-            // Check if Gemini is enabled
-            if (!process.env.USE_GEMINI || process.env.USE_GEMINI !== "true") {
-                return createSuccessResponse(
-                    {
-                        themes: generateFallbackThemes(body.currentTheme),
-                        message:
-                            "Generated themes using fallback method (Gemini not enabled)",
-                    },
-                    requestId,
-                );
-            }
-
             // Initialize Gemini client
             const geminiClient = getGeminiClient();
 

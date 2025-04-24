@@ -121,27 +121,39 @@ export const SectionHighlighting: React.FC<SectionHighlightingProps> = ({
         iframeDocument.head.appendChild(style);
 
         // Add event listeners with capture phase
-        iframeDocument.body.addEventListener(
-            "mouseover",
-            handleMouseOver,
-            true,
-        );
-        iframeDocument.body.addEventListener("mouseout", handleMouseOut, true);
-        iframeDocument.body.addEventListener("click", handleClick, true);
-
-        return () => {
-            // Clean up event listeners and styles
-            iframeDocument.body.removeEventListener(
+        if (iframeDocument?.body) {
+            iframeDocument.body.addEventListener(
                 "mouseover",
                 handleMouseOver,
                 true,
             );
-            iframeDocument.body.removeEventListener(
+            iframeDocument.body.addEventListener(
                 "mouseout",
                 handleMouseOut,
                 true,
             );
-            iframeDocument.body.removeEventListener("click", handleClick, true);
+            iframeDocument.body.addEventListener("click", handleClick, true);
+        }
+
+        return () => {
+            // Clean up event listeners and styles
+            if (iframeDocument?.body) {
+                iframeDocument.body.removeEventListener(
+                    "mouseover",
+                    handleMouseOver,
+                    true,
+                );
+                iframeDocument.body.removeEventListener(
+                    "mouseout",
+                    handleMouseOut,
+                    true,
+                );
+                iframeDocument.body.removeEventListener(
+                    "click",
+                    handleClick,
+                    true,
+                );
+            }
 
             // Remove styles and classes from all elements
             if (currentSelectedElement) {
@@ -152,17 +164,19 @@ export const SectionHighlighting: React.FC<SectionHighlightingProps> = ({
                 );
             }
 
-            const hoveredElements = iframeDocument.querySelectorAll(
-                `.${PAGE_EDITOR_HOVER_ELEMENT_CLASS}`,
-            );
-            for (const el of hoveredElements) {
-                (el as HTMLElement).style.outline = "";
-                (el as HTMLElement).style.outlineOffset = "";
-                el.classList.remove(PAGE_EDITOR_HOVER_ELEMENT_CLASS);
-            }
+            if (iframeDocument) {
+                const hoveredElements = iframeDocument.querySelectorAll(
+                    `.${PAGE_EDITOR_HOVER_ELEMENT_CLASS}`,
+                );
+                for (const el of hoveredElements) {
+                    (el as HTMLElement).style.outline = "";
+                    (el as HTMLElement).style.outlineOffset = "";
+                    el.classList.remove(PAGE_EDITOR_HOVER_ELEMENT_CLASS);
+                }
 
-            // Remove style element
-            style.remove();
+                // Remove style element
+                style.remove();
+            }
         };
     }, [iframeDocument, modeId, setSelectedElement, setPrompt, isGenerating]);
 

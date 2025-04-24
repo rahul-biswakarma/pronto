@@ -13,6 +13,7 @@ import type { ColorVariable, Theme } from "./types";
 import {
     applyTheme,
     extractColorVariables,
+    getThemesFromStorage,
     updateColorVariable,
 } from "./utils";
 
@@ -27,6 +28,16 @@ const ThemeEditor: React.FC = () => {
         ColorVariable[]
     >([]);
     const [isGenerating, setIsGenerating] = useState(false);
+    const [hasStoredThemes, setHasStoredThemes] = useState(false);
+
+    // Check for stored themes on mount
+    useEffect(() => {
+        const savedThemes = getThemesFromStorage();
+        if (savedThemes.length > 0) {
+            setThemes(savedThemes);
+            setHasStoredThemes(true);
+        }
+    }, []);
 
     // Extract color variables from iframe document on first load
     useEffect(() => {
@@ -103,26 +114,26 @@ const ThemeEditor: React.FC = () => {
     const handleGenerateThemesComplete = (newThemes: Theme[]) => {
         setThemes(newThemes);
         setIsGenerating(false);
+        setHasStoredThemes(true); // Set to true when themes are generated
     };
 
     return (
         <div className="flex h-full w-full flex-col gap-1.5 min-w-[500px] max-w-[500px]">
             <div className="feno-mod-container p-3">
-                <h2 className="text-[16px] font-medium leading-none text-[var(--feno-text-1)]">
-                    Theme Editor
-                </h2>
                 <PredefinedThemesSection
                     themes={themes}
                     selectedThemeName={selectedThemeName}
                     onSelectTheme={handleSelectTheme}
                 />
 
-                <GenerateThemeButton
-                    initialColorVariables={initialColorVariables}
-                    isGenerating={isGenerating}
-                    onGenerateStarted={handleGenerateThemesStarted}
-                    onGenerateComplete={handleGenerateThemesComplete}
-                />
+                {!hasStoredThemes && (
+                    <GenerateThemeButton
+                        initialColorVariables={initialColorVariables}
+                        isGenerating={isGenerating}
+                        onGenerateStarted={handleGenerateThemesStarted}
+                        onGenerateComplete={handleGenerateThemesComplete}
+                    />
+                )}
             </div>
 
             <div className="feno-mod-container p-3 flex flex-col gap-3">

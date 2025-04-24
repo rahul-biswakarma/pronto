@@ -7,6 +7,7 @@ import {
 } from "@tabler/icons-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Theme } from "../types";
+import { getThemesFromStorage } from "../utils";
 
 interface PredefinedThemesSectionProps {
     themes: Theme[];
@@ -19,10 +20,21 @@ interface PredefinedThemesSectionProps {
  */
 export const PredefinedThemesSection: React.FC<
     PredefinedThemesSectionProps
-> = ({ themes, selectedThemeName, onSelectTheme }) => {
+> = ({ themes: propThemes, selectedThemeName, onSelectTheme }) => {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(false);
+    const [themes, setThemes] = useState<Theme[]>(propThemes);
+
+    // Load themes from localStorage on mount
+    useEffect(() => {
+        const savedThemes = getThemesFromStorage();
+        if (savedThemes.length > 0) {
+            setThemes(savedThemes);
+        } else {
+            setThemes(propThemes);
+        }
+    }, [propThemes]);
 
     // Check if we can scroll in either direction
     const checkScroll = useCallback(() => {
@@ -35,7 +47,6 @@ export const PredefinedThemesSection: React.FC<
     }, []);
 
     // Set up scroll detection
-    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         const container = scrollContainerRef.current;
         checkScroll(); // Initial check
@@ -100,7 +111,6 @@ export const PredefinedThemesSection: React.FC<
                     </Button>
                 </div>
             </div>
-
             {/* Horizontal scroll container */}
             <div className="relative">
                 <div
@@ -179,14 +189,6 @@ export const PredefinedThemesSection: React.FC<
                         );
                     })}
                 </div>
-
-                {/* Gradient fades for scrolling indication */}
-                {canScrollLeft && (
-                    <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-white" />
-                )}
-                {canScrollRight && (
-                    <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-white" />
-                )}
             </div>
         </div>
     );

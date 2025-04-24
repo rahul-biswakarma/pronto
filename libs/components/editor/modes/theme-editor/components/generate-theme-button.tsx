@@ -34,18 +34,13 @@ export const GenerateThemeButton: React.FC<GenerateThemeButtonProps> = ({
                 {} as Record<string, string>,
             );
 
+            console.log(currentTheme);
+
             // Generate themes
             const themes = await generateThemesWithGemini(currentTheme);
 
-            // Save to localStorage for persistence
-            try {
-                localStorage.setItem(
-                    "feno-predefined-themes",
-                    JSON.stringify(themes),
-                );
-            } catch (error) {
-                console.error("Error saving themes to localStorage:", error);
-            }
+            // Themes are already saved by generateThemesWithGemini function,
+            // so no need to manually save here
 
             // Update state through callback
             onGenerateComplete(themes);
