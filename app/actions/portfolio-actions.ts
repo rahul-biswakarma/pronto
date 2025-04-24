@@ -3,22 +3,13 @@ import { getGeminiClient } from "@/libs/utils/ai/ai-client";
 import { htmlGenPromptGemini } from "@/libs/utils/ai/html-gen-prompt-gemini";
 import { checkAuthentication } from "@/libs/utils/auth";
 import { uploadPortfolioFileInBucket } from "@/libs/utils/supabase-storage";
+import ShortUniqueId from "short-unique-id";
 
 type PortfolioActionResult = {
     success: boolean;
     portfolioId?: string;
     error?: string;
 };
-
-function emailToUsername(email: string) {
-    const localPart = email.split("@")[0];
-    return localPart
-        .toLowerCase()
-        .replace(/[._+]/g, "-") // Replace . _ + with hyphen
-        .replace(/[^a-z0-9-]/g, "") // Remove other non-alphanumerics
-        .replace(/-+/g, "-") // Replace multiple hyphens with single
-        .replace(/^-|-$/g, ""); // Trim hyphens at start/end
-}
 
 export async function generatePortfolioAction({
     content,
@@ -38,7 +29,7 @@ export async function generatePortfolioAction({
 
     const supabase = auth.supabase;
     const userId = auth.userId;
-    const domain = emailToUsername(auth.user?.email ?? "");
+    const domain = new ShortUniqueId({ length: 6 }).rnd();
 
     let portfolioId: string | undefined;
 

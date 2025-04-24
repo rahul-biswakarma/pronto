@@ -28,7 +28,9 @@ export type Template = {
 
 const PDFUpload = ({ template }: { template: Template }) => {
     const { pdfContent, setSelectedTemplateId } = useOnboarding();
+
     const router = useRouter();
+
     const [isPending, startTransition] = useTransition();
     const [error, setError] = useState<string | null>(null);
 
