@@ -155,11 +155,11 @@ export const SectionHighlighting: React.FC<SectionHighlightingProps> = ({
             const hoveredElements = iframeDocument.querySelectorAll(
                 `.${PAGE_EDITOR_HOVER_ELEMENT_CLASS}`,
             );
-            hoveredElements.forEach((el) => {
+            for (const el of hoveredElements) {
                 (el as HTMLElement).style.outline = "";
                 (el as HTMLElement).style.outlineOffset = "";
                 el.classList.remove(PAGE_EDITOR_HOVER_ELEMENT_CLASS);
-            });
+            }
 
             // Remove style element
             style.remove();

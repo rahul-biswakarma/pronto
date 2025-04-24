@@ -106,26 +106,28 @@ const ThemeEditor: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col h-full gap-2 feno-mod-container overflow-hidden min-w-[500px] max-w-[500px] p-3">
-            <h3 className="text-sm font-medium leading-none">Theme Editor</h3>
+        <div className="flex h-full w-full flex-col gap-1.5 min-w-[500px] max-w-[500px]">
+            <div className="feno-mod-container">
+                <HueSaturationControls
+                    onHueChange={handleHueChange}
+                    onSaturationChange={handleSaturationChange}
+                />
+            </div>
 
-            <HueSaturationControls
-                onHueChange={handleHueChange}
-                onSaturationChange={handleSaturationChange}
-            />
+            <div className="feno-mod-container">
+                <PredefinedThemesSection
+                    themes={themes}
+                    selectedThemeName={selectedThemeName}
+                    onSelectTheme={handleSelectTheme}
+                />
 
-            <PredefinedThemesSection
-                themes={themes}
-                selectedThemeName={selectedThemeName}
-                onSelectTheme={handleSelectTheme}
-            />
-
-            <GenerateThemeButton
-                initialColorVariables={initialColorVariables}
-                isGenerating={isGenerating}
-                onGenerateStarted={handleGenerateThemesStarted}
-                onGenerateComplete={handleGenerateThemesComplete}
-            />
+                <GenerateThemeButton
+                    initialColorVariables={initialColorVariables}
+                    isGenerating={isGenerating}
+                    onGenerateStarted={handleGenerateThemesStarted}
+                    onGenerateComplete={handleGenerateThemesComplete}
+                />
+            </div>
         </div>
     );
 };

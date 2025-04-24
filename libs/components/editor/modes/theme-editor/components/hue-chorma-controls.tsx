@@ -74,10 +74,10 @@ export const HueSaturationControls: React.FC<HueSaturationControlsProps> = ({
 
     // Generate colors for the hue slider gradient
     const hueGradient = `linear-gradient(to right,
-    hsl(0, 100%, 50%), hsl(60, 100%, 50%),
-    hsl(120, 100%, 50%), hsl(180, 100%, 50%),
-    hsl(240, 100%, 50%), hsl(300, 100%, 50%),
-    hsl(360, 100%, 50%))`;
+    hsl(0, 75%, 60%), hsl(60, 75%, 60%),
+    hsl(120, 75%, 60%), hsl(180, 75%, 60%),
+    hsl(240, 75%, 60%), hsl(300, 75%, 60%),
+    hsl(360, 75%, 60%))`;
 
     // Generate colors for the chroma slider gradient
     const chromaGradient = `linear-gradient(to right,
@@ -85,74 +85,72 @@ export const HueSaturationControls: React.FC<HueSaturationControlsProps> = ({
     hsl(${hue}, 100%, 50%))`;
 
     // Current color for hue thumb
-    const hueThumbColor = `hsl(${hue}, 100%, 50%)`;
+    const hueThumbColor = `hsl(${hue}, 75%, 60%)`;
 
     // Current color for chroma thumb
     const chromaThumbColor = `hsl(${hue}, ${chroma * 100}%, 50%)`;
 
     return (
-        <div className="space-y-8 w-full py-3">
-            <div className="flex items-center justify-between gap-4">
-                <Label
-                    htmlFor="hue-slider"
-                    className="text-base font-medium w-28"
-                >
-                    Base tone:
-                </Label>
-                <div className="flex-grow relative">
-                    <div
-                        className="absolute inset-0 rounded-full"
-                        style={{
-                            background: hueGradient,
-                            height: "100%",
-                            width: "100%",
-                        }}
-                    />
-                    <Slider
-                        id="hue-slider"
-                        min={0}
-                        max={360}
-                        step={1}
-                        value={[hue]}
-                        thumbColor={hueThumbColor}
-                        onValueChange={handleHueChange}
-                        className="z-10"
-                    />
+        <div className="w-full p-3">
+            <div className="flex gap-4">
+                {/* Hue slider */}
+                <div className="flex-1">
+                    <Label
+                        htmlFor="hue-slider"
+                        className="text-xs font-medium mb-1 block"
+                    >
+                        Tone
+                    </Label>
+                    <div className="relative">
+                        <div
+                            className="absolute inset-0 rounded-full"
+                            style={{
+                                background: hueGradient,
+                                height: "100%",
+                                width: "100%",
+                            }}
+                        />
+                        <Slider
+                            id="hue-slider"
+                            min={0}
+                            max={360}
+                            step={1}
+                            value={[hue]}
+                            thumbColor={hueThumbColor}
+                            onValueChange={handleHueChange}
+                            className="z-10"
+                        />
+                    </div>
                 </div>
-                <div className="min-w-[80px] px-4 py-2 bg-white border border-[var(--feno-border-1)] rounded-md text-center">
-                    {Math.round(hue)}
-                </div>
-            </div>
 
-            <div className="flex items-center justify-between gap-4">
-                <Label
-                    htmlFor="chroma-slider"
-                    className="text-base font-medium w-28"
-                >
-                    Amount of color in gray:
-                </Label>
-                <div className="flex-grow relative">
-                    <div
-                        className="absolute inset-0 rounded-full"
-                        style={{
-                            background: chromaGradient,
-                            height: "100%",
-                            width: "100%",
-                        }}
-                    />
-                    <Slider
-                        id="chroma-slider"
-                        min={0}
-                        max={1}
-                        step={0.001}
-                        value={[chroma]}
-                        thumbColor={chromaThumbColor}
-                        onValueChange={handleChromaChange}
-                        className="z-10"
-                    />
-                </div>
-                <div className="min-w-[80px] px-4 py-2 bg-white border border-[var(--feno-border-1)] rounded-md text-center">
-                    {chroma.toFixed(3)}
+                {/* Chroma slider */}
+                <div className="flex-1">
+                    <Label
+                        htmlFor="chroma-slider"
+                        className="text-xs font-medium mb-1 block"
+                    >
+                        Intensity
+                    </Label>
+                    <div className="relative">
+                        <div
+                            className="absolute inset-0 rounded-full"
+                            style={{
+                                background: chromaGradient,
+                                height: "100%",
+                                width: "100%",
+                            }}
+                        />
+                        <Slider
+                            id="chroma-slider"
+                            min={0}
+                            max={1}
+                            step={0.001}
+                            value={[chroma]}
+                            thumbColor={chromaThumbColor}
+                            onValueChange={handleChromaChange}
+                            className="z-10"
+                        />
+                    </div>
                 </div>
             </div>
         </div>

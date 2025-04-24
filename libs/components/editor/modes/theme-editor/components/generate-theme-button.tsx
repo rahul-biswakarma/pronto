@@ -60,11 +60,12 @@ export const GenerateThemeButton: React.FC<GenerateThemeButtonProps> = ({
         <Button
             onClick={handleGenerateThemes}
             disabled={isGenerating || initialColorVariables.length === 0}
-            className="w-full mt-2 flex items-center justify-center gap-2"
+            className="w-full mt-3 flex items-center justify-center gap-1 text-xs"
             size="sm"
+            variant="outline"
         >
-            <IconBrandGoogle size={16} />
-            {isGenerating ? "Generating Themes..." : "Generate AI Themes"}
+            <IconBrandGoogle size={14} />
+            {isGenerating ? "Generating..." : "Generate with AI"}
         </Button>
     );
 };

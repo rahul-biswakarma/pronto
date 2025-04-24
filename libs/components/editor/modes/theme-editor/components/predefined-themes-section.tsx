@@ -74,29 +74,29 @@ export const PredefinedThemesSection: React.FC<
     if (themes.length === 0) return null;
 
     return (
-        <div>
-            <div className="flex justify-between items-center">
-                <h4 className="text-xs font-medium text-muted-foreground px-3">
-                    Predefined Themes
-                </h4>
+        <div className="w-full py-2">
+            <div className="flex justify-between items-center mb-2">
+                <p className="text-xs font-medium text-muted-foreground">
+                    Themes
+                </p>
                 <div className="flex space-x-1">
                     <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => scroll("left")}
                         disabled={!canScrollLeft}
-                        className="h-6 w-6 disabled:opacity-30"
+                        className="h-6 w-6 p-0 disabled:opacity-30"
                     >
-                        <IconChevronLeft size={16} />
+                        <IconChevronLeft size={14} />
                     </Button>
                     <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => scroll("right")}
                         disabled={!canScrollRight}
-                        className="h-6 w-6 disabled:opacity-30"
+                        className="h-6 w-6 p-0 disabled:opacity-30"
                     >
-                        <IconChevronRight size={16} />
+                        <IconChevronRight size={14} />
                     </Button>
                 </div>
             </div>
@@ -105,7 +105,7 @@ export const PredefinedThemesSection: React.FC<
             <div className="relative">
                 <div
                     ref={scrollContainerRef}
-                    className="relative flex space-x-3 overflow-x-auto -mx-4 p-7 pb-2 pt-2 scrollbar-hide"
+                    className="flex gap-2 overflow-x-auto py-1 scrollbar-hide"
                     style={{
                         scrollbarWidth: "none" /* Firefox */,
                         msOverflowStyle: "none" /* IE and Edge */,
@@ -134,30 +134,29 @@ export const PredefinedThemesSection: React.FC<
                                 key={theme.name}
                                 onClick={() => onSelectTheme(theme)}
                                 className={cn(
-                                    "border rounded-lg p-1.5 w-36 flex-shrink-0 text-left transition-all duration-150 focus:outline-none",
+                                    "border rounded-md p-1 w-32 flex-shrink-0 text-left transition-all focus:outline-none",
                                     isSelected
-                                        ? "border-blue-700/90 ring-2 ring-blue-700/90 ring-offset-2 ring-offset-background"
-                                        : "border-border hover:border-blue-400 hover:bg-blue-300/10",
+                                        ? "border-blue-700/90 ring-1 ring-blue-700"
+                                        : "border-border hover:border-blue-400",
                                 )}
                             >
                                 {/* Theme preview */}
                                 <div
-                                    className="h-20 rounded-lg bg-muted/50 border border-border/50 mb-2 p-1.5 flex flex-col justify-between relative overflow-hidden"
+                                    className="h-16 rounded bg-muted/50 border border-border/50 mb-1 p-1 flex flex-col justify-between relative overflow-hidden"
                                     style={{
                                         background: `linear-gradient(143deg, ${accentColors[0] || "#f0f0f0"} 0%, ${accentColors[1] || "#e0e0e0"} 50%, ${accentColors[2] || "#d0d0d0"} 100%)`,
                                     }}
                                 >
                                     <div className="flex space-x-1">
-                                        {/* Dots representing window controls */}
-                                        <div className="w-2 h-2 rounded-full bg-red-500/70" />
-                                        <div className="w-2 h-2 rounded-full bg-yellow-500/70" />
-                                        <div className="w-2 h-2 rounded-full bg-green-500/70" />
+                                        <div className="w-1.5 h-1.5 rounded-full bg-red-500/70" />
+                                        <div className="w-1.5 h-1.5 rounded-full bg-yellow-500/70" />
+                                        <div className="w-1.5 h-1.5 rounded-full bg-green-500/70" />
                                     </div>
-                                    <div className="flex justify-end space-x-1.5">
+                                    <div className="flex justify-end gap-1">
                                         {accentColors.map((color, idx) => (
                                             <div
                                                 key={`${theme.name}-accent-${idx}`}
-                                                className="w-4 h-4 rounded border border-background/50"
+                                                className="w-3 h-3 rounded border border-background/50"
                                                 style={{
                                                     backgroundColor: color,
                                                 }}
@@ -165,13 +164,13 @@ export const PredefinedThemesSection: React.FC<
                                         ))}
                                     </div>
                                 </div>
-                                <div className="flex items-center justify-between mt-1">
-                                    <span className="text-xs font-medium truncate">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-xs truncate">
                                         {theme.name}
                                     </span>
                                     {isSelected && (
                                         <IconCheck
-                                            size={16}
+                                            size={12}
                                             className="text-primary flex-shrink-0"
                                         />
                                     )}
@@ -183,10 +182,10 @@ export const PredefinedThemesSection: React.FC<
 
                 {/* Gradient fades for scrolling indication */}
                 {canScrollLeft && (
-                    <div className="pointer-events-none absolute inset-y-0 left-0 w-1/5 bg-gradient-to-r from-white" />
+                    <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-white" />
                 )}
                 {canScrollRight && (
-                    <div className="pointer-events-none absolute inset-y-0 right-0 w-1/5 bg-gradient-to-l from-white" />
+                    <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-white" />
                 )}
             </div>
         </div>
