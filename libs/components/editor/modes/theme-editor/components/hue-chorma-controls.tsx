@@ -91,13 +91,13 @@ export const HueSaturationControls: React.FC<HueSaturationControlsProps> = ({
     const chromaThumbColor = `hsl(${hue}, ${chroma * 100}%, 50%)`;
 
     return (
-        <div className="w-full p-3">
+        <div className="w-full">
             <div className="flex gap-4">
                 {/* Hue slider */}
                 <div className="flex-1">
                     <Label
                         htmlFor="hue-slider"
-                        className="text-xs font-medium mb-1 block"
+                        className="text-xs font-medium mb-1 block text-[var(--feno-text-1)]"
                     >
                         Tone
                     </Label>
@@ -127,7 +127,7 @@ export const HueSaturationControls: React.FC<HueSaturationControlsProps> = ({
                 <div className="flex-1">
                     <Label
                         htmlFor="chroma-slider"
-                        className="text-xs font-medium mb-1 block"
+                        className="text-xs font-medium mb-1 block text-[var(--feno-text-1)]"
                     >
                         Intensity
                     </Label>

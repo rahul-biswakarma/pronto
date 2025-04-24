@@ -107,14 +107,10 @@ const ThemeEditor: React.FC = () => {
 
     return (
         <div className="flex h-full w-full flex-col gap-1.5 min-w-[500px] max-w-[500px]">
-            <div className="feno-mod-container">
-                <HueSaturationControls
-                    onHueChange={handleHueChange}
-                    onSaturationChange={handleSaturationChange}
-                />
-            </div>
-
-            <div className="feno-mod-container">
+            <div className="feno-mod-container p-3">
+                <h2 className="text-[16px] font-medium leading-none text-[var(--feno-text-1)]">
+                    Theme Editor
+                </h2>
                 <PredefinedThemesSection
                     themes={themes}
                     selectedThemeName={selectedThemeName}
@@ -126,6 +122,13 @@ const ThemeEditor: React.FC = () => {
                     isGenerating={isGenerating}
                     onGenerateStarted={handleGenerateThemesStarted}
                     onGenerateComplete={handleGenerateThemesComplete}
+                />
+            </div>
+
+            <div className="feno-mod-container p-3 flex flex-col gap-3">
+                <HueSaturationControls
+                    onHueChange={handleHueChange}
+                    onSaturationChange={handleSaturationChange}
                 />
             </div>
         </div>
