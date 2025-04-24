@@ -4,8 +4,8 @@ import {
     IconBold,
     IconItalic,
     IconLink,
-    IconSend,
     IconStrikethrough,
+    IconX,
 } from "@tabler/icons-react";
 import "./tiptap.css";
 import { Link } from "@tiptap/extension-link";
@@ -26,6 +26,7 @@ interface TiptapEditorProps {
     initialContent: string;
     liveChange?: boolean;
     onChange: (html: string) => void;
+    onClose: () => void;
 }
 
 export const TiptapEditor: React.FC<TiptapEditorProps> = ({
@@ -33,6 +34,7 @@ export const TiptapEditor: React.FC<TiptapEditorProps> = ({
     onChange,
     liveChange = false,
     placeholder = "Send a message...",
+    onClose,
 }) => {
     const editor = useTiptapEditor({
         extensions: [
@@ -106,21 +108,9 @@ export const TiptapEditor: React.FC<TiptapEditorProps> = ({
     }
 
     return (
-        <div className="p-2 rounded-lg flex flex-col gap-1 min-w-[600px] relative border border-neutral-200 bg-white">
-            <MenuBar editor={editor} setLink={setLink} />
-            <EditorContent editor={editor} />
-            {!liveChange && (
-                <div className="flex justify-end mt-1 absolute bottom-2 right-2">
-                    <Button
-                        size="icon"
-                        onClick={() => editor && onChange(editor.getHTML())}
-                        className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg p-2"
-                        disabled={!editor?.getText().trim()}
-                    >
-                        <IconSend size={18} />
-                    </Button>
-                </div>
-            )}
+        <div className="rounded-xl flex flex-col gap-1 w-full relative">
+            <MenuBar editor={editor} setLink={setLink} onClose={onClose} />
+            <EditorContent className="px-2" editor={editor} />
         </div>
     );
 };
@@ -128,64 +118,94 @@ export const TiptapEditor: React.FC<TiptapEditorProps> = ({
 interface MenuBarProps {
     editor: Editor | null;
     setLink: () => void;
+    onClose: () => void;
 }
 
-const MenuBar = ({ editor, setLink }: MenuBarProps) => {
+const MenuBar = ({ editor, setLink, onClose }: MenuBarProps) => {
     if (!editor) {
         return null;
     }
 
     return (
-        <div className="flex items-center gap-0.5 flex-wrap">
-            <Button
-                size="icon"
-                variant="ghost"
-                onClick={() => editor.chain().focus().toggleBold().run()}
-                disabled={!editor.can().chain().focus().toggleBold().run()}
-                className={cn(
-                    "p-1",
-                    editor.isActive("bold") ? "is-active bg-neutral-200" : "",
-                )}
-            >
-                <IconBold size={16} />
-            </Button>
-            <Button
-                size="icon"
-                variant="ghost"
-                onClick={() => editor.chain().focus().toggleItalic().run()}
-                disabled={!editor.can().chain().focus().toggleItalic().run()}
-                className={cn(
-                    "p-1",
-                    editor.isActive("italic") ? "is-active bg-neutral-200" : "",
-                )}
-            >
-                <IconItalic size={16} />
-            </Button>
-            <div className="w-[1px] h-4 bg-neutral-200 mx-1" />
-            <Button
-                size="icon"
-                variant="ghost"
-                onClick={() => editor.chain().focus().toggleStrike().run()}
-                disabled={!editor.can().chain().focus().toggleStrike().run()}
-                className={cn(
-                    "p-1",
-                    editor.isActive("strike") ? "is-active bg-neutral-200" : "",
-                )}
-            >
-                <IconStrikethrough size={16} />
-            </Button>
-            <div className="w-[1px] h-4 bg-neutral-200 mx-1" />
-            <Button
-                size="icon"
-                variant="ghost"
-                onClick={setLink}
-                className={cn(
-                    "p-1",
-                    editor.isActive("link") ? "is-active bg-neutral-200" : "",
-                )}
-            >
-                <IconLink size={16} />
-            </Button>
+        <div className="flex items-center justify-between gap-0.5 flex-wrap border-b border-[var(--feno-border-1)] px-2 py-1">
+            <div className="flex items-center gap-1">
+                <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => editor.chain().focus().toggleBold().run()}
+                    disabled={!editor.can().chain().focus().toggleBold().run()}
+                    className={cn(
+                        "p-1",
+                        editor.isActive("bold")
+                            ? "is-active bg-neutral-200"
+                            : "",
+                    )}
+                >
+                    <IconBold size={16} />
+                </Button>
+                <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => editor.chain().focus().toggleItalic().run()}
+                    disabled={
+                        !editor.can().chain().focus().toggleItalic().run()
+                    }
+                    className={cn(
+                        "p-1",
+                        editor.isActive("italic")
+                            ? "is-active bg-neutral-200"
+                            : "",
+                    )}
+                >
+                    <IconItalic size={16} />
+                </Button>
+                <div className="w-[1px] h-4 bg-neutral-200 mx-1" />
+                <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => editor.chain().focus().toggleStrike().run()}
+                    disabled={
+                        !editor.can().chain().focus().toggleStrike().run()
+                    }
+                    className={cn(
+                        "p-1",
+                        editor.isActive("strike")
+                            ? "is-active bg-neutral-200"
+                            : "",
+                    )}
+                >
+                    <IconStrikethrough size={16} />
+                </Button>
+                <div className="w-[1px] h-4 bg-neutral-200 mx-1" />
+                <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={setLink}
+                    className={cn(
+                        "p-1",
+                        editor.isActive("link")
+                            ? "is-active bg-neutral-200"
+                            : "",
+                    )}
+                >
+                    <IconLink size={16} />
+                </Button>
+            </div>
+            <div>
+                <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={onClose}
+                    className={cn(
+                        "p-1",
+                        editor.isActive("bold")
+                            ? "is-active bg-neutral-200"
+                            : "",
+                    )}
+                >
+                    <IconX size={16} />
+                </Button>
+            </div>
         </div>
     );
 };

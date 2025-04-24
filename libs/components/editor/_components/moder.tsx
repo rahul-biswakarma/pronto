@@ -2,9 +2,9 @@ import { cn } from "@/libs/utils/misc";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect } from "react";
 import { useEditor } from "../editor.context";
+import { ContentEditorMode } from "../modes/content-editor";
 import { DeploymentMode } from "../modes/deployment/deployment";
 import { PageEditorMode } from "../modes/page-editor/page-editor";
-
 import { ThemeEditorMode } from "../modes/theme-editor/theme-editor";
 import { ProfileSettingsMode } from "../modes/user-setting/user-setting";
 
@@ -14,6 +14,7 @@ export const Moder = () => {
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         registerMode(PageEditorMode());
+        registerMode(ContentEditorMode());
         registerMode(ThemeEditorMode());
         registerMode(DeploymentMode());
         registerMode(ProfileSettingsMode());
