@@ -1,33 +1,60 @@
 "use client";
-
 import { Button } from "@/libs/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/libs/ui/popover";
-import { Plus } from "lucide-react";
+import {} from "@/libs/ui/popover";
+import { cn } from "@/libs/utils/misc";
+import {
+    IconArrowBackUp,
+    IconArrowForwardUp,
+    IconLink,
+    IconPlus,
+} from "@tabler/icons-react";
 import { useState } from "react";
-import { NavigationActionRoute } from "./navigation/navigation-action-route";
+import { useEditor } from "../editor.context";
 
 export const Navigation = () => {
+    const { domain } = useEditor();
+
     const [open, setOpen] = useState(false);
 
     return (
-        <div className="flex items-center gap-2 fixed top-4 left-1/2 -translate-x-1/2 mx-auto text-base">
-            <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger asChild>
+        <div
+            className={cn(
+                "flex flex-col items-center gap-2 fixed top-6 left-1/2 -translate-x-1/2 mx-auto text-base feno-mod-container",
+                open && "min-w-[500px] border-b border-[var(--feno-border-1)]",
+            )}
+        >
+            <div
+                className={cn(
+                    "flex w-full justify-center items-center p-2 px-3",
+                    open && "border-b border-[var(--feno-border-1)]",
+                )}
+            >
+                <div className="flex gap-2 items-center mr-6">
                     <Button
-                        variant="outline"
+                        variant="custom"
                         size="icon"
-                        className="cursor-pointer"
+                        className="flex gap-1 items-center"
                     >
-                        <Plus className="w-4 h-4" />
+                        <IconArrowBackUp strokeWidth={2} />
+                        <IconArrowForwardUp strokeWidth={2} />
                     </Button>
-                </PopoverTrigger>
-                <PopoverContent
-                    align="start"
-                    className="w-[400px] p-0 bg-transparent outline-none shadow-none border-none"
-                >
-                    <NavigationActionRoute className="rounded-lg" />
-                </PopoverContent>
-            </Popover>
+                </div>
+                <code className="text-blue-600 font-medium border border-dashed border-[var(--feno-border-2)] rounded-md px-1">
+                    {domain}
+                </code>
+                <code className="text-[var(--feno-text-2)]">.feno.app</code>
+                <code className="text-blue-600 font-medium border border-dashed border-[var(--feno-border-2)] rounded-md px-1">
+                    /
+                </code>
+                <Button variant="custom" size="icon" className="-ml-1">
+                    <IconPlus strokeWidth={2} />
+                </Button>
+                <Button variant="custom" size="icon" className="ml-3">
+                    <IconLink strokeWidth={2} />
+                </Button>
+            </div>
+
+            <div className={cn("flex-1", !open && "hidden")}>hello</div>
         </div>
     );
 };

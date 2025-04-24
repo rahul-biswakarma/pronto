@@ -3,16 +3,8 @@
 import { generateDynamicPage } from "@/app/actions/portfolio-actions-dynamic";
 import { useEditor } from "@/libs/components/editor/editor.context";
 import { templates } from "@/libs/constants/templates";
-import { Button } from "@/libs/ui/button";
-import {
-    PromptInput,
-    PromptInputAction,
-    PromptInputActions,
-    PromptInputTextarea,
-} from "@/libs/ui/prompt-input";
-import { cn } from "@/libs/utils/misc";
-import { ArrowUp, Square } from "lucide-react";
-import Image from "next/image";
+import {} from "@/libs/ui/prompt-input";
+import {} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { startTransition, useState } from "react";
 export const NavigationActionRoute = ({
@@ -21,9 +13,11 @@ export const NavigationActionRoute = ({
     className?: string;
 }) => {
     const { dls, domain, portfolioId } = useEditor();
+
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
     const router = useRouter();
 
     const article = templates[0];
@@ -68,50 +62,10 @@ export const NavigationActionRoute = ({
     };
 
     return (
-        <PromptInput
-            value={input}
-            onValueChange={handleValueChange}
-            isLoading={isLoading}
-            onSubmit={handleSubmit}
-            className={cn("w-full max-w-(--breakpoint-md)", className)}
-        >
-            {templates.map((template) => (
-                <div
-                    key={template.id}
-                    className="w-[100px] aspect-video overflow-hidden rounded-md border-2"
-                >
-                    <Image
-                        className="object-cover w-full"
-                        src={template.image}
-                        alt={template.name}
-                        width={100}
-                        height={100}
-                    />
-                </div>
-            ))}
-            <PromptInputTextarea
-                className="px-1 min-h-[160px]"
-                placeholder="Ask me anything..."
-                value={article.prompt}
-            />
-            <PromptInputActions className="justify-end pt-2">
-                <PromptInputAction
-                    tooltip={isLoading ? "Stop generation" : "Send message"}
-                >
-                    <Button
-                        variant="default"
-                        size="icon"
-                        className="h-8 w-8 rounded-full"
-                        onClick={handleSubmit}
-                    >
-                        {isLoading ? (
-                            <Square className="size-5 fill-current" />
-                        ) : (
-                            <ArrowUp className="size-5" />
-                        )}
-                    </Button>
-                </PromptInputAction>
-            </PromptInputActions>
-        </PromptInput>
+        <div className="p-1">
+            <div className="feno-mod-container p-2">
+                <code>feno.app</code>
+            </div>
+        </div>
     );
 };
