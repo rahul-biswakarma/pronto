@@ -1,5 +1,7 @@
 import { commonColorVariablePrefix } from "./components/utils";
 
+export const THEMES_STORAGE_KEY = "feno-predefined-themes";
+
 export const extractCssVariables = (html: string) => {
     const colorVariables: Array<{ name: string; value: string }> = [];
 
@@ -119,6 +121,12 @@ export const generateThemesWithGemini = async (
     currentTheme: Record<string, string>,
 ): Promise<Theme[]> => {
     try {
+        // First check localStorage for already generated themes
+        const savedThemes = getThemesFromStorage();
+        if (savedThemes.length > 0) {
+            return savedThemes;
+        }
+
         // Format variables to a list for the prompt
         const colorVariables = Object.entries(currentTheme)
             .map(([name, value]) => `${formatColorVariable(name)}: ${value}`)
@@ -134,12 +142,22 @@ ${colorVariables}
 For each theme, provide a name and the CSS variable values. Make the themes diverse in style while still being cohesive and professional.
 Theme styles could include: Modern, Professional, Playful, Elegant, Minimalist, Bold, etc.
 
+IMPORTANT REQUIREMENTS:
+1. All color values MUST be provided in OKLCH format, NOT hex format.
+2. Each theme MUST use the same base variables: --feno-color-hue and --feno-color-chroma.
+3. All color definitions should REFERENCE these variables using var() syntax like:
+   oklch(0.9 var(--feno-color-chroma) var(--feno-color-hue))
+4. Only modify the actual numerical values of --feno-color-hue (0-360) and --feno-color-chroma (0-0.4) to create theme variations.
+5. For other color variables, modify their lightness values but continue to reference the same hue and chroma variables.
+
 Return the result as a JSON array of theme objects with this exact structure:
 [
   {
     "name": "Theme Name",
     "colors": {
-      "--feno-color-variable-name": "hex-color-value",
+      "--feno-color-hue": "210",
+      "--feno-color-chroma": "0.05",
+      "--feno-color-variable-name": "oklch(0.9 var(--feno-color-chroma) var(--feno-color-hue))",
       // Include ALL color variables from the original theme
     }
   },
@@ -173,49 +191,133 @@ Return only valid JSON, no additional text.`;
 
         // If the API is not available (for development/testing), return dummy themes
         if (!data.themes && !data.error) {
-            return generateDummyThemes(currentTheme);
+            const dummyThemes = generateDummyThemes(currentTheme);
+            saveThemesToStorage(dummyThemes);
+            return dummyThemes;
         }
 
         if (data.error) {
             throw new Error(data.error);
         }
 
+        // Save the generated themes to localStorage for future use
+        saveThemesToStorage(data.themes);
         return data.themes;
     } catch (error) {
         console.error("Error generating themes with Gemini:", error);
 
         // Fallback to dummy themes if there's an error
-        return generateDummyThemes(currentTheme);
+        const dummyThemes = generateDummyThemes(currentTheme);
+        saveThemesToStorage(dummyThemes);
+        return dummyThemes;
     }
 };
 
 // Function to generate dummy themes for testing or when API is unavailable
 const generateDummyThemes = (currentTheme: Record<string, string>): Theme[] => {
-    // Basic color transformations to create dummy themes
+    // Extract the base hue and chroma from the current theme
+    const baseChroma = Number.parseFloat(
+        currentTheme["--feno-color-chroma"] || "0.03",
+    );
+
+    // OKLCH color transformations to create dummy themes
     const themes = [
         {
             name: "Modern Blue",
-            colorShift: (hex: string) => shiftTowardsColor(hex, "#0066cc"),
+            colorShift: (oklchValue: string) => {
+                // Shift hue towards blue (210-230)
+                return oklchValue.replace(
+                    /var\(--feno-color-hue\)/g,
+                    String(210),
+                );
+            },
         },
         {
             name: "Forest Green",
-            colorShift: (hex: string) => shiftTowardsColor(hex, "#116633"),
+            colorShift: (oklchValue: string) => {
+                // Shift hue towards green (140-150)
+                return oklchValue.replace(
+                    /var\(--feno-color-hue\)/g,
+                    String(145),
+                );
+            },
         },
         {
             name: "Sunset Orange",
-            colorShift: (hex: string) => shiftTowardsColor(hex, "#ff7700"),
+            colorShift: (oklchValue: string) => {
+                // Shift hue towards orange (25-30)
+                return oklchValue.replace(
+                    /var\(--feno-color-hue\)/g,
+                    String(30),
+                );
+            },
         },
         {
             name: "Lavender Dreams",
-            colorShift: (hex: string) => shiftTowardsColor(hex, "#9966cc"),
+            colorShift: (oklchValue: string) => {
+                // Shift hue towards purple (280-300)
+                return oklchValue.replace(
+                    /var\(--feno-color-hue\)/g,
+                    String(290),
+                );
+            },
+        },
+        {
+            name: "Vibrant",
+            colorShift: (oklchValue: string) => {
+                // Increase chroma for more vibrant colors
+                return oklchValue.replace(
+                    /var\(--feno-color-chroma\)/g,
+                    String(Math.min(0.15, baseChroma * 3)),
+                );
+            },
         },
         {
             name: "Dark Mode",
-            colorShift: (hex: string) => invertColor(hex),
+            colorShift: (oklchValue: string) => {
+                // Invert lightness while preserving hue and chroma
+                if (oklchValue.startsWith("oklch(")) {
+                    const parts = oklchValue.match(
+                        /oklch\((.*?)\s+var\(--feno-color-chroma\)\s+var\(--feno-color-hue\)\)/,
+                    );
+                    if (parts?.[1]) {
+                        const lightness = Number.parseFloat(parts[1]);
+                        // Invert the lightness (1 - lightness)
+                        const invertedLightness = Math.max(
+                            0,
+                            Math.min(1, 1 - lightness),
+                        );
+                        return `oklch(${invertedLightness.toFixed(2)} var(--feno-color-chroma) var(--feno-color-hue))`;
+                    }
+                }
+                return oklchValue;
+            },
         },
         {
             name: "Pastel",
-            colorShift: (hex: string) => lightenColor(hex, 0.3),
+            colorShift: (oklchValue: string) => {
+                // Increase lightness and reduce chroma for pastel look
+                if (oklchValue.startsWith("oklch(")) {
+                    const parts = oklchValue.match(
+                        /oklch\((.*?)\s+var\(--feno-color-chroma\)\s+var\(--feno-color-hue\)\)/,
+                    );
+                    if (parts?.[1]) {
+                        const lightness = Number.parseFloat(parts[1]);
+                        // Increase lightness for pastel effect
+                        const pastelLightness = Math.min(0.95, lightness + 0.2);
+                        return oklchValue
+                            .replace(
+                                /var\(--feno-color-chroma\)/g,
+                                String(Math.max(0.01, baseChroma * 0.5)),
+                            )
+                            .replace(
+                                /oklch\((.*?)\s+/,
+                                `oklch(${pastelLightness.toFixed(2)} `,
+                            );
+                    }
+                }
+                return oklchValue;
+            },
         },
     ];
 
@@ -236,51 +338,32 @@ const generateDummyThemes = (currentTheme: Record<string, string>): Theme[] => {
     });
 };
 
-// Helper function to shift a color towards another color
-const shiftTowardsColor = (hex: string, targetHex: string, amount = 0.5) => {
-    const r1 = Number.parseInt(hex.slice(1, 3), 16);
-    const g1 = Number.parseInt(hex.slice(3, 5), 16);
-    const b1 = Number.parseInt(hex.slice(5, 7), 16);
+// Save themes to localStorage for future use
+export const saveThemesToStorage = (themes: Theme[]) => {
+    if (typeof window === "undefined") return;
 
-    const r2 = Number.parseInt(targetHex.slice(1, 3), 16);
-    const g2 = Number.parseInt(targetHex.slice(3, 5), 16);
-    const b2 = Number.parseInt(targetHex.slice(5, 7), 16);
-
-    const r = Math.round(r1 + (r2 - r1) * amount);
-    const g = Math.round(g1 + (g2 - g1) * amount);
-    const b = Math.round(b1 + (b2 - b1) * amount);
-
-    return `#${r.toString(16).padStart(2, "0")}${g
-        .toString(16)
-        .padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
+    try {
+        localStorage.setItem(THEMES_STORAGE_KEY, JSON.stringify(themes));
+    } catch (error) {
+        console.error("Error saving themes to localStorage:", error);
+    }
 };
 
-// Helper function to invert a color
-const invertColor = (hex: string) => {
-    const r = 255 - Number.parseInt(hex.slice(1, 3), 16);
-    const g = 255 - Number.parseInt(hex.slice(3, 5), 16);
-    const b = 255 - Number.parseInt(hex.slice(5, 7), 16);
+// Get saved themes from localStorage
+export const getThemesFromStorage = (): Theme[] => {
+    if (typeof window === "undefined") return [];
 
-    return `#${r.toString(16).padStart(2, "0")}${g
-        .toString(16)
-        .padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
-};
+    try {
+        const savedThemes = localStorage.getItem(THEMES_STORAGE_KEY);
+        if (savedThemes) {
+            const parsedThemes = JSON.parse(savedThemes) as Theme[];
+            if (Array.isArray(parsedThemes) && parsedThemes.length > 0) {
+                return parsedThemes;
+            }
+        }
+    } catch (error) {
+        console.error("Error loading themes from localStorage:", error);
+    }
 
-// Helper function to lighten a color
-const lightenColor = (hex: string, amount = 0.2) => {
-    const r = Number.parseInt(hex.slice(1, 3), 16);
-    const g = Number.parseInt(hex.slice(3, 5), 16);
-    const b = Number.parseInt(hex.slice(5, 7), 16);
-
-    const lightenChannel = (channel: number) => {
-        return Math.round(channel + (255 - channel) * amount);
-    };
-
-    const rLightened = lightenChannel(r);
-    const gLightened = lightenChannel(g);
-    const bLightened = lightenChannel(b);
-
-    return `#${rLightened.toString(16).padStart(2, "0")}${gLightened
-        .toString(16)
-        .padStart(2, "0")}${bLightened.toString(16).padStart(2, "0")}`;
+    return [];
 };

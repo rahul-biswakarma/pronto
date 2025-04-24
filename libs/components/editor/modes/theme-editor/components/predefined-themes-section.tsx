@@ -1,12 +1,9 @@
 import { Button } from "@/libs/ui/button";
 import { cn } from "@/libs/utils/misc";
-import {
-    IconCheck,
-    IconChevronLeft,
-    IconChevronRight,
-} from "@tabler/icons-react";
+import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Theme } from "../types";
+import { getThemesFromStorage } from "../utils";
 
 interface PredefinedThemesSectionProps {
     themes: Theme[];
@@ -19,10 +16,21 @@ interface PredefinedThemesSectionProps {
  */
 export const PredefinedThemesSection: React.FC<
     PredefinedThemesSectionProps
-> = ({ themes, selectedThemeName, onSelectTheme }) => {
+> = ({ themes: propThemes, selectedThemeName, onSelectTheme }) => {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(false);
+    const [themes, setThemes] = useState<Theme[]>(propThemes);
+
+    // Load themes from localStorage on mount
+    useEffect(() => {
+        const savedThemes = getThemesFromStorage();
+        if (savedThemes.length > 0) {
+            setThemes(savedThemes);
+        } else {
+            setThemes(propThemes);
+        }
+    }, [propThemes]);
 
     // Check if we can scroll in either direction
     const checkScroll = useCallback(() => {
@@ -35,7 +43,7 @@ export const PredefinedThemesSection: React.FC<
     }, []);
 
     // Set up scroll detection
-    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+    // biome-ignore lint/correctness/useExhaustiveDependencies: themes required to re-run
     useEffect(() => {
         const container = scrollContainerRef.current;
         checkScroll(); // Initial check
@@ -74,38 +82,37 @@ export const PredefinedThemesSection: React.FC<
     if (themes.length === 0) return null;
 
     return (
-        <div>
-            <div className="flex justify-between items-center">
-                <h4 className="text-xs font-medium text-muted-foreground px-3">
-                    Predefined Themes
-                </h4>
+        <div className="w-full">
+            <div className="flex justify-between items-center p-3 px-4 pb-0">
+                <p className="text-xs font-medium text-[var(--feno-text-1)]">
+                    Themes
+                </p>
                 <div className="flex space-x-1">
                     <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => scroll("left")}
                         disabled={!canScrollLeft}
-                        className="h-6 w-6 disabled:opacity-30"
+                        className="h-6 w-6 p-0 disabled:opacity-30"
                     >
-                        <IconChevronLeft size={16} />
+                        <IconChevronLeft size={14} />
                     </Button>
                     <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => scroll("right")}
                         disabled={!canScrollRight}
-                        className="h-6 w-6 disabled:opacity-30"
+                        className="h-6 w-6 p-0 disabled:opacity-30"
                     >
-                        <IconChevronRight size={16} />
+                        <IconChevronRight size={14} />
                     </Button>
                 </div>
             </div>
-
             {/* Horizontal scroll container */}
             <div className="relative">
                 <div
                     ref={scrollContainerRef}
-                    className="relative flex space-x-3 overflow-x-auto -mx-4 p-7 pb-2 pt-2 scrollbar-hide"
+                    className="flex gap-4 overflow-x-auto p-4 scrollbar-hide"
                     style={{
                         scrollbarWidth: "none" /* Firefox */,
                         msOverflowStyle: "none" /* IE and Edge */,
@@ -119,14 +126,24 @@ export const PredefinedThemesSection: React.FC<
 
                     {themes.map((theme) => {
                         const isSelected = selectedThemeName === theme.name;
-                        const primaryColor =
-                            theme.colors["--primary"] ||
-                            Object.values(theme.colors)[0] ||
-                            "#000000"; // Fallback color
+                        const hue = theme.colors["--feno-color-hue"] || "210";
+                        const chroma =
+                            Number.parseFloat(
+                                theme.colors["--feno-color-chroma"] || "0.05",
+                            ) * 0.7; // Reduce chroma for softer colors
 
-                        const accentColors = Object.values(theme.colors)
-                            .filter((c) => c !== primaryColor)
-                            .slice(0, 3);
+                        // Use consistent values for all themes instead of light/dark distinction
+                        const contentLightness = "0.97"; // Background of the preview
+                        const textLightness = "0.55"; // Text and UI elements - softer appearance
+                        const lineLightness = "0.75"; // Border color - more subtle
+
+                        // Generate color variants for the boxes
+                        const colorVariants = [
+                            { l: "0.85", c: chroma * 1.2 }, // Lighter variant
+                            { l: "0.75", c: chroma * 1.5 }, // Medium-light variant
+                            { l: "0.65", c: chroma * 1.8 }, // Medium-dark variant
+                            { l: "0.55", c: chroma * 2.0 }, // Darker variant
+                        ];
 
                         return (
                             <button
@@ -134,60 +151,49 @@ export const PredefinedThemesSection: React.FC<
                                 key={theme.name}
                                 onClick={() => onSelectTheme(theme)}
                                 className={cn(
-                                    "border rounded-lg p-1.5 w-36 flex-shrink-0 text-left transition-all duration-150 focus:outline-none",
+                                    "border rounded-xl w-36 flex-shrink-0 overflow-hidden transition-all focus:outline-none",
                                     isSelected
-                                        ? "border-blue-700/90 ring-2 ring-blue-700/90 ring-offset-2 ring-offset-background"
-                                        : "border-border hover:border-blue-400 hover:bg-blue-300/10",
+                                        ? "ring-2 ring-blue-500"
+                                        : "border-border hover:border-blue-400",
                                 )}
                             >
-                                {/* Theme preview */}
-                                <div
-                                    className="h-20 rounded-lg bg-muted/50 border border-border/50 mb-2 p-1.5 flex flex-col justify-between relative overflow-hidden"
-                                    style={{
-                                        background: `linear-gradient(143deg, ${accentColors[0] || "#f0f0f0"} 0%, ${accentColors[1] || "#e0e0e0"} 50%, ${accentColors[2] || "#d0d0d0"} 100%)`,
-                                    }}
-                                >
-                                    <div className="flex space-x-1">
-                                        {/* Dots representing window controls */}
-                                        <div className="w-2 h-2 rounded-full bg-red-500/70" />
-                                        <div className="w-2 h-2 rounded-full bg-yellow-500/70" />
-                                        <div className="w-2 h-2 rounded-full bg-green-500/70" />
+                                {/* Theme card preview */}
+                                <div className="relative p-1 pb-2 w-full flex flex-col">
+                                    {/* Phone/App preview mockup with gradient */}
+                                    <div
+                                        className="relative rounded-lg w-full h-24 p-2 mb-1 border overflow-hidden flex flex-col gap-1"
+                                        style={{
+                                            background: `linear-gradient(135deg, oklch(${contentLightness} ${chroma * 0.8} ${hue}) 0%, oklch(${
+                                                Number(contentLightness) - 0.03
+                                            } ${chroma * 1.2} ${
+                                                Number(hue) + 5
+                                            }) 100%)`,
+                                            borderColor: `oklch(${lineLightness} ${chroma} ${hue})`,
+                                        }}
+                                    >
+                                        {/* Color variant boxes - bottom right */}
+                                        <div className="absolute bottom-2 right-2 flex gap-1">
+                                            {colorVariants.map((variant) => (
+                                                <div
+                                                    key={variant.l + variant.c}
+                                                    className="w-5 h-2.5 rounded-sm shadow-sm"
+                                                    style={{
+                                                        backgroundColor: `oklch(${variant.l} ${variant.c} ${hue})`,
+                                                    }}
+                                                />
+                                            ))}
+                                        </div>
                                     </div>
-                                    <div className="flex justify-end space-x-1.5">
-                                        {accentColors.map((color, idx) => (
-                                            <div
-                                                key={`${theme.name}-accent-${idx}`}
-                                                className="w-4 h-4 rounded border border-background/50"
-                                                style={{
-                                                    backgroundColor: color,
-                                                }}
-                                            />
-                                        ))}
-                                    </div>
-                                </div>
-                                <div className="flex items-center justify-between mt-1">
-                                    <span className="text-xs font-medium truncate">
+
+                                    {/* Theme name */}
+                                    <span className="text-xs">
                                         {theme.name}
                                     </span>
-                                    {isSelected && (
-                                        <IconCheck
-                                            size={16}
-                                            className="text-primary flex-shrink-0"
-                                        />
-                                    )}
                                 </div>
                             </button>
                         );
                     })}
                 </div>
-
-                {/* Gradient fades for scrolling indication */}
-                {canScrollLeft && (
-                    <div className="pointer-events-none absolute inset-y-0 left-0 w-1/5 bg-gradient-to-r from-white" />
-                )}
-                {canScrollRight && (
-                    <div className="pointer-events-none absolute inset-y-0 right-0 w-1/5 bg-gradient-to-l from-white" />
-                )}
             </div>
         </div>
     );

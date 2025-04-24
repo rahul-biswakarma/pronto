@@ -3,9 +3,6 @@ import {
     PAGE_EDITOR_HOVER_ELEMENT_CLASS,
     PAGE_EDITOR_SECTION_LOADING_CLASS,
     PAGE_EDITOR_SELECTED_ELEMENT_CLASS,
-    baseStyle,
-    elementHoveredStyle,
-    elementSelectedStyle,
 } from "../utils";
 
 interface SectionHighlightingProps {
@@ -19,55 +16,86 @@ interface SectionHighlightingProps {
 
 export const SectionHighlighting: React.FC<SectionHighlightingProps> = ({
     iframeDocument,
-    modeId,
-    selectedElement,
     setSelectedElement,
-    setPrompt,
     isGenerating,
 }) => {
-    // Set up hover and click handlers in the iframe
-    // biome-ignore lint/correctness/useExhaustiveDependencies: we need modeId for cleanup when different mode is selected
     useEffect(() => {
         if (!iframeDocument) return;
+
+        // Keep a direct reference to the currently selected element
+        let currentSelectedElement: HTMLElement | null = null;
+
+        // Apply both styles and classes to the element
+        const applySelectedStyles = (element: HTMLElement) => {
+            // Reset previous selection if exists
+            if (currentSelectedElement && currentSelectedElement !== element) {
+                currentSelectedElement.style.outline = "";
+                currentSelectedElement.style.outlineOffset = "";
+                currentSelectedElement.classList.remove(
+                    PAGE_EDITOR_SELECTED_ELEMENT_CLASS,
+                );
+            }
+
+            // Apply styles directly (for immediate visual feedback)
+            element.style.outline = "2px solid #0ea5e9";
+            element.style.outlineOffset = "2px";
+
+            // Also add class (for compatibility with other components)
+            element.classList.add(PAGE_EDITOR_SELECTED_ELEMENT_CLASS);
+
+            // Update our direct reference
+            currentSelectedElement = element;
+
+            // Defer React state update to avoid interference
+            setTimeout(() => {
+                setSelectedElement(element);
+            }, 50);
+        };
 
         // Event handler for mouse over elements
         const handleMouseOver = (e: MouseEvent) => {
             if (isGenerating) return;
             const target = e.target as HTMLElement;
-            target.classList.add(PAGE_EDITOR_HOVER_ELEMENT_CLASS);
+            if (target !== currentSelectedElement) {
+                target.style.outline = "1px dashed #0ea5e9";
+                target.style.outlineOffset = "1px";
+                target.classList.add(PAGE_EDITOR_HOVER_ELEMENT_CLASS);
+            }
         };
 
         // Event handler for mouse out
         const handleMouseOut = (e: MouseEvent) => {
             if (isGenerating) return;
             const target = e.target as HTMLElement;
-            target.classList.remove(PAGE_EDITOR_HOVER_ELEMENT_CLASS);
+            if (target !== currentSelectedElement) {
+                target.style.outline = "";
+                target.style.outlineOffset = "";
+                target.classList.remove(PAGE_EDITOR_HOVER_ELEMENT_CLASS);
+            }
         };
 
         // Event handler for clicking elements
         const handleClick = (e: MouseEvent) => {
-            if (isGenerating) return;
             e.preventDefault();
+            e.stopPropagation();
             const target = e.target as HTMLElement;
-            selectedElement?.classList.remove(
-                PAGE_EDITOR_SELECTED_ELEMENT_CLASS,
-            );
-            target.classList.add(PAGE_EDITOR_SELECTED_ELEMENT_CLASS);
-            setSelectedElement(target);
+            applySelectedStyles(target);
         };
 
-        // Add CSS for highlight effect
+        // Add CSS for hover effect and loading animation
         const style = iframeDocument.createElement("style");
         style.textContent = `
-            .${PAGE_EDITOR_HOVER_ELEMENT_CLASS}, .${PAGE_EDITOR_SELECTED_ELEMENT_CLASS} {
-                ${baseStyle}
-            }
+            /* Fallback styles for class-based approach */
             .${PAGE_EDITOR_HOVER_ELEMENT_CLASS} {
-                ${elementHoveredStyle}
+                outline: 1px dashed #0ea5e9 !important;
+                outline-offset: 1px !important;
             }
+
             .${PAGE_EDITOR_SELECTED_ELEMENT_CLASS} {
-                ${elementSelectedStyle}
+                outline: 2px solid #0ea5e9 !important;
+                outline-offset: 2px !important;
             }
+
             /* Animated Gradient Overlay */
             @keyframes pulse-gradient {
                 0% { background-position: 0% 50%; }
@@ -89,41 +117,65 @@ export const SectionHighlighting: React.FC<SectionHighlightingProps> = ({
         `;
         iframeDocument.head.appendChild(style);
 
-        // Add event listeners
-        iframeDocument.body.addEventListener("mouseover", handleMouseOver);
-        iframeDocument.body.addEventListener("mouseout", handleMouseOut);
-        iframeDocument.body.addEventListener("click", handleClick);
+        // Add event listeners with capture phase
+        if (iframeDocument?.body) {
+            iframeDocument.body.addEventListener(
+                "mouseover",
+                handleMouseOver,
+                true,
+            );
+            iframeDocument.body.addEventListener(
+                "mouseout",
+                handleMouseOut,
+                true,
+            );
+            iframeDocument.body.addEventListener("click", handleClick, true);
+        }
 
         return () => {
             // Clean up event listeners and styles
-            iframeDocument.body.removeEventListener(
-                "mouseover",
-                handleMouseOver,
-            );
-            iframeDocument.body.removeEventListener("mouseout", handleMouseOut);
-            iframeDocument.body.removeEventListener("click", handleClick);
-
-            // Remove highlight styles from all elements
-            const highlightedElements = iframeDocument.querySelectorAll(
-                `.${PAGE_EDITOR_HOVER_ELEMENT_CLASS}, .${PAGE_EDITOR_SELECTED_ELEMENT_CLASS}`,
-            );
-
-            for (const el of highlightedElements) {
-                el.classList.remove(PAGE_EDITOR_SELECTED_ELEMENT_CLASS);
-                el.classList.remove(PAGE_EDITOR_HOVER_ELEMENT_CLASS);
+            if (iframeDocument?.body) {
+                iframeDocument.body.removeEventListener(
+                    "mouseover",
+                    handleMouseOver,
+                    true,
+                );
+                iframeDocument.body.removeEventListener(
+                    "mouseout",
+                    handleMouseOut,
+                    true,
+                );
+                iframeDocument.body.removeEventListener(
+                    "click",
+                    handleClick,
+                    true,
+                );
             }
 
-            // Remove style element
-            style.remove();
+            // Remove styles and classes from all elements
+            if (currentSelectedElement) {
+                currentSelectedElement.style.outline = "";
+                currentSelectedElement.style.outlineOffset = "";
+                currentSelectedElement.classList.remove(
+                    PAGE_EDITOR_SELECTED_ELEMENT_CLASS,
+                );
+            }
+
+            if (iframeDocument) {
+                const hoveredElements = iframeDocument.querySelectorAll(
+                    `.${PAGE_EDITOR_HOVER_ELEMENT_CLASS}`,
+                );
+                for (const el of hoveredElements) {
+                    (el as HTMLElement).style.outline = "";
+                    (el as HTMLElement).style.outlineOffset = "";
+                    el.classList.remove(PAGE_EDITOR_HOVER_ELEMENT_CLASS);
+                }
+
+                // Remove style element
+                style.remove();
+            }
         };
-    }, [
-        iframeDocument,
-        modeId,
-        selectedElement,
-        setSelectedElement,
-        setPrompt,
-        isGenerating,
-    ]);
+    }, [iframeDocument, setSelectedElement, isGenerating]);
 
     return null; // This component doesn't render anything, it just adds event handlers
 };

@@ -1,5 +1,5 @@
 import { Separator } from "@/libs/ui/separator";
-import { cn } from "@/libs/utils/misc";
+import { AnimatePresence, motion } from "framer-motion";
 import type React from "react";
 import { useCallback, useEffect, useState } from "react";
 import { BorderControls } from "./style-input/border-controls";
@@ -132,44 +132,53 @@ export const StyleControls: React.FC<StyleControlsProps> = ({
                 setSelectedElement={setSelectedElement}
             />
 
-            <div
-                className={cn(
-                    "flex flex-col gap-4 p-3 pt-0 pb-3.5",
-                    !isOpen && "hidden",
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        className="overflow-hidden"
+                    >
+                        <div className="flex flex-col gap-4 p-3 pt-0 pb-3.5">
+                            <ColorPickers
+                                styles={styles}
+                                onStyleChange={handleStyleChange}
+                                showBgColorPicker={showBgColorPicker}
+                                setShowBgColorPicker={setShowBgColorPicker}
+                                showTextColorPicker={showTextColorPicker}
+                                setShowTextColorPicker={setShowTextColorPicker}
+                            />
+
+                            <Separator />
+
+                            <SpacingControls
+                                styles={styles}
+                                onStyleChange={handleStyleChange}
+                            />
+
+                            <Separator />
+
+                            <FontControls
+                                styles={styles}
+                                onStyleChange={handleStyleChange}
+                            />
+
+                            <Separator />
+
+                            <BorderControls
+                                styles={styles}
+                                onStyleChange={handleStyleChange}
+                                showBorderColorPicker={showBorderColorPicker}
+                                setShowBorderColorPicker={
+                                    setShowBorderColorPicker
+                                }
+                            />
+                        </div>
+                    </motion.div>
                 )}
-            >
-                <ColorPickers
-                    styles={styles}
-                    onStyleChange={handleStyleChange}
-                    showBgColorPicker={showBgColorPicker}
-                    setShowBgColorPicker={setShowBgColorPicker}
-                    showTextColorPicker={showTextColorPicker}
-                    setShowTextColorPicker={setShowTextColorPicker}
-                />
-
-                <Separator />
-
-                <SpacingControls
-                    styles={styles}
-                    onStyleChange={handleStyleChange}
-                />
-
-                <Separator />
-
-                <FontControls
-                    styles={styles}
-                    onStyleChange={handleStyleChange}
-                />
-
-                <Separator />
-
-                <BorderControls
-                    styles={styles}
-                    onStyleChange={handleStyleChange}
-                    showBorderColorPicker={showBorderColorPicker}
-                    setShowBorderColorPicker={setShowBorderColorPicker}
-                />
-            </div>
+            </AnimatePresence>
         </div>
     );
 };

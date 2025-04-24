@@ -1,4 +1,5 @@
 import { Button } from "@/libs/ui/button";
+import { cn } from "@/libs/utils/misc";
 import { IconCashEdit } from "@tabler/icons-react";
 import type React from "react";
 import { useCallback, useState } from "react";
@@ -88,9 +89,11 @@ export const PageEditorMode = (): EditorMode => {
         label: "Edit Sections",
         actionRenderer: (isActive) => (
             <Button
-                variant="ghost"
+                variant="custom"
                 size="icon"
-                className={isActive ? "bg-blue-500/10 text-blue-700" : ""}
+                className={cn("feno-mode-button", {
+                    "feno-mode-active-button": isActive,
+                })}
             >
                 <IconCashEdit className="size-[17px] stroke-[1.8]" />
             </Button>

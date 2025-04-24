@@ -1,22 +1,32 @@
+"use client";
+
 import { Button } from "@/libs/ui/button";
-import { IconPalette } from "@tabler/icons-react";
+import { cn } from "@/libs/utils/misc";
+import {
+    IconChevronDown,
+    IconChevronUp,
+    IconPalette,
+} from "@tabler/icons-react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useEditor } from "../../editor.context";
 import type { EditorMode } from "../../types/editor.types";
 import { GenerateThemeButton } from "./components/generate-theme-button";
-import { HueSaturationControls } from "./components/hue-saturation-controls";
+import { HueSaturationControls } from "./components/hue-chorma-controls";
 import { PredefinedThemesSection } from "./components/predefined-themes-section";
-import { ThemeCustomization } from "./components/theme-customization";
-import { hueVariableName, saturationVariableName } from "./components/utils";
+import { chromaVariableName, hueVariableName } from "./components/utils";
 import type { ColorVariable, Theme } from "./types";
 import {
     applyTheme,
     extractColorVariables,
+    getThemesFromStorage,
     updateColorVariable,
 } from "./utils";
 
 const ThemeEditor: React.FC = () => {
     const { iframeDocument } = useEditor();
+
+    const [showAdvancedControls, setShowAdvancedControls] = useState(false);
     const [colorVariables, setColorVariables] = useState<ColorVariable[]>([]);
     const [themes, setThemes] = useState<Theme[]>([]);
     const [selectedThemeName, setSelectedThemeName] = useState<string | null>(
@@ -26,6 +36,16 @@ const ThemeEditor: React.FC = () => {
         ColorVariable[]
     >([]);
     const [isGenerating, setIsGenerating] = useState(false);
+    const [hasStoredThemes, setHasStoredThemes] = useState(false);
+
+    // Check for stored themes on mount
+    useEffect(() => {
+        const savedThemes = getThemesFromStorage();
+        if (savedThemes.length > 0) {
+            setThemes(savedThemes);
+            setHasStoredThemes(true);
+        }
+    }, []);
 
     // Extract color variables from iframe document on first load
     useEffect(() => {
@@ -35,19 +55,6 @@ const ThemeEditor: React.FC = () => {
         setColorVariables(extractedVars);
         setInitialColorVariables(extractedVars);
     }, [iframeDocument]);
-
-    // Handle color variable change
-    const handleColorChange = (name: string, value: string) => {
-        const updatedVariables = colorVariables.map((variable) =>
-            variable.name === name ? { ...variable, value } : variable,
-        );
-        setColorVariables(updatedVariables);
-
-        if (iframeDocument) {
-            // Apply the color change to the iframe
-            updateColorVariable(iframeDocument, name, value);
-        }
-    };
 
     // Handle hue and saturation changes
     const handleHueChange = (value: number) => {
@@ -67,7 +74,7 @@ const ThemeEditor: React.FC = () => {
         if (iframeDocument) {
             updateColorVariable(
                 iframeDocument,
-                saturationVariableName,
+                chromaVariableName,
                 value.toString(),
             );
             // Re-extract variables to update the UI
@@ -102,35 +109,71 @@ const ThemeEditor: React.FC = () => {
     const handleGenerateThemesComplete = (newThemes: Theme[]) => {
         setThemes(newThemes);
         setIsGenerating(false);
+        setHasStoredThemes(true); // Set to true when themes are generated
     };
 
     return (
-        <div className="flex flex-col h-full gap-2 feno-mod-container overflow-hidden min-w-[500px] max-w-[500px] p-3">
-            <h3 className="text-sm font-medium leading-none">Theme Editor</h3>
+        <AnimatePresence>
+            <div className="flex h-full w-full flex-col gap-1.5 min-w-[500px] max-w-[500px]">
+                <div className="feno-mod-container flex flex-col gap-2">
+                    <PredefinedThemesSection
+                        themes={themes}
+                        selectedThemeName={selectedThemeName}
+                        onSelectTheme={handleSelectTheme}
+                    />
 
-            <HueSaturationControls
-                onHueChange={handleHueChange}
-                onSaturationChange={handleSaturationChange}
-            />
+                    {!hasStoredThemes && (
+                        <GenerateThemeButton
+                            initialColorVariables={initialColorVariables}
+                            isGenerating={isGenerating}
+                            onGenerateStarted={handleGenerateThemesStarted}
+                            onGenerateComplete={handleGenerateThemesComplete}
+                        />
+                    )}
+                </div>
 
-            <ThemeCustomization
-                colorVariables={colorVariables}
-                onColorChange={handleColorChange}
-            />
-
-            <PredefinedThemesSection
-                themes={themes}
-                selectedThemeName={selectedThemeName}
-                onSelectTheme={handleSelectTheme}
-            />
-
-            <GenerateThemeButton
-                initialColorVariables={initialColorVariables}
-                isGenerating={isGenerating}
-                onGenerateStarted={handleGenerateThemesStarted}
-                onGenerateComplete={handleGenerateThemesComplete}
-            />
-        </div>
+                <div className="feno-mod-container flex flex-col gap-1">
+                    <div
+                        onClick={() =>
+                            setShowAdvancedControls(!showAdvancedControls)
+                        }
+                        className={cn(
+                            "flex justify-between items-center p-3 px-4 text-xs font-medium text-[var(--feno-text-1)]  border-[var(--feno-border-1)]",
+                            showAdvancedControls && "border-b",
+                        )}
+                    >
+                        Advanced Controls
+                        <div className="size-6 flex items-center justify-center hover:bg-[var(--feno-interactive-hovered-bg)] hover:border-[var(--feno-interactive-hovered-border)] rounded-lg">
+                            {!showAdvancedControls ? (
+                                <IconChevronUp className="size-4" />
+                            ) : (
+                                <IconChevronDown className="size-4" />
+                            )}
+                        </div>
+                    </div>
+                    <AnimatePresence>
+                        {showAdvancedControls && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.2, ease: "easeOut" }}
+                                className="overflow-hidden"
+                            >
+                                <div className="p-3 px-4">
+                                    <HueSaturationControls
+                                        onHueChange={handleHueChange}
+                                        onSaturationChange={
+                                            handleSaturationChange
+                                        }
+                                    />
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+            </div>
+        </AnimatePresence>
     );
 };
 
@@ -141,9 +184,11 @@ export const ThemeEditorMode = (): EditorMode => {
         label: "Theme Editor",
         actionRenderer: (isActive) => (
             <Button
-                variant="ghost"
+                variant="custom"
                 size="icon"
-                className={isActive ? "bg-blue-500/10 text-blue-700" : ""}
+                className={cn("feno-mode-button", {
+                    "feno-mode-active-button": isActive,
+                })}
             >
                 <IconPalette className="size-[17px] stroke-[1.8]" />
             </Button>

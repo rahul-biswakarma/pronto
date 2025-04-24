@@ -4,7 +4,6 @@ import {
     createSuccessResponse,
     withErrorHandling,
 } from "@/libs/utils/api-response";
-import Color from "color";
 
 /**
  * POST /api/ai/generate-themes - Generate theme suggestions using Gemini AI
@@ -20,18 +19,6 @@ export const POST = withErrorHandling(
                     "Missing required fields: prompt and currentTheme",
                     requestId,
                     400,
-                );
-            }
-
-            // Check if Gemini is enabled
-            if (!process.env.USE_GEMINI || process.env.USE_GEMINI !== "true") {
-                return createSuccessResponse(
-                    {
-                        themes: generateFallbackThemes(body.currentTheme),
-                        message:
-                            "Generated themes using fallback method (Gemini not enabled)",
-                    },
-                    requestId,
                 );
             }
 
@@ -120,65 +107,100 @@ export const POST = withErrorHandling(
 
 // Generate fallback themes when Gemini is not available
 function generateFallbackThemes(currentTheme: Record<string, string>) {
-    // Helper function using the 'color' library
-    const transformColor = (
-        hex: string,
-        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-        transformation: (c: any) => any,
-    ): string => {
-        try {
-            const originalColor = Color(hex);
-            const transformedColor = transformation(originalColor);
-            return transformedColor.hex();
-        } catch (error) {
-            console.error(`Error transforming color ${hex}:`, error);
-            return hex; // Return original color on error
-        }
-    };
+    // Extract base hue and chroma from current theme
+    const baseHue = Number.parseFloat(
+        currentTheme["--feno-color-hue"] || "210",
+    );
+    const baseChroma = Number.parseFloat(
+        currentTheme["--feno-color-chroma"] || "0.03",
+    );
 
     // Create basic transformations for fallback themes
     const transformations = [
         {
             name: "Modern Blue",
-            transform: (hex: string) => transformColor(hex, (c) => c.hue(210)),
+            hue: 210,
+            chroma: baseChroma,
         },
         {
             name: "Forest Green",
-            transform: (hex: string) => transformColor(hex, (c) => c.hue(120)),
+            hue: 120,
+            chroma: baseChroma,
         },
         {
             name: "Sunset Orange",
-            transform: (hex: string) => transformColor(hex, (c) => c.hue(30)),
+            hue: 30,
+            chroma: baseChroma,
         },
         {
             name: "Dark Mode",
-            transform: (hex: string) => transformColor(hex, (c) => c.negate()),
+            hue: baseHue,
+            chroma: baseChroma,
+            transform: (value: string) => {
+                if (value.startsWith("oklch(")) {
+                    const lightnessParts = value.match(/oklch\(([\d\.]+)/);
+                    if (lightnessParts?.[1]) {
+                        const lightness = Number.parseFloat(lightnessParts[1]);
+                        // Invert lightness
+                        const invertedLightness = Math.max(
+                            0,
+                            Math.min(1, 1 - lightness),
+                        );
+                        return value.replace(
+                            /oklch\(([\d\.]+)/,
+                            `oklch(${invertedLightness.toFixed(2)}`,
+                        );
+                    }
+                }
+                return value;
+            },
         },
         {
             name: "Pastel",
-            transform: (hex: string) =>
-                transformColor(hex, (c) =>
-                    c
-                        .saturationl(Math.min(c.saturationl(), 70))
-                        .lightness(Math.max(c.lightness(), 70)),
-                ),
+            hue: baseHue,
+            chroma: Math.max(0.01, baseChroma * 0.7),
+            transform: (value: string) => {
+                if (value.startsWith("oklch(")) {
+                    const lightnessParts = value.match(/oklch\(([\d\.]+)/);
+                    if (lightnessParts?.[1]) {
+                        const lightness = Number.parseFloat(lightnessParts[1]);
+                        // Increase lightness for pastel effect
+                        const pastelLightness = Math.min(0.95, lightness + 0.2);
+                        return value.replace(
+                            /oklch\(([\d\.]+)/,
+                            `oklch(${pastelLightness.toFixed(2)}`,
+                        );
+                    }
+                }
+                return value;
+            },
         },
         {
-            name: "Monochrome",
-            transform: (hex: string) =>
-                transformColor(hex, (c) => c.saturationl(10)),
+            name: "Vibrant",
+            hue: baseHue,
+            chroma: Math.min(0.15, baseChroma * 2.5),
         },
     ];
 
     // Generate themes using the transformations
     return transformations.map((transformation) => {
-        const colors = Object.entries(currentTheme).reduce(
-            (acc, [name, value]) => {
-                acc[name] = transformation.transform(value);
-                return acc;
-            },
-            {} as Record<string, string>,
-        );
+        const colors = { ...currentTheme };
+
+        // Set the base hue and chroma values
+        colors["--feno-color-hue"] = transformation.hue.toString();
+        colors["--feno-color-chroma"] = transformation.chroma.toString();
+
+        // Apply special transformations if needed
+        if (transformation.transform) {
+            for (const [name, value] of Object.entries(colors)) {
+                if (
+                    name !== "--feno-color-hue" &&
+                    name !== "--feno-color-chroma"
+                ) {
+                    colors[name] = transformation.transform(value);
+                }
+            }
+        }
 
         return {
             name: transformation.name,

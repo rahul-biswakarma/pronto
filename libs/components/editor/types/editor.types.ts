@@ -2,46 +2,46 @@ import type { User } from "@supabase/supabase-js";
 import type { JSX } from "react";
 
 export type EditorMode = {
-  id: string;
-  label?: string;
-  actionRenderer?: (isActive: boolean) => JSX.Element;
-  editorRenderer: () => JSX.Element;
+    id: string;
+    label?: string;
+    actionRenderer?: (isActive: boolean) => JSX.Element;
+    editorRenderer: () => JSX.Element;
 };
 
 export type EditorContextType = {
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  dls: Record<string, any>;
-  user: User;
-  domain: string;
-  routes: Record<string, string>;
+    dls: Record<string, string>;
+    user: User;
+    domain: string;
+    portfolioId: string;
+    routes: Record<string, string>;
 
-  activeRoute: string;
-  setActiveRoute: (route: string) => void;
+    activeRoute: string;
+    setActiveRoute: (route: string) => void;
 
-  iframeRef: React.RefObject<HTMLIFrameElement | null>;
+    iframeRef: React.RefObject<HTMLIFrameElement | null>;
 
-  modeId: string;
-  modes: Record<string, EditorMode>;
-  setModeId: (mode: string) => void;
-
-  registerMode: (mode: EditorMode) => void;
-
-  iframeDocument: Document | null;
-  setIframeDocument: (doc: Document | null) => void;
-
-  portfolioHtml: string;
-  setPortfolioHtml: (html: string) => void;
-
-  previewMode: boolean;
-  setPreviewMode: (previewMode: boolean) => void;
-
-  onHtmlChange: ({
-    html,
-    modeId,
-    modeLabel,
-  }: {
-    html: string;
     modeId: string;
-    modeLabel: string;
-  }) => void;
+    modes: Record<string, EditorMode>;
+    setModeId: (mode: string) => void;
+
+    registerMode: (mode: EditorMode) => void;
+
+    iframeDocument: Document | null;
+    setIframeDocument: (doc: Document | null) => void;
+
+    portfolioHtml: string;
+    setPortfolioHtml: (html: string) => void;
+
+    previewMode: boolean;
+    setPreviewMode: (previewMode: boolean) => void;
+
+    onHtmlChange: ({
+        html,
+        modeId,
+        modeLabel,
+    }: {
+        html: string;
+        modeId: string;
+        modeLabel: string;
+    }) => void;
 };

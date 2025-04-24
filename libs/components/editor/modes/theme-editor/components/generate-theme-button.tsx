@@ -37,15 +37,8 @@ export const GenerateThemeButton: React.FC<GenerateThemeButtonProps> = ({
             // Generate themes
             const themes = await generateThemesWithGemini(currentTheme);
 
-            // Save to localStorage for persistence
-            try {
-                localStorage.setItem(
-                    "feno-predefined-themes",
-                    JSON.stringify(themes),
-                );
-            } catch (error) {
-                console.error("Error saving themes to localStorage:", error);
-            }
+            // Themes are already saved by generateThemesWithGemini function,
+            // so no need to manually save here
 
             // Update state through callback
             onGenerateComplete(themes);
@@ -60,11 +53,12 @@ export const GenerateThemeButton: React.FC<GenerateThemeButtonProps> = ({
         <Button
             onClick={handleGenerateThemes}
             disabled={isGenerating || initialColorVariables.length === 0}
-            className="w-full mt-2 flex items-center justify-center gap-2"
+            className="w-full mt-3 flex items-center justify-center gap-1 text-xs"
             size="sm"
+            variant="outline"
         >
-            <IconBrandGoogle size={16} />
-            {isGenerating ? "Generating Themes..." : "Generate AI Themes"}
+            <IconBrandGoogle size={14} />
+            {isGenerating ? "Generating..." : "Generate with AI"}
         </Button>
     );
 };
