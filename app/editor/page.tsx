@@ -16,11 +16,12 @@ export default async function Page() {
     // Fetch user's portfolio data
     const { data: portfolioData, error: portfolioError } = await supabase
         .from("portfolio")
-        .select("domain")
+        .select("domain, id")
         .eq("user_id", userId)
         .single();
 
     const domain = portfolioData?.domain;
+    const portfolioId = portfolioData?.id;
 
     if (portfolioError) {
         console.error("Error fetching portfolio:", portfolioError);
@@ -78,6 +79,7 @@ export default async function Page() {
             html={html}
             domain={domain}
             routes={routeMap}
+            portfolioId={portfolioId}
             activeRoute={portfolioRoute}
         >
             <Editor />

@@ -31,6 +31,7 @@ export async function GET(
                   .from("portfolio_route_map")
                   .select("*")
                   .eq("domain", domain)
+                  .eq("route", "home")
                   .single();
 
         if (error) {
