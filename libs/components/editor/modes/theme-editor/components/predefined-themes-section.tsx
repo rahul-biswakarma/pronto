@@ -87,7 +87,7 @@ export const PredefinedThemesSection: React.FC<
     return (
         <div className="w-full py-2">
             <div className="flex justify-between items-center mb-2">
-                <p className="text-xs font-medium text-muted-foreground">
+                <p className="text-xs font-medium text-[var(--feno-text-1)]">
                     Themes
                 </p>
                 <div className="flex space-x-1">

@@ -142,12 +142,22 @@ ${colorVariables}
 For each theme, provide a name and the CSS variable values. Make the themes diverse in style while still being cohesive and professional.
 Theme styles could include: Modern, Professional, Playful, Elegant, Minimalist, Bold, etc.
 
+IMPORTANT REQUIREMENTS:
+1. All color values MUST be provided in OKLCH format, NOT hex format.
+2. Each theme MUST use the same base variables: --feno-color-hue and --feno-color-chroma.
+3. All color definitions should REFERENCE these variables using var() syntax like:
+   oklch(0.9 var(--feno-color-chroma) var(--feno-color-hue))
+4. Only modify the actual numerical values of --feno-color-hue (0-360) and --feno-color-chroma (0-0.4) to create theme variations.
+5. For other color variables, modify their lightness values but continue to reference the same hue and chroma variables.
+
 Return the result as a JSON array of theme objects with this exact structure:
 [
   {
     "name": "Theme Name",
     "colors": {
-      "--feno-color-variable-name": "hex-color-value",
+      "--feno-color-hue": "210",
+      "--feno-color-chroma": "0.05",
+      "--feno-color-variable-name": "oklch(0.9 var(--feno-color-chroma) var(--feno-color-hue))",
       // Include ALL color variables from the original theme
     }
   },

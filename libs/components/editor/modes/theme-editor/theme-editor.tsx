@@ -119,7 +119,12 @@ const ThemeEditor: React.FC = () => {
 
     return (
         <div className="flex h-full w-full flex-col gap-1.5 min-w-[500px] max-w-[500px]">
-            <div className="feno-mod-container p-3">
+            <div className="feno-mod-container p-3 flex flex-col gap-2">
+                {themes.length === 0 && (
+                    <p className="text-xs font-medium text-[var(--feno-text-1)]">
+                        Themes
+                    </p>
+                )}
                 <PredefinedThemesSection
                     themes={themes}
                     selectedThemeName={selectedThemeName}
