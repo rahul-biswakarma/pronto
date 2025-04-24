@@ -1,6 +1,5 @@
 "use server";
-import { article_templates } from "@/libs/constants/article-templates";
-import type { templates } from "@/libs/constants/templates";
+import { templates } from "@/libs/constants/templates";
 import { getGeminiClient } from "@/libs/utils/ai/ai-client";
 import { htmlGenPromptGeminiDynamic } from "@/libs/utils/ai/html-gen-prompt-gemini-dynamic";
 import { checkAuthentication } from "@/libs/utils/auth";
@@ -53,21 +52,10 @@ export async function generateDynamicPage({
 
     try {
         // Find the template
-        const template = article_templates.find((t) => t.id === templateId);
+        const template = templates.find((t) => t.id === templateId);
         if (!template) {
             throw new Error(`Template with ID ${templateId} not found`);
         }
-
-        // if (createError || !createData?.id) {
-        //     throw new Error(
-        //         `Failed to create page record: ${createError?.message || "Unknown error"}`,
-        //     );
-        // }
-        // pageId = createData.id;
-
-        // if (!pageId) {
-        //     throw new Error("Failed to create page record");
-        // }
 
         return await generatePageWithGemini({
             cssVariables,

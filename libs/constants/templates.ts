@@ -56,4 +56,13 @@ export const templates: Template[] = [
         prompt: "Create a bold educational website with a light background, strong serif typography, and high contrast sections. Focus on front-end web development articles, premium courses, and newsletters. Highlight popular topics with tags and feature a vibrant promotional banner to guide users toward learning resources.",
         mimeType: "image/webp",
     },
+    {
+        id: "feno-article:1",
+        name: "Paco.me",
+        description:
+            "A minimalist personal website with a dark background, centered content layout, elegant typography, and subtle interactions. Include sections for biography, current activities (Now page), a Colophon, a newsletter signup, and social media links. Showcase music activity and maintain a conversational tone throughout the site.",
+        image: "/wireframes/article/image.png",
+        prompt: "Write an engaging article template that follows a minimalist style with clear headings and concise paragraphs. Focus on delivering valuable insights while maintaining a conversational tone. Include relevant examples and practical takeaways. Structure the content with a compelling introduction, well-organized body sections, and a strong conclusion that ties everything together. Aim for clarity and readability while keeping the reader engaged throughout.",
+        mimeType: "image/png",
+    },
 ];

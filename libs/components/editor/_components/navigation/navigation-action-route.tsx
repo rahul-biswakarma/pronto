@@ -2,7 +2,7 @@
 
 import { generateDynamicPage } from "@/app/actions/portfolio-actions-dynamic";
 import { useEditor } from "@/libs/components/editor/editor.context";
-import { article_templates } from "@/libs/constants/article-templates";
+import { templates } from "@/libs/constants/templates";
 import { Button } from "@/libs/ui/button";
 import {
     PromptInput,
@@ -26,7 +26,7 @@ export const NavigationActionRoute = ({
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
 
-    const article = article_templates[0];
+    const article = templates[0];
 
     const handleSubmit = async () => {
         setIsLoading(true);
@@ -75,7 +75,7 @@ export const NavigationActionRoute = ({
             onSubmit={handleSubmit}
             className={cn("w-full max-w-(--breakpoint-md)", className)}
         >
-            {article_templates.map((template) => (
+            {templates.map((template) => (
                 <div
                     key={template.id}
                     className="w-[100px] aspect-video overflow-hidden rounded-md border-2"
