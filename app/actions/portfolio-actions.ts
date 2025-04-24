@@ -55,7 +55,9 @@ export async function generatePortfolioAction({
 
         if (createError || !createData?.id) {
             throw new Error(
-                `Failed to create portfolio record: ${createError?.message || "Unknown error"}`,
+                `Failed to create portfolio record: ${
+                    createError?.message || "Unknown error"
+                }`,
             );
         }
         portfolioId = createData.id;
@@ -65,6 +67,7 @@ export async function generatePortfolioAction({
         }
 
         return await generateWithGemini({
+            domain,
             content,
             templateId,
             portfolioId,
@@ -85,10 +88,12 @@ export async function generatePortfolioAction({
  * Generate portfolio HTML using Gemini via Vercel AI SDK
  */
 async function generateWithGemini({
+    domain,
     content,
     templateId,
     portfolioId,
 }: {
+    domain: string;
     content: string;
     templateId: string;
     portfolioId: string;
@@ -128,7 +133,8 @@ async function generateWithGemini({
             content: htmlTemplate,
             filename: `portfolio-${portfolioId}.html`,
             contentType: "text/html",
-            dbColKeyPrefix: "html",
+            route: "home",
+            domain,
         });
 
         return { success: true, portfolioId };

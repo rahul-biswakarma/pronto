@@ -1,6 +1,7 @@
 import { Editor } from "@/libs/components/editor/editor";
 import { EditorProvider } from "@/libs/components/editor/editor.context";
 import { checkAuthentication } from "@/libs/utils/auth";
+import { createDomainRouteMap } from "@/libs/utils/misc";
 import { getFileFromBucket } from "@/libs/utils/supabase-storage";
 import { redirect } from "next/navigation";
 
@@ -12,23 +13,35 @@ export default async function Page() {
         redirect("/");
     }
 
-    const { data: portfolio, error } = await supabase
+    // Fetch user's portfolio data
+    const { data: portfolioData, error: portfolioError } = await supabase
         .from("portfolio")
-        .select("*")
-        .eq("user_id", userId);
+        .select("domain, id")
+        .eq("user_id", userId)
+        .single();
 
-    if (
-        error ||
-        !portfolio ||
-        portfolio.length === 0
-        // if content is null, it means the user has not submitted their portfolio yet
-    ) {
+    const domain = portfolioData?.domain;
+    const portfolioId = portfolioData?.id;
+
+    if (portfolioError) {
+        console.error("Error fetching portfolio:", portfolioError);
         redirect("/");
     }
 
-    // TODO: Add portfolio selector in case the user has multiple portfolios
-    const htmlContent = (await getFileFromBucket(portfolio[0].html_s3_path))
-        .data;
+    const { data: portfolioRoutes, error: portfolioRoutesError } =
+        await supabase
+            .from("portfolio_route_map")
+            .select("*")
+            .eq("domain", domain);
+
+    const routeMap = await createDomainRouteMap(portfolioRoutes ?? []);
+    const portfolioRoute = routeMap["/"];
+
+    if (portfolioRoutesError || !portfolioRoute) {
+        redirect("/");
+    }
+
+    const htmlContent = (await getFileFromBucket(portfolioRoute)).data;
     const cssVars: Record<string, string> = {};
 
     // Extract CSS variables from style tags
@@ -46,7 +59,7 @@ export default async function Page() {
         }
     }
 
-    const html = htmlContent;
+    const html = htmlContent ?? "";
 
     // Flatten theme variables into dls
     const dls: Record<string, string> = {
@@ -61,10 +74,13 @@ export default async function Page() {
 
     return (
         <EditorProvider
-            user={user}
-            html={html ?? ""}
-            portfolio={portfolio[0]}
             dls={dls}
+            user={user}
+            html={html}
+            domain={domain}
+            routes={routeMap}
+            portfolioId={portfolioId}
+            activeRoute={portfolioRoute}
         >
             <Editor />
         </EditorProvider>

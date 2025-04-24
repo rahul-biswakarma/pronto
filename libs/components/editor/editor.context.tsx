@@ -1,6 +1,4 @@
 "use client";
-
-import type { Database } from "@/libs/supabase/database.types";
 import type { User } from "@supabase/supabase-js";
 import type React from "react";
 import { createContext, useContext, useRef, useState } from "react";
@@ -20,24 +18,30 @@ export const EditorProvider: React.FC<{
     user: User;
     children: React.ReactNode;
     html: string;
-    portfolio: Database["public"]["Tables"]["portfolio"]["Row"];
     dls: Record<string, string>;
+    domain: string;
+    activeRoute: string;
     onHtmlChange?: (updatedHtml: string) => void;
+    portfolioId: string;
+    routes: Record<string, string>;
 }> = ({
-    user,
-    portfolio,
-    children,
-    html,
     dls,
+    user,
+    html,
+    routes,
+    domain,
+    children,
+    portfolioId,
+    activeRoute: initialActiveRoute,
     onHtmlChange: externalHtmlChangeHandler,
 }) => {
     const iframeRef = useRef<HTMLIFrameElement>(null);
-
     const [modeId, setModeId] = useState<string>("");
     const [modes, setModes] = useState<Record<string, EditorMode>>({});
     const [previewMode, setPreviewMode] = useState<boolean>(true);
     const [portfolioHtml, setPortfolioHtml] = useState<string>(html);
     const [iframeDocument, setIframeDocument] = useState<Document | null>(null);
+    const [activeRoute, setActiveRoute] = useState<string>(initialActiveRoute);
 
     const registerMode = (mode: EditorMode) => {
         setModes((prevModes) => ({
@@ -64,16 +68,23 @@ export const EditorProvider: React.FC<{
             value={{
                 dls,
                 user,
+                domain,
                 iframeRef,
                 modeId,
-                portfolio,
+                portfolioId,
+                routes,
+
                 setModeId,
                 portfolioHtml,
                 setPortfolioHtml,
                 modes,
-                portfolioId: portfolio.id,
+
+                activeRoute,
+                setActiveRoute,
+
                 registerMode,
                 iframeDocument,
+
                 setIframeDocument,
                 onHtmlChange,
                 previewMode,

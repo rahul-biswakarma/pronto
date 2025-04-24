@@ -28,9 +28,10 @@ export const GET = withErrorHandling(
         const { data, error } = await supabase
             .from("portfolio")
             .select("html_s3_path")
-            .eq("domain", domain);
+            .eq("domain", domain)
+            .single();
 
-        const htmlUrl = await getFileUrlFromBucket(data?.[0]?.html_s3_path);
+        const htmlUrl = await getFileUrlFromBucket(data?.html_s3_path);
 
         if (error) {
             return createErrorResponse(

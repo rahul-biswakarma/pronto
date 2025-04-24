@@ -1,4 +1,3 @@
-import type { Database } from "@/libs/supabase/database.types";
 import type { User } from "@supabase/supabase-js";
 import type { JSX } from "react";
 
@@ -12,20 +11,24 @@ export type EditorMode = {
 export type EditorContextType = {
     dls: Record<string, string>;
     user: User;
+    domain: string;
     portfolioId: string;
+    routes: Record<string, string>;
+
+    activeRoute: string;
+    setActiveRoute: (route: string) => void;
 
     iframeRef: React.RefObject<HTMLIFrameElement | null>;
 
     modeId: string;
+    modes: Record<string, EditorMode>;
     setModeId: (mode: string) => void;
 
-    modes: Record<string, EditorMode>;
     registerMode: (mode: EditorMode) => void;
 
     iframeDocument: Document | null;
     setIframeDocument: (doc: Document | null) => void;
 
-    portfolio: Database["public"]["Tables"]["portfolio"]["Row"];
     portfolioHtml: string;
     setPortfolioHtml: (html: string) => void;
 
