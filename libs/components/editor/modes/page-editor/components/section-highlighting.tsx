@@ -16,10 +16,7 @@ interface SectionHighlightingProps {
 
 export const SectionHighlighting: React.FC<SectionHighlightingProps> = ({
     iframeDocument,
-    modeId,
-    selectedElement,
     setSelectedElement,
-    setPrompt,
     isGenerating,
 }) => {
     useEffect(() => {
@@ -178,7 +175,7 @@ export const SectionHighlighting: React.FC<SectionHighlightingProps> = ({
                 style.remove();
             }
         };
-    }, [iframeDocument, modeId, setSelectedElement, setPrompt, isGenerating]);
+    }, [iframeDocument, setSelectedElement, isGenerating]);
 
     return null; // This component doesn't render anything, it just adds event handlers
 };

@@ -216,9 +216,6 @@ Return only valid JSON, no additional text.`;
 // Function to generate dummy themes for testing or when API is unavailable
 const generateDummyThemes = (currentTheme: Record<string, string>): Theme[] => {
     // Extract the base hue and chroma from the current theme
-    const baseHue = Number.parseFloat(
-        currentTheme["--feno-color-hue"] || "210",
-    );
     const baseChroma = Number.parseFloat(
         currentTheme["--feno-color-chroma"] || "0.03",
     );

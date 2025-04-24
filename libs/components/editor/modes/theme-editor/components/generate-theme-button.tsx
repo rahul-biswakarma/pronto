@@ -34,8 +34,6 @@ export const GenerateThemeButton: React.FC<GenerateThemeButtonProps> = ({
                 {} as Record<string, string>,
             );
 
-            console.log(currentTheme);
-
             // Generate themes
             const themes = await generateThemesWithGemini(currentTheme);
 

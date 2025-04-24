@@ -11,13 +11,13 @@ type PortfolioActionResult = {
 };
 
 function emailToUsername(email: string) {
-    const localPart = email.split('@')[0];
+    const localPart = email.split("@")[0];
     return localPart
         .toLowerCase()
-        .replace(/[._+]/g, '-')      // Replace . _ + with hyphen
-        .replace(/[^a-z0-9-]/g, '')  // Remove other non-alphanumerics
-        .replace(/-+/g, '-')         // Replace multiple hyphens with single
-        .replace(/^-|-$/g, '');      // Trim hyphens at start/end
+        .replace(/[._+]/g, "-") // Replace . _ + with hyphen
+        .replace(/[^a-z0-9-]/g, "") // Remove other non-alphanumerics
+        .replace(/-+/g, "-") // Replace multiple hyphens with single
+        .replace(/^-|-$/g, ""); // Trim hyphens at start/end
 }
 
 export async function generatePortfolioAction({

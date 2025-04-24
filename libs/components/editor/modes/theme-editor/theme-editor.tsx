@@ -48,19 +48,6 @@ const ThemeEditor: React.FC = () => {
         setInitialColorVariables(extractedVars);
     }, [iframeDocument]);
 
-    // Handle color variable change
-    const handleColorChange = (name: string, value: string) => {
-        const updatedVariables = colorVariables.map((variable) =>
-            variable.name === name ? { ...variable, value } : variable,
-        );
-        setColorVariables(updatedVariables);
-
-        if (iframeDocument) {
-            // Apply the color change to the iframe
-            updateColorVariable(iframeDocument, name, value);
-        }
-    };
-
     // Handle hue and saturation changes
     const handleHueChange = (value: number) => {
         if (iframeDocument) {

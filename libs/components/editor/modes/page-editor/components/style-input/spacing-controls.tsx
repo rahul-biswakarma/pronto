@@ -35,10 +35,6 @@ export const SpacingControls: React.FC<SpacingControlsProps> = ({
         [onStyleChange, parseValue],
     );
 
-    const resetValue = useCallback((handler: (value: string) => void) => {
-        handler("0");
-    }, []);
-
     const SpacingInput = useCallback(
         ({
             value,
@@ -63,21 +59,11 @@ export const SpacingControls: React.FC<SpacingControlsProps> = ({
                         <span className="text-[var(--feno-text-2)] mr-2 pointer-events-none absolute right-0">
                             px
                         </span>
-                        {/* {parseValue(value) > 0 && (
-                            <button
-                                type="button"
-                                className="absolute right-2 p-1 text-[var(--feno-text-2)]"
-                                onClick={() => resetValue(onChange)}
-                                aria-label="Clear value"
-                            >
-                                <IconX size={16} />
-                            </button>
-                        )} */}
                     </div>
                 </div>
             );
         },
-        [parseValue, resetValue],
+        [parseValue],
     );
 
     const getMarginValue = (direction: string): string => {

@@ -47,6 +47,7 @@ export const PredefinedThemesSection: React.FC<
     }, []);
 
     // Set up scroll detection
+    // biome-ignore lint/correctness/useExhaustiveDependencies: themes required to re-run
     useEffect(() => {
         const container = scrollContainerRef.current;
         checkScroll(); // Initial check
