@@ -86,8 +86,8 @@ export const PredefinedThemesSection: React.FC<
     if (themes.length === 0) return null;
 
     return (
-        <div className="w-full py-2">
-            <div className="flex justify-between items-center mb-2">
+        <div className="w-full ">
+            <div className="flex justify-between items-center border-b border-[var(--feno-border-2)] p-3 px-4">
                 <p className="text-xs font-medium text-[var(--feno-text-1)]">
                     Themes
                 </p>
@@ -116,7 +116,7 @@ export const PredefinedThemesSection: React.FC<
             <div className="relative">
                 <div
                     ref={scrollContainerRef}
-                    className="flex gap-2 overflow-x-auto py-1 scrollbar-hide"
+                    className="flex gap-2 overflow-x-auto p-4 scrollbar-hide"
                     style={{
                         scrollbarWidth: "none" /* Firefox */,
                         msOverflowStyle: "none" /* IE and Edge */,

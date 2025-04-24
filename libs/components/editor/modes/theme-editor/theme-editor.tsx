@@ -106,12 +106,7 @@ const ThemeEditor: React.FC = () => {
 
     return (
         <div className="flex h-full w-full flex-col gap-1.5 min-w-[500px] max-w-[500px]">
-            <div className="feno-mod-container p-3 flex flex-col gap-2">
-                {themes.length === 0 && (
-                    <p className="text-xs font-medium text-[var(--feno-text-1)]">
-                        Themes
-                    </p>
-                )}
+            <div className="feno-mod-container flex flex-col gap-2">
                 <PredefinedThemesSection
                     themes={themes}
                     selectedThemeName={selectedThemeName}
@@ -128,11 +123,16 @@ const ThemeEditor: React.FC = () => {
                 )}
             </div>
 
-            <div className="feno-mod-container p-3 flex flex-col gap-3">
-                <HueSaturationControls
-                    onHueChange={handleHueChange}
-                    onSaturationChange={handleSaturationChange}
-                />
+            <div className="feno-mod-container flex flex-col gap-1">
+                <div className="p-3 px-4 text-xs font-medium text-[var(--feno-text-1)] border-b border-[var(--feno-border-1)]">
+                    Advanced Controls
+                </div>
+                <div className="p-3 px-4">
+                    <HueSaturationControls
+                        onHueChange={handleHueChange}
+                        onSaturationChange={handleSaturationChange}
+                    />
+                </div>
             </div>
         </div>
     );
