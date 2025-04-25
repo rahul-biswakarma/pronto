@@ -103,13 +103,13 @@ export const Navigation = () => {
                 }}
             >
                 <motion.div
-                    className="flex w-full justify-center items-center p-2 px-3"
+                    className="flex w-full justify-center items-center p-1 px-3"
                     variants={headerVariants}
                     style={{
                         transformOrigin: "center top",
                     }}
                 >
-                    <div className="flex gap-1.5 items-center mr-7">
+                    <div className="flex gap-1.5 items-center mr-6">
                         <Button
                             variant="custom"
                             size="icon"
@@ -122,15 +122,16 @@ export const Navigation = () => {
                     {/* <code className="text-blue-600 font-medium border border-dashed border-[var(--feno-border-2)] rounded-md px-1">
                         {domain}
                     </code> */}
-                    <code className="text-[var(--feno-text-2)] font-medium">
+                    <code className="flex items-center text-[var(--feno-text-2)] font-medium bg-white rounded-lg p-2 !py-0 pl-4 shadow-[var(--feno-minimal-shadow)]">
                         {domain}.feno.app{activeRoute}
+                        <Button variant="custom" size="icon" className="-ml-1">
+                            <IconPlus strokeWidth={2} />
+                        </Button>
                     </code>
                     {/* <code className="text-blue-600 font-medium border border-dashed border-[var(--feno-border-2)] rounded-md px-1">
                         {activeRoute}
                     </code> */}
-                    <Button variant="custom" size="icon" className="-ml-1">
-                        <IconPlus strokeWidth={2} />
-                    </Button>
+
                     <Button
                         onClick={() => setOpen(!open)}
                         variant="custom"
