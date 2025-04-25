@@ -3,12 +3,9 @@
 import { Button } from "@/libs/ui/button";
 import { IconSettings } from "@tabler/icons-react";
 import { motion } from "framer-motion";
-import type { NavigationActionButtonProps } from "../types";
+import type { SectionActionButtonProps } from "../types";
 
-export const NavigationActionButton = ({
-    open,
-    setOpen,
-}: NavigationActionButtonProps) => (
+export const SectionActionButton = ({ open, setOpen }: SectionActionButtonProps) => (
     <Button
         onClick={() => setOpen(open ? null : "update_route")}
         variant="custom"

@@ -9,16 +9,8 @@ export type EditorMode = {
 };
 
 export type EditorContextType = {
-    dls: Record<string, string>;
     user: User;
-    domain: string;
     portfolioId: string;
-    routes: Record<string, string>;
-
-    activeRoute: string;
-    setActiveRoute: (route: string) => void;
-    activeRoutePath: string;
-    setActiveRoutePath: (path: string) => void;
 
     iframeRef: React.RefObject<HTMLIFrameElement | null>;
 
@@ -30,17 +22,4 @@ export type EditorContextType = {
 
     iframeDocument: Document | null;
     setIframeDocument: (doc: Document | null) => void;
-
-    portfolioHtml: string;
-    setPortfolioHtml: (html: string) => void;
-
-    onHtmlChange: ({
-        html,
-        modeId,
-        modeLabel,
-    }: {
-        html: string;
-        modeId: string;
-        modeLabel: string;
-    }) => void;
 };

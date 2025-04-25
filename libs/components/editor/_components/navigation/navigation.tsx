@@ -1,10 +1,9 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useState } from "react";
-import { AddRoutePanel } from "./components/add-route-panel";
 import { DomainDisplay } from "./components/domain-display";
-import { NavigationActionButton } from "./components/navigation-action-button";
+import { SectionActionButton } from "./components/navigation-action-button";
 import { NavigationControls } from "./components/navigation-controls";
 import { RoutesDropdown } from "./components/routes-dropdown";
 import type { NavigationPanelType } from "./types";
@@ -35,13 +34,13 @@ export const Navigation = () => {
                     <DomainDisplay />
                     <div className="flex items-center">
                         <RoutesDropdown open={open} setOpen={setOpen} />
-                        <NavigationActionButton open={open} setOpen={setOpen} />
+                        <SectionActionButton open={open} setOpen={setOpen} />
                     </div>
                 </motion.div>
 
-                <AnimatePresence>
+                {/* <AnimatePresence>
                     {open === "add_route" && <AddRoutePanel />}
-                </AnimatePresence>
+                </AnimatePresence> */}
             </motion.div>
         </div>
     );

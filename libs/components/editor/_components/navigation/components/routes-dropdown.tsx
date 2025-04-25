@@ -24,10 +24,15 @@ export const RoutesDropdown = ({ open, setOpen }: RoutesDropdownProps) => {
         newRoute,
         setNewRoute,
         handleAddRoute,
+        isAddingRoute,
+        errorMessage,
     } = useRouteManagement();
 
     return (
-        <DropdownMenu>
+        <DropdownMenu
+            open={open === "add_route"}
+            onOpenChange={(isOpen) => setOpen(isOpen ? "add_route" : null)}
+        >
             <DropdownMenuTrigger>
                 <div
                     onClick={(e) => {
@@ -75,7 +80,13 @@ export const RoutesDropdown = ({ open, setOpen }: RoutesDropdownProps) => {
                             value={newRoute}
                             onChange={setNewRoute}
                             onAdd={handleAddRoute}
+                            isLoading={isAddingRoute}
                         />
+                        {errorMessage && (
+                            <p className="text-red-500 text-xs mt-1 px-2">
+                                {errorMessage}
+                            </p>
+                        )}
                     </DropdownMenuLabel>
                 )}
             </DropdownMenuContent>

@@ -8,7 +8,7 @@ export const containerVariants = {
         },
     },
     open: {
-        width: "400px",
+        width: "auto",
         borderBottom: "1px solid var(--feno-border-1)",
         transition: {
             width: { duration: 0.3, ease: [0.19, 1.0, 0.22, 1.0] },

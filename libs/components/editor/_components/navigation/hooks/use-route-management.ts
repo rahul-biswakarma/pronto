@@ -1,26 +1,58 @@
 "use client";
-
+import dataLayer from "@/libs/utils/data-layer";
 import { useCallback, useState } from "react";
 import { useEditor } from "../../../editor.context";
 import type { RouteManagementHook } from "../types";
 
 export const useRouteManagement = (): RouteManagementHook => {
-    const { domain, routes } = useEditor();
+    const { domain, routes, portfolioId, setActiveRoute } = useEditor();
+
     const [newRoute, setNewRoute] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
     const [showAddRouteInput, setShowAddRouteInput] = useState(false);
+    const [isAddingRoute, setIsAddingRoute] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const filteredRoutes = Object.keys(routes).filter((route) =>
         route.toLowerCase().includes(searchTerm.toLowerCase()),
     );
 
-    const handleAddRoute = useCallback(() => {
-        if (newRoute.trim()) {
-            // Add route functionality would go here
-            // addRoute?.(newRoute);
-            setNewRoute("");
+    const handleAddRoute = useCallback(async () => {
+        if (!newRoute.trim()) {
+            setErrorMessage("Route name cannot be empty");
+            return;
         }
-    }, [newRoute]);
+
+        setErrorMessage(null);
+        setIsAddingRoute(true);
+
+        try {
+            const result = await dataLayer.post<{
+                success: boolean;
+                error?: string;
+            }>("/api/portfolios/create-route", {
+                url: newRoute,
+                domain,
+                portfolioId: portfolioId,
+            });
+
+            const data = result.data;
+
+            if (data.success) {
+                setNewRoute("");
+                setActiveRoute(newRoute);
+                // Keep dropdown open but hide the input after successful add
+                setShowAddRouteInput(false);
+            } else {
+                setErrorMessage(data.error || "Failed to create route");
+            }
+        } catch (error) {
+            setErrorMessage("An unexpected error occurred");
+            console.error(error);
+        } finally {
+            setIsAddingRoute(false);
+        }
+    }, [newRoute, domain, portfolioId, setActiveRoute]);
 
     return {
         domain,
@@ -33,5 +65,7 @@ export const useRouteManagement = (): RouteManagementHook => {
         setShowAddRouteInput,
         filteredRoutes,
         handleAddRoute,
+        isAddingRoute,
+        errorMessage,
     };
 };

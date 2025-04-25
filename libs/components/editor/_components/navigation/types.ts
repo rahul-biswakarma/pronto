@@ -15,6 +15,7 @@ export interface AddRouteInputProps {
     value: string;
     onChange: (value: string) => void;
     onAdd: () => void;
+    isLoading?: boolean;
 }
 
 export interface RouteMenuHeaderProps {
@@ -27,7 +28,7 @@ export interface RoutesDropdownProps {
     setOpen: Dispatch<SetStateAction<NavigationPanelType>>;
 }
 
-export interface NavigationActionButtonProps {
+export interface SectionActionButtonProps {
     open: NavigationPanelType;
     setOpen: Dispatch<SetStateAction<NavigationPanelType>>;
 }
@@ -43,4 +44,6 @@ export interface RouteManagementHook {
     setShowAddRouteInput: Dispatch<SetStateAction<boolean>>;
     filteredRoutes: string[];
     handleAddRoute: () => void;
+    isAddingRoute: boolean;
+    errorMessage: string | null;
 }
