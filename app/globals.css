@@ -60,7 +60,7 @@
     --feno-border-1: #ddd;
     --feno-border-2: #e6e6e7;
 
-    --feno-floating-shadow: 0px 8px 32px rgba(0, 0, 0, 0.2);
+    --feno-floating-shadow: 0px 8px 32px rgba(0, 0, 0, 0.1);
     --feno-minimal-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.03);
 
     --feno-interactive-resting-bg: #f6f6f6;

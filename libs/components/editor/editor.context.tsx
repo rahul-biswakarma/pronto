@@ -38,7 +38,6 @@ export const EditorProvider: React.FC<{
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const [modeId, setModeId] = useState<string>("");
     const [modes, setModes] = useState<Record<string, EditorMode>>({});
-    const [previewMode, setPreviewMode] = useState<boolean>(true);
     const [portfolioHtml, setPortfolioHtml] = useState<string>(html);
     const [iframeDocument, setIframeDocument] = useState<Document | null>(null);
     const [activeRoute, setActiveRoute] = useState<string>(initialActiveRoute);
@@ -92,8 +91,6 @@ export const EditorProvider: React.FC<{
 
                 setIframeDocument,
                 onHtmlChange,
-                previewMode,
-                setPreviewMode,
             }}
         >
             {children}

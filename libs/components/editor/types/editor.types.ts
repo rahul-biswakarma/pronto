@@ -34,9 +34,6 @@ export type EditorContextType = {
     portfolioHtml: string;
     setPortfolioHtml: (html: string) => void;
 
-    previewMode: boolean;
-    setPreviewMode: (previewMode: boolean) => void;
-
     onHtmlChange: ({
         html,
         modeId,
