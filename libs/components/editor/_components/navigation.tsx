@@ -5,14 +5,14 @@ import { cn } from "@/libs/utils/misc";
 import {
     IconArrowBackUp,
     IconArrowForwardUp,
-    IconLink,
     IconPlus,
+    IconSettings,
 } from "@tabler/icons-react";
 import { useState } from "react";
 import { useEditor } from "../editor.context";
 
 export const Navigation = () => {
-    const { domain } = useEditor();
+    const { domain, activeRoute } = useEditor();
 
     const [open, setOpen] = useState(false);
 
@@ -29,7 +29,7 @@ export const Navigation = () => {
                     open && "border-b border-[var(--feno-border-1)]",
                 )}
             >
-                <div className="flex gap-2 items-center mr-6">
+                <div className="flex gap-1.5 items-center mr-7">
                     <Button
                         variant="custom"
                         size="icon"
@@ -39,18 +39,25 @@ export const Navigation = () => {
                         <IconArrowForwardUp strokeWidth={2} />
                     </Button>
                 </div>
-                <code className="text-blue-600 font-medium border border-dashed border-[var(--feno-border-2)] rounded-md px-1">
+                {/* <code className="text-blue-600 font-medium border border-dashed border-[var(--feno-border-2)] rounded-md px-1">
                     {domain}
+                </code> */}
+                <code className="text-[var(--feno-text-2)] font-medium">
+                    {domain}.feno.app{activeRoute}
                 </code>
-                <code className="text-[var(--feno-text-2)]">.feno.app</code>
-                <code className="text-blue-600 font-medium border border-dashed border-[var(--feno-border-2)] rounded-md px-1">
-                    /
-                </code>
+                {/* <code className="text-blue-600 font-medium border border-dashed border-[var(--feno-border-2)] rounded-md px-1">
+                    {activeRoute}
+                </code> */}
                 <Button variant="custom" size="icon" className="-ml-1">
                     <IconPlus strokeWidth={2} />
                 </Button>
-                <Button variant="custom" size="icon" className="ml-3">
-                    <IconLink strokeWidth={2} />
+                <Button
+                    onClick={() => setOpen(!open)}
+                    variant="custom"
+                    size="icon"
+                    className="ml-3"
+                >
+                    <IconSettings strokeWidth={2} />
                 </Button>
             </div>
 

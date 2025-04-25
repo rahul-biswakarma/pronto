@@ -1,5 +1,6 @@
 import { Editor } from "@/libs/components/editor/editor";
 import { EditorProvider } from "@/libs/components/editor/editor.context";
+import { extractCssVariables } from "@/libs/components/editor/modes/theme-editor/utils";
 import { checkAuthentication } from "@/libs/utils/auth";
 import { createDomainRouteMap } from "@/libs/utils/misc";
 import { getFileFromBucket } from "@/libs/utils/supabase-storage";
@@ -35,42 +36,34 @@ export default async function Page() {
             .eq("domain", domain);
 
     const routeMap = await createDomainRouteMap(portfolioRoutes ?? []);
-    const portfolioRoute = routeMap["/"];
+    const portfolioRoutePath = routeMap["/"];
 
-    if (portfolioRoutesError || !portfolioRoute) {
+    if (portfolioRoutesError || !portfolioRoutePath) {
         redirect("/");
     }
 
-    const htmlContent = (await getFileFromBucket(portfolioRoute)).data;
-    const cssVars: Record<string, string> = {};
+    const htmlContent = (await getFileFromBucket(portfolioRoutePath)).data;
 
     // Extract CSS variables from style tags
-    const styleMatch = htmlContent?.match(/<style[^>]*>([\s\S]*?)<\/style>/gi);
-    if (styleMatch) {
-        const varRegex = /--[\w-]+:\s*[^;]+/g;
-        for (const style of styleMatch) {
-            const vars = style.match(varRegex);
-            if (vars) {
-                for (const v of vars) {
-                    const [key, value] = v.split(":").map((s) => s.trim());
-                    cssVars[key] = value;
-                }
-            }
-        }
-    }
-
     const html = htmlContent ?? "";
+    const cssVariables: Record<string, string> = extractCssVariables(
+        html,
+    ).reduce(
+        (acc, { name, value }) => {
+            acc[name] = value;
+            return acc;
+        },
+        {} as Record<string, string>,
+    );
 
     // Flatten theme variables into dls
-    const dls: Record<string, string> = {
-        ...Object.entries(cssVars).reduce(
-            (acc, [key, value]) => {
-                acc[`theme.${key}`] = value;
-                return acc;
-            },
-            {} as Record<string, string>,
-        ),
-    };
+    const dls: Record<string, string> = Object.keys(cssVariables).reduce(
+        (acc, key) => {
+            acc[`theme.${key}`] = cssVariables[key];
+            return acc;
+        },
+        {} as Record<string, string>,
+    );
 
     return (
         <EditorProvider
@@ -80,7 +73,7 @@ export default async function Page() {
             domain={domain}
             routes={routeMap}
             portfolioId={portfolioId}
-            activeRoute={portfolioRoute}
+            activeRoute={"/"}
         >
             <Editor />
         </EditorProvider>

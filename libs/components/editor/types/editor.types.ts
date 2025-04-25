@@ -17,6 +17,8 @@ export type EditorContextType = {
 
     activeRoute: string;
     setActiveRoute: (route: string) => void;
+    activeRoutePath: string;
+    setActiveRoutePath: (path: string) => void;
 
     iframeRef: React.RefObject<HTMLIFrameElement | null>;
 

@@ -42,6 +42,9 @@ export const EditorProvider: React.FC<{
     const [portfolioHtml, setPortfolioHtml] = useState<string>(html);
     const [iframeDocument, setIframeDocument] = useState<Document | null>(null);
     const [activeRoute, setActiveRoute] = useState<string>(initialActiveRoute);
+    const [activeRoutePath, setActiveRoutePath] = useState<string>(
+        routes[initialActiveRoute],
+    );
 
     const registerMode = (mode: EditorMode) => {
         setModes((prevModes) => ({
@@ -81,6 +84,8 @@ export const EditorProvider: React.FC<{
 
                 activeRoute,
                 setActiveRoute,
+                activeRoutePath,
+                setActiveRoutePath,
 
                 registerMode,
                 iframeDocument,
