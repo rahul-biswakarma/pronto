@@ -1,4 +1,5 @@
 import { IconChevronDown } from "@tabler/icons-react";
+import { ColorPickerPopover } from "./color-picker-popover";
 import { parsePixelValue } from "./style-utils";
 
 interface BorderControlsProps {
@@ -78,17 +79,13 @@ export const BorderControls: React.FC<BorderControlsProps> = ({
                     {showBorderColorPicker !== undefined &&
                         setShowBorderColorPicker !== undefined && (
                             <div className="flex items-center">
-                                <button
-                                    type="button"
-                                    className="h-8 w-30 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors"
-                                    style={{
-                                        backgroundColor:
-                                            styles.borderColor || "transparent",
-                                    }}
-                                    onClick={() =>
-                                        setShowBorderColorPicker(true)
+                                <ColorPickerPopover
+                                    color={styles.borderColor}
+                                    onChange={(color) =>
+                                        onStyleChange("borderColor", color)
                                     }
-                                    aria-label="Select border color"
+                                    open={showBorderColorPicker}
+                                    onOpenChange={setShowBorderColorPicker}
                                 />
                             </div>
                         )}
