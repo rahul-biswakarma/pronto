@@ -39,6 +39,8 @@ export interface RouteManagementHook {
     routes: Record<string, string>;
     newRoute: string;
     setNewRoute: Dispatch<SetStateAction<string>>;
+    newDomain: string;
+    setNewDomain: Dispatch<SetStateAction<string>>;
     searchTerm: string;
     setSearchTerm: Dispatch<SetStateAction<string>>;
     showAddRouteInput: boolean;
@@ -47,4 +49,8 @@ export interface RouteManagementHook {
     handleAddRoute: () => void;
     isAddingRoute: boolean;
     errorMessage: string | null;
+    isDomainUpdating: boolean;
+    domainErrorMessage: string | null;
+    handleUpdateDomain: () => void;
+    checkDomainAvailability: (domain: string) => Promise<boolean>;
 }

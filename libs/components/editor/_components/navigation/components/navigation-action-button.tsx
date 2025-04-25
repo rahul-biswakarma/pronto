@@ -15,7 +15,7 @@ export const SectionActionButton = ({
         size="icon"
     >
         <motion.div
-            animate={{ rotate: open ? 180 : 0 }}
+            animate={{ rotate: open === "update_route" ? 180 : 0 }}
             transition={{
                 duration: 0.3,
                 ease: [0.19, 1.0, 0.22, 1.0],
