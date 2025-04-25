@@ -11,6 +11,7 @@ const PortfolioEditorPage = async ({
 }: {
     params: { domain: string };
 }) => {
+    const { domain } = await params;
     const { authenticated, errorResponse, supabase, user } =
         await checkAuthentication();
 
@@ -18,11 +19,9 @@ const PortfolioEditorPage = async ({
         redirect("/");
     }
 
-    const domain = params.domain;
-
     const { data: portfolioData, error: portfolioError } = await supabase
         .from("portfolio")
-        .select("domain, id")
+        .select("domain, id, theme_variables")
         .eq("domain", domain)
         .single();
 
@@ -40,9 +39,9 @@ const PortfolioEditorPage = async ({
         redirect(ROUTES.SelectPortfolio);
     }
 
-    const routeMap = await createDomainRouteMap(portfolioRoutes ?? []);
-
     const portfolioId = portfolioData?.id;
+    const themeVariables = portfolioData?.theme_variables;
+    const routeMap = await createDomainRouteMap(portfolioRoutes ?? []);
 
     return (
         <RouteProvider
@@ -50,7 +49,11 @@ const PortfolioEditorPage = async ({
             portfolioId={portfolioId}
             routeMap={routeMap}
         >
-            <EditorProvider user={user} portfolioId={portfolioId}>
+            <EditorProvider
+                dls={{ theme: themeVariables }}
+                user={user}
+                portfolioId={portfolioId}
+            >
                 <Editor />
             </EditorProvider>
         </RouteProvider>
