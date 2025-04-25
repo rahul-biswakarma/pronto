@@ -5,9 +5,11 @@ import { type NextRequest, NextResponse } from "next/server";
 
 export async function GET(
     _request: NextRequest,
-    { params }: { params: { subdomain: string[] } },
+    context: { params: Promise<{ subdomain: string[] }> },
 ) {
-    const { subdomain } = await params;
+    const params = await context.params;
+    const { subdomain } = params;
+
     try {
         const supabase = await createSupabaseServerClient(supabaseOption);
 

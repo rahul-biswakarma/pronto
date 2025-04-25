@@ -1,3 +1,4 @@
+import type { PageProps } from "@/.next/types/app/page";
 import { EditorProvider } from "@/libs/components/editor/context/editor.context";
 import { RouteProvider } from "@/libs/components/editor/context/route.context";
 import { Editor } from "@/libs/components/editor/editor";
@@ -6,19 +7,16 @@ import { checkAuthentication } from "@/libs/utils/auth";
 import { createDomainRouteMap } from "@/libs/utils/misc";
 import { redirect } from "next/navigation";
 
-const PortfolioEditorPage = async ({
-    params,
-}: {
-    params: { domain: string };
-}) => {
+const PortfolioEditorPage = async (props: PageProps) => {
+    const params = await props.params;
+    const domain = params.domain as string;
+
     const { authenticated, errorResponse, supabase, user } =
         await checkAuthentication();
 
     if (!authenticated || errorResponse) {
         redirect("/");
     }
-
-    const domain = params.domain;
 
     const { data: portfolioData, error: portfolioError } = await supabase
         .from("portfolio")

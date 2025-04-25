@@ -8,18 +8,17 @@ import {
 import { checkAuthentication } from "@/libs/utils/auth";
 import { withCSRFProtection } from "@/libs/utils/csrf";
 import { getFileUrlFromBucket } from "@/libs/utils/supabase-storage";
-import type { NextRequest } from "next/server";
 
 /**
  * GET /api/portfolios - Retrieves the user's portfolio
  */
 export const GET = withErrorHandling(
-    async (req: NextRequest, requestId: string) => {
+    async (req: Request, requestId: string) => {
         // Check authentication
         const supabase = await createSupabaseServerClient(supabaseOption);
 
         // Get the URL object from the request
-        const url = req.nextUrl;
+        const url = new URL(req.url);
 
         // Get the 'domain' query parameter from the URL's search parameters
         const domain = url.searchParams.get("domain");
@@ -55,7 +54,7 @@ export const GET = withErrorHandling(
  * Protected by CSRF token verification
  */
 export const POST = withErrorHandling(
-    async (req: NextRequest, requestId: string) => {
+    async (req: Request, requestId: string) => {
         const handler = async (validatedReq: Request) => {
             // Check authentication
             const auth = await checkAuthentication();
