@@ -47,6 +47,10 @@ export const RoutesDropdown = ({ open, setOpen }: RoutesDropdownProps) => {
                 </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent
+                side="bottom"
+                align="end"
+                sideOffset={8}
+                alignOffset={-10}
                 className="border-none !shadow-[var(--feno-minimal-shadow)] bg-[var(--feno-surface-0)] max-w-[250px] min-w-[250px] w-[250px]"
                 onClick={(e) => e.stopPropagation()}
             >

@@ -62,8 +62,8 @@ export const Navigation = () => {
                     </AnimatePresence>
                 </motion.div>
                 {error && open === "update_route" && (
-                    <div className="max-w-[80%] text-[12px] text-center w-full p-0.5 rounded-b-xl bg-red-700/30 backdrop-blur-xl text-red-300">
-                        {error}
+                    <div className="max-w-[80%] text-[12px] text-center w-full rounded-b-xl overflow-hidden bg-black/50 backdrop-blur-xl text-red-200">
+                        <div className="p-0.5 bg-red-500/30">{error}</div>
                     </div>
                 )}
             </div>

@@ -62,7 +62,7 @@ export const useRouteManagement = (): RouteManagementHook => {
         } finally {
             setIsAddingRoute(false);
         }
-    }, [newRoute, domain, portfolioId, setActiveRoute]);
+    }, [newRoute, domain, portfolioId, setActiveRoute, setRouteMap]);
 
     const checkDomainAvailability = useCallback(
         async (domainToCheck: string) => {
