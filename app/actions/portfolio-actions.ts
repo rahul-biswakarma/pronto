@@ -44,6 +44,12 @@ export async function generatePortfolioAction({
             .select("id")
             .single();
 
+        await supabase.from("portfolio_route_map").insert({
+            portfolio_id: createData?.id,
+            route: "/",
+            domain: domain,
+        });
+
         if (createError || !createData?.id) {
             throw new Error(
                 `Failed to create portfolio record: ${

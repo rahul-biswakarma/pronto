@@ -1,4 +1,4 @@
-import { PortfolioSelector } from "@/libs/components/selector/portfolio-selector";
+import { Onboarding } from "@/libs/components/onboarding/onboarding";
 import { ROUTES } from "@/libs/constants/routes";
 import { checkAuthentication } from "@/libs/utils/auth";
 import { redirect } from "next/navigation";
@@ -20,7 +20,7 @@ const ONXPage = async () => {
         redirect(ROUTES.Onboarding);
     }
 
-    return <PortfolioSelector portfolioData={portfolioData} />;
+    return <Onboarding authenticated={authenticated} />;
 };
 
 export default ONXPage;

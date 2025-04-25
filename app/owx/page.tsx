@@ -20,6 +20,10 @@ const OWXPage = async () => {
         redirect(ROUTES.Onboarding);
     }
 
+    if (portfolioData.length === 1) {
+        redirect(`/${portfolioData[0].domain}`);
+    }
+
     return <PortfolioSelector portfolioData={portfolioData} />;
 };
 
