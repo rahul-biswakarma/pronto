@@ -7,7 +7,7 @@ export { AddRouteInput } from "./components/add-route-input";
 export { RouteMenuHeader } from "./components/route-menu-header";
 export { RoutesDropdown } from "./components/routes-dropdown";
 export { SectionActionButton } from "./components/navigation-action-button";
-export { AddRoutePanel } from "./components/add-route-panel";
+export { RouteSettingsPanel } from "./components/route-setting-panel";
 export { useRouteManagement } from "./hooks/use-route-management";
 export * from "./types";
 export * from "./utils";

@@ -1,8 +1,4 @@
-import { useClickOutside } from "@/libs/hooks/use-outside-click";
-import { Button } from "@/libs/ui/button";
-import { useRef } from "react";
-import { HexColorPicker } from "react-colorful";
-import { rgbToHex } from "./style-utils";
+import { ColorPickerPopover } from "./color-picker-popover";
 
 interface ColorPickersProps {
     styles: React.CSSProperties;
@@ -24,12 +20,6 @@ export const ColorPickers: React.FC<ColorPickersProps> = ({
     showTextColorPicker,
     setShowTextColorPicker,
 }) => {
-    const bgColorPickerRef = useRef<HTMLDivElement>(null);
-    const textColorPickerRef = useRef<HTMLDivElement>(null);
-
-    useClickOutside(bgColorPickerRef, () => setShowBgColorPicker(false));
-    useClickOutside(textColorPickerRef, () => setShowTextColorPicker(false));
-
     return (
         <div className="flex flex-col gap-2">
             <div className="text-lg font-medium text-[var(--feno-text-1)]">
@@ -42,32 +32,14 @@ export const ColorPickers: React.FC<ColorPickersProps> = ({
                     <div className="text-base text-[var(--feno-text-1)]">
                         Text color
                     </div>
-                    <div className="relative">
-                        <Button
-                            id="textColor"
-                            variant="outline"
-                            className="h-8 w-32 border border-[var(--feno-border-1)] rounded-lg hover:border-[var(--feno-border-2)] transition-colors"
-                            style={{ backgroundColor: styles.color }}
-                            onClick={() =>
-                                setShowTextColorPicker(!showTextColorPicker)
-                            }
-                            aria-label="Select text color"
+                    <div>
+                        <ColorPickerPopover
+                            color={styles.color}
+                            onChange={(color) => onStyleChange("color", color)}
+                            open={showTextColorPicker}
+                            onOpenChange={setShowTextColorPicker}
+                            triggerClassName="h-8 w-32 border border-[var(--feno-border-1)] rounded-lg hover:border-[var(--feno-border-2)] transition-colors"
                         />
-                        {showTextColorPicker && (
-                            <div
-                                ref={textColorPickerRef}
-                                className="absolute right-0 top-full mt-1.5 z-10 bg-white p-1 rounded-lg shadow-lg border border-[var(--feno-border-1)]"
-                            >
-                                <HexColorPicker
-                                    color={rgbToHex(
-                                        styles.color || "rgb(0, 0, 0)",
-                                    )}
-                                    onChange={(color) =>
-                                        onStyleChange("color", color)
-                                    }
-                                />
-                            </div>
-                        )}
                     </div>
                 </div>
 
@@ -76,33 +48,16 @@ export const ColorPickers: React.FC<ColorPickersProps> = ({
                     <div className="text-base text-[var(--feno-text-1)]">
                         Background
                     </div>
-                    <div className="relative">
-                        <Button
-                            id="bgColor"
-                            variant="outline"
-                            className="h-8 w-32 border border-[var(--feno-border-1)] rounded-lg hover:border-[var(--feno-border-2)] transition-colors"
-                            style={{ backgroundColor: styles.backgroundColor }}
-                            onClick={() =>
-                                setShowBgColorPicker(!showBgColorPicker)
+                    <div>
+                        <ColorPickerPopover
+                            color={styles.backgroundColor}
+                            onChange={(color) =>
+                                onStyleChange("backgroundColor", color)
                             }
-                            aria-label="Select background color"
+                            open={showBgColorPicker}
+                            onOpenChange={setShowBgColorPicker}
+                            triggerClassName="h-8 w-32 border border-[var(--feno-border-1)] rounded-lg hover:border-[var(--feno-border-2)] transition-colors"
                         />
-                        {showBgColorPicker && (
-                            <div
-                                ref={bgColorPickerRef}
-                                className="absolute right-0 top-full mt-1.5 z-10 bg-white p-2 rounded-lg shadow-lg border border-gray-200"
-                            >
-                                <HexColorPicker
-                                    color={rgbToHex(
-                                        styles.backgroundColor ||
-                                            "rgba(0, 0, 0, 0)",
-                                    )}
-                                    onChange={(color) =>
-                                        onStyleChange("backgroundColor", color)
-                                    }
-                                />
-                            </div>
-                        )}
                     </div>
                 </div>
             </div>

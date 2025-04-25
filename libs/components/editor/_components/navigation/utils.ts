@@ -1,7 +1,6 @@
 export const containerVariants = {
     closed: {
         width: "auto",
-        borderBottom: "0px solid rgba(0, 0, 0, 0)",
         transition: {
             width: { duration: 0.3, ease: [0.19, 1.0, 0.22, 1.0] },
             borderBottom: { duration: 0.1, delay: 0 },
@@ -9,7 +8,6 @@ export const containerVariants = {
     },
     open: {
         width: "auto",
-        borderBottom: "1px solid var(--feno-border-1)",
         transition: {
             width: { duration: 0.3, ease: [0.19, 1.0, 0.22, 1.0] },
             borderBottom: { duration: 0.1, delay: 0.2 },
@@ -19,14 +17,12 @@ export const containerVariants = {
 
 export const headerVariants = {
     closed: {
-        borderBottom: "0px solid rgba(0, 0, 0, 0)",
         transition: {
             duration: 0.1,
             delay: 0,
         },
     },
     open: {
-        borderBottom: "1px solid var(--feno-border-1)",
         transition: {
             duration: 0.1,
             delay: 0.2,
@@ -46,8 +42,8 @@ export const contentVariants = {
     animate: {
         height: "auto",
         opacity: 1,
-        marginTop: 8,
-        marginBottom: 8,
+        marginTop: 0,
+        marginBottom: 0,
         transformOrigin: "center top",
         scaleY: 1,
         transition: {
