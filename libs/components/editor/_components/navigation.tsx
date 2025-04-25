@@ -109,7 +109,7 @@ export const Navigation = () => {
                         transformOrigin: "center top",
                     }}
                 >
-                    <div className="flex gap-1.5 items-center mr-6">
+                    <div className="flex gap-1.5 items-center mr-5">
                         <Button
                             variant="custom"
                             size="icon"
