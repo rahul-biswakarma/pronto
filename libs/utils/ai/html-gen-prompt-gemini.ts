@@ -42,54 +42,42 @@ export const htmlGenPromptGemini = async ({
     }
 
     // Create prompt text
-    const promptText = `Here is the content of the portfolio: ${content}
+    const promptText = `Your goal is to generate a complete portfolio website.
 
-I'm showing you a screenshot of a portfolio website design as a visual reference only.
-Your task is to generate a COMPLETE, polished, and highly detailed HTML document (with
-embedded CSS and Tailwind CSS) that closely matches the layout and styling of the screenshot, but uses
-ONLY the provided content.
+Here is the content of the portfolio: ${content}
+
+I'm showing you a screenshot of a portfolio website design. Use this screenshot ONLY as a visual reference for layout and styling.
 
 REQUIREMENTS:
-1. CSS, Tailwind & Styling:
-   - Include Tailwind CSS in the head:
-     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-   - Use Tailwind CSS classes as much as possible for styling.
-   - Place additional CSS within a single <style> block in the <head>.
-   - Define two base color variables: "--feno-color-hue" and "--feno-color-chroma", then derive all other
-     color variables from these using the OKLCH color model (e.g., "--feno-color-primary: oklch(0.7 var(--feno-color-chroma) var(--feno-color-hue));").
-   - Define font families as CSS variables with the prefix "--feno-font-family-" (e.g., "--feno-font-family-primary",
-     "--feno-font-family-heading") and reference these variables in the CSS / tailwindcss.
-   - Use CSS variables in Tailwind classes with square bracket notation, like: bg-[var(--feno-color-bg)] or text-[var(--feno-text-primary)].
-   - IMPORTANT: Do NOT use HTML-like tags for configuration. Do NOT use <tailwind-config> or similar tags.
-   - Do NOT attempt to override default Tailwind values through configuration - always use the CSS variable approach with square bracket notation instead.
-   - All styling should be done through CSS variables and Tailwind classes, never through configuration files.
+1. Generate a COMPLETE HTML document with no comments.
+2. DO NOT use any formatting from the portfolio content - only extract the necessary data.
+3. Only refer to the attached screenshot for design inspiration and layout.
+4. Only use relevant data from the provided content - ignore any PDF styling info or extraneous text.
+5. CSS, Tailwind & Styling:
+   - Include Tailwind CSS: <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+   - Use Tailwind CSS classes extensively.
+   - Place additional CSS in a single <style> block in <head>.
+   - Define two base color variables: "--feno-color-hue" and "--feno-color-chroma", derive all other
+     colors using the OKLCH color model.
+   - Define font families as CSS variables with "--feno-font-family-" prefix.
+   - Use CSS variables in Tailwind classes with square bracket notation.
+   - DO NOT use HTML-like tags for configuration or attempt to override Tailwind defaults.
 
-2. Layout & Visual Consistency:
-   - Replicate the screenshot's layout, structure, and visual design details using Tailwind classes.
-   - Make the layout responsive across major breakpoints (desktop, tablet, mobile).
-   - Implement any relevant hover transitions for interactive elements using Tailwind's hover classes.
-   - Pay special attention to spacing and padding between elements to match the design shared; use Tailwind spacing utilities (p-*, m-*, gap-*) consistently.
+6. Layout & Visual Consistency:
+   - Match the screenshot's layout and structure using Tailwind classes.
+   - Make the layout responsive.
+   - Implement hover transitions for interactive elements.
 
-3. Content Usage:
-   - Only include data provided in "${content}". Do not invent or import extraneous text.
-   - Be selective and only use the resume data that is strictly relevant to each section - the resume data is not curated and may contain unnecessary information or pdf styling info.
-   - If a design element in the screenshot (e.g., a testimonial section) has no corresponding
-     data, omit it gracefully from the final HTML.
+7. Icons:
+   - Use Tabler Icons: <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" />
+   - Format: <i class="ti ti-[icon-name]"></i>
 
-4. Icons:
-   - For any icons, use Tabler Icons by including this stylesheet in the <head> section:
-     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" />
-   - Use icons with the format: <i class="ti ti-[icon-name]"></i>, for example <i class="ti ti-home"></i>
+8. Final Output:
+   - Return complete HTML starting with <!DOCTYPE html>
+   - Include properly formatted <head> and <body>
+   - Ensure visual accuracy to the screenshot
 
-5. Final Output:
-   - Return the complete HTML document, starting with <!DOCTYPE html>, including a properly
-     formatted <head> (with <style> block, Tailwind script, and icon stylesheet) and <body>.
-   - Make sure output is visually accurate to the screenshot provided and logically make sense as a portfolio website that people would want to visit.
-   - Do not include placeholder text or screenshot text. Reference the screenshot design ONLY
-     for layout/style.
-
-Ensure the final rendered page is aesthetically accurate to the screenshot for included sections,
-and that the content arrangement, styling, and responsiveness all adhere to these requirements.`;
+Do not include any content not found in the provided portfolio data.`;
 
     // Create parts array
     const parts = [];
