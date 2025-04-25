@@ -60,7 +60,6 @@ export const RouteProvider = ({
 
     useEffect(() => {
         const htmlPath = routeMap[activeRoute];
-        console.log("htmlPath", htmlPath, routeMap);
 
         const getHtml = async () => {
             const html = await getFileFromBucket(htmlPath);
