@@ -6,14 +6,14 @@ import { IconEdit } from "@tabler/icons-react";
 import DOMPurify from "dompurify";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { useEditor } from "../../editor.context";
+import { useEditor } from "../../context/editor.context";
 
 // Constants for element class names
 const CONTENT_EDITOR_HOVER_ELEMENT_CLASS = "content-editor-hover-element";
 const CONTENT_EDITOR_SELECTED_ELEMENT_CLASS = "content-editor-selected-element";
 
 const ContentEditor = () => {
-    const { iframeDocument, onHtmlChange } = useEditor();
+    const { iframeDocument } = useEditor();
     const [selectedNode, setSelectedNode] = useState<HTMLElement | null>(null);
     const [selectedHtml, setSelectedHtml] = useState<string>("");
 
@@ -188,13 +188,6 @@ const ContentEditor = () => {
 
         // Immediately apply changes to the DOM
         selectedNode.innerHTML = sanitizedHtml;
-
-        // Update the document HTML
-        onHtmlChange({
-            html: iframeDocument.documentElement.outerHTML,
-            modeId: "content-editor",
-            modeLabel: "Content Editor",
-        });
     };
 
     // Reset selection

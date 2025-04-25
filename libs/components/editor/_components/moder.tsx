@@ -1,7 +1,6 @@
 import { cn } from "@/libs/utils/misc";
-import {} from "framer-motion";
 import { useEffect } from "react";
-import { useEditor } from "../editor.context";
+import { useEditor } from "../context/editor.context";
 import { ContentEditorMode } from "../modes/content-editor";
 import { DeploymentMode } from "../modes/deployment/deployment";
 import { PageEditorMode } from "../modes/page-editor/page-editor";

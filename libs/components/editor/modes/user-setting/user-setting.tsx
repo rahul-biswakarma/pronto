@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/libs/ui/avatar";
 import { cn } from "@/libs/utils/misc";
 import { IconUserCircle } from "@tabler/icons-react"; // Placeholder icon
 import type React from "react";
-import { useEditor } from "../../editor.context";
+import { useEditor } from "../../context/editor.context";
 import type { EditorMode } from "../../types/editor.types";
 
 const ProfileSettings: React.FC = () => {

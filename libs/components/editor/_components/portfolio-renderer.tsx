@@ -1,6 +1,6 @@
 import type React from "react";
 import { useEffect } from "react";
-import { useEditor } from "../editor.context";
+import { useEditor } from "../context/editor.context";
 
 import { Moder } from "./moder";
 import { Navigation } from "./navigation/navigation";

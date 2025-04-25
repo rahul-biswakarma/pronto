@@ -5,7 +5,10 @@ import { IconSettings } from "@tabler/icons-react";
 import { motion } from "framer-motion";
 import type { SectionActionButtonProps } from "../types";
 
-export const SectionActionButton = ({ open, setOpen }: SectionActionButtonProps) => (
+export const SectionActionButton = ({
+    open,
+    setOpen,
+}: SectionActionButtonProps) => (
     <Button
         onClick={() => setOpen(open ? null : "update_route")}
         variant="custom"

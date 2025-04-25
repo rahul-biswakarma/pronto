@@ -3,10 +3,7 @@ import { supabaseOption } from "@/libs/supabase/config";
 import { getFileUrlFromBucket } from "@/libs/utils/supabase-storage";
 import { NextResponse } from "next/server";
 
-export async function GET(
-    request: Request,
-    { params }: { params: { subdomain: string[] } },
-) {
+export async function GET({ params }: { params: { subdomain: string[] } }) {
     try {
         const { subdomain } = await params;
         const supabase = await createSupabaseServerClient(supabaseOption);

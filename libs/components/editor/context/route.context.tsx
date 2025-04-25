@@ -1,3 +1,5 @@
+"use client";
+
 import { getFileFromBucket } from "@/libs/utils/supabase-storage";
 import {
     type Dispatch,
@@ -13,14 +15,14 @@ type RouteContextType = {
     portfolioId: string;
 
     activeRoute: string;
-    setActiveRoute: Dispatch<SetStateAction<string>> | null;
+    setActiveRoute: Dispatch<SetStateAction<string>>;
 
     routeMap: Record<string, string>;
-    setRouteMap: Dispatch<SetStateAction<Record<string, string>>> | null;
+    setRouteMap: Dispatch<SetStateAction<Record<string, string>>>;
 
     activeRouteHtml: string;
     activeRouteHtmlPath: string;
-    setActiveRouteHtmlPath: Dispatch<SetStateAction<string>> | null;
+    setActiveRouteHtmlPath: Dispatch<SetStateAction<string>>;
 };
 
 export const RouteContext = createContext<RouteContextType>({
@@ -28,14 +30,14 @@ export const RouteContext = createContext<RouteContextType>({
     portfolioId: "",
 
     activeRoute: "",
-    setActiveRoute: null,
+    setActiveRoute: () => {},
 
     routeMap: {},
-    setRouteMap: null,
+    setRouteMap: () => {},
 
     activeRouteHtml: "",
     activeRouteHtmlPath: "",
-    setActiveRouteHtmlPath: null,
+    setActiveRouteHtmlPath: () => {},
 });
 
 type RouteProviderProps = {

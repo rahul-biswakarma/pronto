@@ -3,7 +3,7 @@ import { cn } from "@/libs/utils/misc";
 import { IconCashEdit } from "@tabler/icons-react";
 import type React from "react";
 import { useCallback, useState } from "react";
-import { useEditor } from "../../editor.context";
+import { useEditor } from "../../context/editor.context";
 import type { EditorMode } from "../../types/editor.types";
 import { SectionHighlighting } from "./components/section-highlighting";
 import { modifySection } from "./components/section-modifier";

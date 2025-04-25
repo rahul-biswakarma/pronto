@@ -1,11 +1,11 @@
 "use client";
 import dataLayer from "@/libs/utils/data-layer";
 import { useCallback, useState } from "react";
-import { useEditor } from "../../../editor.context";
+import { useRouteContext } from "../../../context/route.context";
 import type { RouteManagementHook } from "../types";
 
 export const useRouteManagement = (): RouteManagementHook => {
-    const { domain, routes, portfolioId, setActiveRoute } = useEditor();
+    const { domain, routeMap, portfolioId, setActiveRoute } = useRouteContext();
 
     const [newRoute, setNewRoute] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
@@ -13,7 +13,7 @@ export const useRouteManagement = (): RouteManagementHook => {
     const [isAddingRoute, setIsAddingRoute] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-    const filteredRoutes = Object.keys(routes).filter((route) =>
+    const filteredRoutes = Object.keys(routeMap).filter((route) =>
         route.toLowerCase().includes(searchTerm.toLowerCase()),
     );
 
@@ -56,7 +56,7 @@ export const useRouteManagement = (): RouteManagementHook => {
 
     return {
         domain,
-        routes,
+        routes: routeMap,
         newRoute,
         setNewRoute,
         searchTerm,

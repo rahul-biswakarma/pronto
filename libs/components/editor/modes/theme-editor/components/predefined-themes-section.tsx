@@ -2,7 +2,7 @@ import { Button } from "@/libs/ui/button";
 import { cn } from "@/libs/utils/misc";
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useEditor } from "../../../editor.context";
+import { useEditor } from "../../../context/editor.context";
 import type { Theme } from "../types";
 import { getThemesFromStorage } from "../utils";
 
