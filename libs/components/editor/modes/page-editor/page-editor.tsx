@@ -12,7 +12,7 @@ import { SectionEditorInput } from "./page-editor-input";
 
 // Section Editor component
 const PageEditor: React.FC = () => {
-    const { iframeDocument, modeId } = useEditor();
+    const { iframeDocument, modeId, iframeRef } = useEditor();
 
     const [prompt, setPrompt] = useState<string>("");
     const [loading, setLoading] = useState(false);
@@ -65,10 +65,11 @@ const PageEditor: React.FC = () => {
                     loading={loading}
                     placeholder="Edit section content..."
                     submitHandler={() =>
-                        selectedElement &&
                         prompt.trim() &&
                         !loading &&
                         modifySection({
+                            fullPageElement:
+                                iframeRef.current?.contentDocument?.body,
                             selectedElement,
                             prompt,
                             setLoading,
