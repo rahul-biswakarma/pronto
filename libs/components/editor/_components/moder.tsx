@@ -35,7 +35,7 @@ export const Moder = () => {
                 className={cn(
                     "bottom-8 feno-font-wrapper bg-[var(--feno-surface-2)] shadow-[var(--feno-floating-shadow)] border border-[var(--feno-border-1)] p-1.5 pb-0 rounded-2xl max-w-[min(900px,90vw)] max-h-fit",
                     {
-                        "pb-1.5": !modeId,
+                        "pb-1.5 bg-[var(--feno-surface-1)]": !modeId,
                     },
                 )}
             >
@@ -49,7 +49,7 @@ export const Moder = () => {
                 )}
 
                 <div className="w-full flex">
-                    <div className="flex items-center w-full gap-1">
+                    <div className="flex items-center w-full gap-1.5">
                         {Object.values(modes).map((mode) => (
                             <div
                                 key={mode.id}
