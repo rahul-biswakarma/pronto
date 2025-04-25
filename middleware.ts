@@ -25,7 +25,7 @@ export async function middleware(request: NextRequest) {
             !request.nextUrl.pathname.startsWith("/api")
         ) {
             const rewriteUrl = new URL(
-                `/api/preview/${subdomain}${request.nextUrl.pathname}`,
+                `/api/preview/${subdomain}/${request.nextUrl.pathname}`,
                 request.url,
             );
 

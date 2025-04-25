@@ -1,15 +1,20 @@
 import { createSupabaseServerClient } from "@/libs/supabase/client/server";
 import { supabaseOption } from "@/libs/supabase/config";
 import { getFileUrlFromBucket } from "@/libs/utils/supabase-storage";
-import { NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
-export async function GET({ params }: { params: { subdomain: string[] } }) {
+export async function GET(
+    _request: NextRequest,
+    { params }: { params: { subdomain: string[] } },
+) {
+    const { subdomain } = await params;
     try {
-        const { subdomain } = await params;
         const supabase = await createSupabaseServerClient(supabaseOption);
 
         const domain = subdomain[0];
-        const path = subdomain.slice(1).join("/") ?? "home";
+        const routes = subdomain?.slice(1)?.join("/");
+
+        const path = routes.length > 0 ? `${routes}` : "/";
 
         if (!subdomain) {
             console.error("No subdomain provided");
@@ -17,19 +22,12 @@ export async function GET({ params }: { params: { subdomain: string[] } }) {
         }
 
         // Get the portfolio data for the subdomain
-        const { data, error } = path
-            ? await supabase
-                  .from("portfolio_route_map")
-                  .select("*")
-                  .eq("domain", domain)
-                  .eq("route", path)
-                  .single()
-            : await supabase
-                  .from("portfolio_route_map")
-                  .select("*")
-                  .eq("domain", domain)
-                  .eq("route", "home")
-                  .single();
+        const { data, error } = await supabase
+            .from("portfolio_route_map")
+            .select("*")
+            .eq("domain", domain)
+            .eq("route", path)
+            .single();
 
         if (error) {
             console.error("Supabase error:", error);

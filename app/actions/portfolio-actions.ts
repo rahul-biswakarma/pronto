@@ -31,7 +31,7 @@ export async function generatePortfolioAction({
 
     const supabase = auth.supabase;
     const userId = auth.userId;
-    const domain = new ShortUniqueId({ length: 6 }).rnd();
+    const domain = new ShortUniqueId({ length: 6 }).rnd().toLowerCase();
 
     let portfolioId: string | undefined;
 
