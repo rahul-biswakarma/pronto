@@ -60,7 +60,9 @@ REQUIREMENTS:
    - Define font families as CSS variables with the prefix "--feno-font-family-" (e.g., "--feno-font-family-primary",
      "--feno-font-family-heading") and reference these variables in the CSS / tailwindcss.
    - Use CSS variables in Tailwind classes with square bracket notation, like: bg-[var(--feno-color-bg)] or text-[var(--feno-text-primary)].
-   - Do NOT use tailwind.config or attempt to override default Tailwind values - always use the CSS variable approach with square bracket notation instead.
+   - IMPORTANT: Do NOT use HTML-like tags for configuration. Do NOT use <tailwind-config> or similar tags.
+   - Do NOT attempt to override default Tailwind values through configuration - always use the CSS variable approach with square bracket notation instead.
+   - All styling should be done through CSS variables and Tailwind classes, never through configuration files.
 
 2. Layout & Visual Consistency:
    - Replicate the screenshot's layout, structure, and visual design details using Tailwind classes.

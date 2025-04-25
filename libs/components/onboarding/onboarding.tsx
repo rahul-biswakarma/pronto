@@ -188,51 +188,53 @@ const Onboarding = ({ authenticated }: { authenticated: boolean }) => {
             </div>
             <div className="relative flex w-full flex-col items-center justify-center overflow-hidden">
                 <Marquee pauseOnHover>
-                    {templates.map((template) => {
-                        const { Renderer } = authenticated
-                            ? {
-                                  Renderer: PDFUpload,
-                              }
-                            : {
-                                  Renderer: WaitListPopover,
-                              };
+                    {templates
+                        .filter((template) => template.id.startsWith("feno:"))
+                        .map((template) => {
+                            const { Renderer } = authenticated
+                                ? {
+                                      Renderer: PDFUpload,
+                                  }
+                                : {
+                                      Renderer: WaitListPopover,
+                                  };
 
-                        return (
-                            <Dialog key={template.id}>
-                                <DialogTrigger className="relative" asChild>
-                                    <div className="w-56 md:w-96 bg-accent border border-foreground/20 rounded-[12px] p-1 cursor-pointer">
-                                        <div className="relative border-foreground/20 border rounded-[8px] overflow-hidden">
-                                            <Image
-                                                className="w-full aspect-video object-cover object-top -mt-1"
-                                                src={template.image}
-                                                width={1080}
-                                                height={1080}
-                                                alt={template.name}
-                                            />
-                                            <Button
-                                                className="absolute bottom-2 right-2 rounded-sm border-accent/50"
-                                                variant="default"
-                                                size="icon"
-                                            >
-                                                <IconArrowRight className="-rotate-45 stroke-white" />
-                                            </Button>
+                            return (
+                                <Dialog key={template.id}>
+                                    <DialogTrigger className="relative" asChild>
+                                        <div className="w-56 md:w-96 bg-accent border border-foreground/20 rounded-[12px] p-1 cursor-pointer">
+                                            <div className="relative border-foreground/20 border rounded-[8px] overflow-hidden">
+                                                <Image
+                                                    className="w-full aspect-video object-cover object-top -mt-1"
+                                                    src={template.image}
+                                                    width={1080}
+                                                    height={1080}
+                                                    alt={template.name}
+                                                />
+                                                <Button
+                                                    className="absolute bottom-2 right-2 rounded-sm border-accent/50"
+                                                    variant="default"
+                                                    size="icon"
+                                                >
+                                                    <IconArrowRight className="-rotate-45 stroke-white" />
+                                                </Button>
+                                            </div>
+                                            <div className="flex flex-col px-2 pt-2 pb-1">
+                                                <h3 className="text-sm">
+                                                    {template.name}
+                                                </h3>
+                                                <p className="text-sm text-muted-foreground">
+                                                    {template.description}
+                                                </p>
+                                            </div>
                                         </div>
-                                        <div className="flex flex-col px-2 pt-2 pb-1">
-                                            <h3 className="text-sm">
-                                                {template.name}
-                                            </h3>
-                                            <p className="text-sm text-muted-foreground">
-                                                {template.description}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </DialogTrigger>
-                                <DialogContent className="w-full sm:max-w-[700px] p-0 bg-transparent border-0 shadow-none outline-none">
-                                    <Renderer template={template} />
-                                </DialogContent>
-                            </Dialog>
-                        );
-                    })}
+                                    </DialogTrigger>
+                                    <DialogContent className="w-full sm:max-w-[700px] p-0 bg-transparent border-0 shadow-none outline-none">
+                                        <Renderer template={template} />
+                                    </DialogContent>
+                                </Dialog>
+                            );
+                        })}
                 </Marquee>
                 <div className="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-background" />
                 <div className="pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-background" />

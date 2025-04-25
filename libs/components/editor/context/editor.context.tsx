@@ -1,5 +1,4 @@
 "use client";
-import type { User } from "@supabase/supabase-js";
 import type React from "react";
 import { createContext, useContext, useRef, useState } from "react";
 import type { EditorContextType, EditorMode } from "../types/editor.types";
@@ -14,11 +13,11 @@ export const useEditor = () => {
     return context;
 };
 
-export const EditorProvider: React.FC<{
-    user: User;
-    children: React.ReactNode;
-    portfolioId: string;
-}> = ({ user, children, portfolioId }) => {
+export const EditorProvider: React.FC<
+    Pick<EditorContextType, "user" | "portfolioId" | "dls"> & {
+        children: React.ReactNode;
+    }
+> = ({ user, children, portfolioId, dls }) => {
     const iframeRef = useRef<HTMLIFrameElement>(null);
 
     const [modeId, setModeId] = useState<string>("");
@@ -33,15 +32,27 @@ export const EditorProvider: React.FC<{
         }));
     };
 
+    const invalidateRegisteredModes = () => {
+        setModes((prevModes) => {
+            const newModes = { ...prevModes };
+            for (const key of Object.keys(newModes)) {
+                delete newModes[key];
+            }
+            return newModes;
+        });
+    };
+
     return (
         <EditorContext.Provider
             value={{
+                dls,
                 user,
                 iframeRef,
                 portfolioId,
 
                 modes,
                 registerMode,
+                invalidateRegisteredModes,
 
                 modeId,
                 setModeId,

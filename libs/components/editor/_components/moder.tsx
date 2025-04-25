@@ -4,20 +4,38 @@ import { useEditor } from "../context/editor.context";
 import { ContentEditorMode } from "../modes/content-editor";
 import { DeploymentMode } from "../modes/deployment/deployment";
 import { PageEditorMode } from "../modes/page-editor/page-editor";
+import { TemplateSelectorMode } from "../modes/template-selector/template-selector";
 import { ThemeEditorMode } from "../modes/theme-editor/theme-editor";
 import { ProfileSettingsMode } from "../modes/user-setting/user-setting";
-
 export const Moder = () => {
-    const { modes, setModeId, registerMode, modeId } = useEditor();
+    const {
+        modes,
 
+        modeId,
+        setModeId,
+        iframeDocument,
+
+        registerMode,
+        invalidateRegisteredModes,
+    } = useEditor();
+
+    const isPageExists = Boolean(iframeDocument?.body.innerHTML);
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
-        registerMode(PageEditorMode());
-        registerMode(ContentEditorMode());
-        registerMode(ThemeEditorMode());
-        registerMode(DeploymentMode());
-        registerMode(ProfileSettingsMode());
-    }, []);
+        invalidateRegisteredModes();
+        if (isPageExists) {
+            registerMode(PageEditorMode());
+            registerMode(ContentEditorMode());
+            registerMode(ThemeEditorMode());
+            registerMode(DeploymentMode());
+            registerMode(ProfileSettingsMode());
+        } else {
+            registerMode(TemplateSelectorMode());
+            registerMode(DeploymentMode());
+            registerMode(ProfileSettingsMode());
+            setModeId("template-selector");
+        }
+    }, [isPageExists, iframeDocument]);
 
     const handleModeClick = (id: string) => {
         // If clicking on the already active mode, deselect it

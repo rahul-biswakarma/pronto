@@ -51,9 +51,8 @@ export const htmlGenPromptGeminiDynamic = async ({
             <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
         - Use Tailwind CSS classes as much as possible for styling.
         - STRICTLY use the following CSS variables for styling without modification: ${JSON.stringify(cssVariables)}.
-        - Place additional CSS within a single <style> block in the <head>.
-        - Do NOT use tailwind.config or attempt to override default Tailwind values - always use the CSS variable approach with square bracket notation instead.
         - Do NOT use any other CSS variables apart from the ones provided.
+        - Do NOT modify the CSS variable values from the ones provided.
 
         1. Layout Structure:
         - Follow the exact layout and spacing shown in the screenshot

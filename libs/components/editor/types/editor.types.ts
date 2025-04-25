@@ -11,6 +11,10 @@ export type EditorMode = {
 export type EditorContextType = {
     user: User;
     portfolioId: string;
+    dls: {
+        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+        theme: Record<string, any>;
+    };
 
     iframeRef: React.RefObject<HTMLIFrameElement | null>;
 
@@ -19,6 +23,7 @@ export type EditorContextType = {
     setModeId: (mode: string) => void;
 
     registerMode: (mode: EditorMode) => void;
+    invalidateRegisteredModes: () => void;
 
     iframeDocument: Document | null;
     setIframeDocument: (doc: Document | null) => void;
