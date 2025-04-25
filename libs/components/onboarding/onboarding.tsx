@@ -27,7 +27,7 @@ export type Template = {
 };
 
 const PDFUpload = ({ template }: { template: Template }) => {
-    const { pdfContent, setSelectedTemplateId } = useOnboarding();
+    const { pdfContent } = useOnboarding();
 
     const router = useRouter();
 
@@ -50,8 +50,7 @@ const PDFUpload = ({ template }: { template: Template }) => {
                 });
 
                 if (result.success && result.portfolioId) {
-                    setSelectedTemplateId(template.id);
-                    router.push("/editor");
+                    router.push(`/${result.domain}`);
                 } else {
                     setError(result.error || "Failed to generate portfolio");
                 }

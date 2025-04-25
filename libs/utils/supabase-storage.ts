@@ -15,6 +15,7 @@ interface PortfolioUploadResult {
     success: boolean;
     publicUrl?: string | null;
     error?: string;
+    htmlPath?: string | null;
 }
 
 /**
@@ -39,15 +40,11 @@ type uploadPortfolioFileInBucketProps = {
     content: string;
     filename: string;
     contentType: string;
-    route: string;
-    domain: string;
 };
 
 export async function uploadPortfolioFileInBucket({
     portfolioId,
     content,
-    route,
-    domain,
     filename,
     contentType,
 }: uploadPortfolioFileInBucketProps): Promise<PortfolioUploadResult> {
@@ -88,30 +85,10 @@ export async function uploadPortfolioFileInBucket({
 
         const url = urlData.publicUrl;
 
-        const { error: updateError } = await supabase
-            .from("portfolio_route_map")
-            .insert({
-                route,
-                domain,
-                html_s3_path: `${bucket}/${filename}`,
-            })
-            .select("id")
-            .single();
-
-        if (updateError) {
-            logger.error(
-                {
-                    operationId,
-                    portfolioId,
-                    error: updateError.message,
-                },
-                "Database update failed after portfolio upload",
-            );
-        }
-
         return {
             success: true,
             publicUrl: url,
+            htmlPath: `${bucket}/${filename}`,
         };
     } catch (error) {
         logger.error(

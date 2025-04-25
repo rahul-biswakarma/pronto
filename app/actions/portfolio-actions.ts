@@ -9,6 +9,8 @@ type PortfolioActionResult = {
     success: boolean;
     portfolioId?: string;
     error?: string;
+    htmlPath?: string | null;
+    domain?: string;
 };
 
 export async function generatePortfolioAction({
@@ -44,12 +46,6 @@ export async function generatePortfolioAction({
             .select("id")
             .single();
 
-        await supabase.from("portfolio_route_map").insert({
-            portfolio_id: createData?.id,
-            route: "/",
-            domain: domain,
-        });
-
         if (createError || !createData?.id) {
             throw new Error(
                 `Failed to create portfolio record: ${
@@ -57,18 +53,37 @@ export async function generatePortfolioAction({
                 }`,
             );
         }
-        portfolioId = createData.id;
 
-        if (!portfolioId) {
-            throw new Error("Failed to create portfolio record");
-        }
+        await supabase.from("portfolio_route_map").insert({
+            portfolio_id: createData?.id,
+            route: "/",
+            domain: domain,
+        });
 
-        return await generateWithGemini({
-            domain,
+        const { success, htmlPath, error } = await generateWithGemini({
             content,
             templateId,
-            portfolioId,
+            portfolioId: createData?.id,
         });
+
+        if (!success || error) {
+            throw new Error("Failed to generate portfolio");
+        }
+
+        const { error: updateError } = await supabase
+            .from("portfolio_route_map")
+            .update({
+                html_s3_path: htmlPath,
+            })
+            .eq("portfolio_id", createData?.id)
+            .eq("domain", domain)
+            .eq("route", "/");
+
+        if (updateError) {
+            throw new Error("Failed to update portfolio route map");
+        }
+
+        return { success, portfolioId: createData?.id, htmlPath, domain };
     } catch (error: unknown) {
         console.error("Server-side portfolio generation error:", error);
         const errorMessage =
@@ -85,12 +100,10 @@ export async function generatePortfolioAction({
  * Generate portfolio HTML using Gemini via Vercel AI SDK
  */
 async function generateWithGemini({
-    domain,
     content,
     templateId,
     portfolioId,
 }: {
-    domain: string;
     content: string;
     templateId: string;
     portfolioId: string;
@@ -125,16 +138,18 @@ async function generateWithGemini({
             throw new Error("Failed to generate valid HTML content");
         }
 
-        await uploadPortfolioFileInBucket({
-            portfolioId,
-            content: htmlTemplate,
-            filename: `portfolio-${portfolioId}.html`,
-            contentType: "text/html",
-            route: "home",
-            domain,
-        });
+        const { error: uploadError, htmlPath } =
+            await uploadPortfolioFileInBucket({
+                portfolioId,
+                content: htmlTemplate,
+                filename: `portfolio-${portfolioId}.html`,
+                contentType: "text/html",
+            });
 
-        return { success: true, portfolioId };
+        if (uploadError) {
+            throw new Error("Failed to upload portfolio file");
+        }
+        return { success: true, portfolioId, htmlPath };
     } catch (error: unknown) {
         console.error("Gemini generation error:", error);
         const errorMessage =

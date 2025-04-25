@@ -15,7 +15,6 @@ export type Database = {
                     created_at: string;
                     domain: string | null;
                     first_view: boolean;
-                    html_s3_path: string | null;
                     id: string;
                     user_id: string;
                 };
@@ -24,7 +23,6 @@ export type Database = {
                     created_at?: string;
                     domain?: string | null;
                     first_view?: boolean;
-                    html_s3_path?: string | null;
                     id?: string;
                     user_id: string;
                 };
@@ -33,11 +31,42 @@ export type Database = {
                     created_at?: string;
                     domain?: string | null;
                     first_view?: boolean;
-                    html_s3_path?: string | null;
                     id?: string;
                     user_id?: string;
                 };
                 Relationships: [];
+            };
+            portfolio_route_map: {
+                Row: {
+                    domain: string;
+                    html_s3_path: string | null;
+                    id: string;
+                    portfolio_id: string;
+                    route: string | null;
+                };
+                Insert: {
+                    domain: string;
+                    html_s3_path?: string | null;
+                    id?: string;
+                    portfolio_id?: string;
+                    route?: string | null;
+                };
+                Update: {
+                    domain?: string;
+                    html_s3_path?: string | null;
+                    id?: string;
+                    portfolio_id?: string;
+                    route?: string | null;
+                };
+                Relationships: [
+                    {
+                        foreignKeyName: "portfolio_route_map_portfolio_id_fkey";
+                        columns: ["portfolio_id"];
+                        isOneToOne: false;
+                        referencedRelation: "portfolio";
+                        referencedColumns: ["id"];
+                    },
+                ];
             };
         };
         Views: {

@@ -36,7 +36,7 @@ export const createDomainRouteMap = async (
 }> => {
     return routes.reduce(
         (acc, route) => {
-            acc[route.route === "home" ? "/" : `/${route.route}`] =
+            acc[route.route === "/" ? "/" : `/${route.route}`] =
                 route.html_s3_path;
             return acc;
         },
