@@ -9,6 +9,7 @@ export interface RouteSearchInputProps {
 
 export interface RouteListItemProps {
     route: string;
+    isActive: boolean;
 }
 
 export interface AddRouteInputProps {

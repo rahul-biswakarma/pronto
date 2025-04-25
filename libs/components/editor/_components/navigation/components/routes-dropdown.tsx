@@ -7,6 +7,7 @@ import {
     DropdownMenuTrigger,
 } from "@/libs/ui/dropdown";
 import { IconMenu2 } from "@tabler/icons-react";
+import { useRouteContext } from "../../../context/route.context";
 import { useRouteManagement } from "../hooks/use-route-management";
 import type { RoutesDropdownProps } from "../types";
 import { AddRouteInput } from "./add-route-input";
@@ -15,6 +16,8 @@ import { RouteMenuHeader } from "./route-menu-header";
 import { RouteSearchInput } from "./route-search-input";
 
 export const RoutesDropdown = ({ open, setOpen }: RoutesDropdownProps) => {
+    const { activeRoute } = useRouteContext();
+
     const {
         searchTerm,
         setSearchTerm,
@@ -33,11 +36,10 @@ export const RoutesDropdown = ({ open, setOpen }: RoutesDropdownProps) => {
             open={open === "add_route"}
             onOpenChange={(isOpen) => setOpen(isOpen ? "add_route" : null)}
         >
-            <DropdownMenuTrigger>
+            <DropdownMenuTrigger className="outline-none">
                 <div
                     onClick={(e) => {
                         e.stopPropagation();
-                        setOpen(open ? null : "add_route");
                     }}
                     className="flex items-center justify-center w-7 h-7 text-[var(--feno-text-1)] font-medium"
                 >
@@ -71,7 +73,11 @@ export const RoutesDropdown = ({ open, setOpen }: RoutesDropdownProps) => {
                 </DropdownMenuLabel>
 
                 {filteredRoutes.map((route) => (
-                    <RouteListItem key={route} route={route} />
+                    <RouteListItem
+                        key={route}
+                        route={route}
+                        isActive={activeRoute === route}
+                    />
                 ))}
 
                 {showAddRouteInput && (

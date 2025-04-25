@@ -5,7 +5,8 @@ import { useRouteContext } from "../../../context/route.context";
 import type { RouteManagementHook } from "../types";
 
 export const useRouteManagement = (): RouteManagementHook => {
-    const { domain, routeMap, portfolioId, setActiveRoute } = useRouteContext();
+    const { domain, routeMap, portfolioId, setActiveRoute, setRouteMap } =
+        useRouteContext();
 
     const [newRoute, setNewRoute] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
@@ -40,6 +41,10 @@ export const useRouteManagement = (): RouteManagementHook => {
 
             if (data.success) {
                 setNewRoute("");
+                setRouteMap((prev) => ({
+                    ...prev,
+                    [`/${newRoute}`]: "",
+                }));
                 setActiveRoute(newRoute);
                 // Keep dropdown open but hide the input after successful add
                 setShowAddRouteInput(false);
