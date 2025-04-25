@@ -1,4 +1,5 @@
 "use server";
+import { extractCssVariables } from "@/libs/components/editor/modes/theme-editor/utils";
 import { getGeminiClient } from "@/libs/utils/ai/ai-client";
 import { htmlGenPromptGemini } from "@/libs/utils/ai/html-gen-prompt-gemini";
 import { checkAuthentication } from "@/libs/utils/auth";
@@ -11,6 +12,7 @@ type PortfolioActionResult = {
     error?: string;
     htmlPath?: string | null;
     domain?: string;
+    cssVariables?: { name: string; value: string }[];
 };
 
 export async function generatePortfolioAction({
@@ -42,6 +44,7 @@ export async function generatePortfolioAction({
                 user_id: userId,
                 content,
                 domain,
+                theme_variables: "{}",
             })
             .select("id")
             .single();
@@ -60,11 +63,12 @@ export async function generatePortfolioAction({
             domain: domain,
         });
 
-        const { success, htmlPath, error } = await generateWithGemini({
-            content,
-            templateId,
-            portfolioId: createData?.id,
-        });
+        const { success, htmlPath, error, cssVariables } =
+            await generateWithGemini({
+                content,
+                templateId,
+                portfolioId: createData?.id,
+            });
 
         if (!success || error) {
             throw new Error("Failed to generate portfolio");
@@ -78,6 +82,13 @@ export async function generatePortfolioAction({
             .eq("portfolio_id", createData?.id)
             .eq("domain", domain)
             .eq("route", "/");
+
+        await supabase
+            .from("portfolio")
+            .update({
+                theme_variables: cssVariables,
+            })
+            .eq("id", createData?.id);
 
         if (updateError) {
             throw new Error("Failed to update portfolio route map");
@@ -138,6 +149,8 @@ async function generateWithGemini({
             throw new Error("Failed to generate valid HTML content");
         }
 
+        const cssVariables = extractCssVariables(htmlTemplate);
+
         const { error: uploadError, htmlPath } =
             await uploadPortfolioFileInBucket({
                 portfolioId,
@@ -149,7 +162,7 @@ async function generateWithGemini({
         if (uploadError) {
             throw new Error("Failed to upload portfolio file");
         }
-        return { success: true, portfolioId, htmlPath };
+        return { success: true, portfolioId, htmlPath, cssVariables };
     } catch (error: unknown) {
         console.error("Gemini generation error:", error);
         const errorMessage =
