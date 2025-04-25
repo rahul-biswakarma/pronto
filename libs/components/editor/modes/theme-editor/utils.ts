@@ -119,10 +119,11 @@ export const applyTheme = (
 // Function to generate themes using Gemini AI
 export const generateThemesWithGemini = async (
     currentTheme: Record<string, string>,
+    portfolioId?: string,
 ): Promise<Theme[]> => {
     try {
         // First check localStorage for already generated themes
-        const savedThemes = getThemesFromStorage();
+        const savedThemes = getThemesFromStorage(portfolioId);
         if (savedThemes.length > 0) {
             return savedThemes;
         }
@@ -192,7 +193,7 @@ Return only valid JSON, no additional text.`;
         // If the API is not available (for development/testing), return dummy themes
         if (!data.themes && !data.error) {
             const dummyThemes = generateDummyThemes(currentTheme);
-            saveThemesToStorage(dummyThemes);
+            saveThemesToStorage(dummyThemes, portfolioId);
             return dummyThemes;
         }
 
@@ -201,14 +202,14 @@ Return only valid JSON, no additional text.`;
         }
 
         // Save the generated themes to localStorage for future use
-        saveThemesToStorage(data.themes);
+        saveThemesToStorage(data.themes, portfolioId);
         return data.themes;
     } catch (error) {
         console.error("Error generating themes with Gemini:", error);
 
         // Fallback to dummy themes if there's an error
         const dummyThemes = generateDummyThemes(currentTheme);
-        saveThemesToStorage(dummyThemes);
+        saveThemesToStorage(dummyThemes, portfolioId);
         return dummyThemes;
     }
 };
@@ -339,22 +340,30 @@ const generateDummyThemes = (currentTheme: Record<string, string>): Theme[] => {
 };
 
 // Save themes to localStorage for future use
-export const saveThemesToStorage = (themes: Theme[]) => {
+export const saveThemesToStorage = (themes: Theme[], portfolioId?: string) => {
     if (typeof window === "undefined") return;
 
     try {
-        localStorage.setItem(THEMES_STORAGE_KEY, JSON.stringify(themes));
+        const storageKey = portfolioId
+            ? `${THEMES_STORAGE_KEY}-${portfolioId}`
+            : THEMES_STORAGE_KEY;
+
+        localStorage.setItem(storageKey, JSON.stringify(themes));
     } catch (error) {
         console.error("Error saving themes to localStorage:", error);
     }
 };
 
 // Get saved themes from localStorage
-export const getThemesFromStorage = (): Theme[] => {
+export const getThemesFromStorage = (portfolioId?: string): Theme[] => {
     if (typeof window === "undefined") return [];
 
     try {
-        const savedThemes = localStorage.getItem(THEMES_STORAGE_KEY);
+        const storageKey = portfolioId
+            ? `${THEMES_STORAGE_KEY}-${portfolioId}`
+            : THEMES_STORAGE_KEY;
+
+        const savedThemes = localStorage.getItem(storageKey);
         if (savedThemes) {
             const parsedThemes = JSON.parse(savedThemes) as Theme[];
             if (Array.isArray(parsedThemes) && parsedThemes.length > 0) {

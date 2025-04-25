@@ -2,6 +2,7 @@ import { Button } from "@/libs/ui/button";
 import { cn } from "@/libs/utils/misc";
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useEditor } from "../../../editor.context";
 import type { Theme } from "../types";
 import { getThemesFromStorage } from "../utils";
 
@@ -17,6 +18,7 @@ interface PredefinedThemesSectionProps {
 export const PredefinedThemesSection: React.FC<
     PredefinedThemesSectionProps
 > = ({ themes: propThemes, selectedThemeName, onSelectTheme }) => {
+    const { portfolioId } = useEditor();
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(false);
@@ -24,13 +26,13 @@ export const PredefinedThemesSection: React.FC<
 
     // Load themes from localStorage on mount
     useEffect(() => {
-        const savedThemes = getThemesFromStorage();
+        const savedThemes = getThemesFromStorage(portfolioId);
         if (savedThemes.length > 0) {
             setThemes(savedThemes);
         } else {
             setThemes(propThemes);
         }
-    }, [propThemes]);
+    }, [propThemes, portfolioId]);
 
     // Check if we can scroll in either direction
     const checkScroll = useCallback(() => {

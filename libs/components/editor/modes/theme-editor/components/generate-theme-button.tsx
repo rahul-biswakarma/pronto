@@ -7,6 +7,7 @@ interface GenerateThemeButtonProps {
     isGenerating: boolean;
     onGenerateStarted: () => void;
     onGenerateComplete: (themes: Theme[]) => void;
+    portfolioId?: string;
 }
 
 /**
@@ -17,6 +18,7 @@ export const GenerateThemeButton: React.FC<GenerateThemeButtonProps> = ({
     isGenerating,
     onGenerateStarted,
     onGenerateComplete,
+    portfolioId,
 }) => {
     const handleGenerateThemes = async () => {
         if (initialColorVariables.length === 0) return;
@@ -34,7 +36,10 @@ export const GenerateThemeButton: React.FC<GenerateThemeButtonProps> = ({
             );
 
             // Generate themes
-            const themes = await generateThemesWithGemini(currentTheme);
+            const themes = await generateThemesWithGemini(
+                currentTheme,
+                portfolioId,
+            );
 
             // Themes are already saved by generateThemesWithGemini function,
             // so no need to manually save here

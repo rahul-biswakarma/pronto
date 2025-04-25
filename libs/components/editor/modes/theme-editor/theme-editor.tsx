@@ -24,7 +24,7 @@ import {
 } from "./utils";
 
 const ThemeEditor: React.FC = () => {
-    const { iframeDocument } = useEditor();
+    const { iframeDocument, portfolioId } = useEditor();
 
     const [showAdvancedControls, setShowAdvancedControls] = useState(false);
     const [colorVariables, setColorVariables] = useState<ColorVariable[]>([]);
@@ -40,12 +40,12 @@ const ThemeEditor: React.FC = () => {
 
     // Check for stored themes on mount
     useEffect(() => {
-        const savedThemes = getThemesFromStorage();
+        const savedThemes = getThemesFromStorage(portfolioId);
         if (savedThemes.length > 0) {
             setThemes(savedThemes);
             setHasStoredThemes(true);
         }
-    }, []);
+    }, [portfolioId]);
 
     // Extract color variables from iframe document on first load
     useEffect(() => {
@@ -136,6 +136,7 @@ const ThemeEditor: React.FC = () => {
                                 onGenerateComplete={
                                     handleGenerateThemesComplete
                                 }
+                                portfolioId={portfolioId}
                             />
                         </div>
                     )}
