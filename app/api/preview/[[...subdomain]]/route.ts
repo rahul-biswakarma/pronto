@@ -44,7 +44,6 @@ export async function GET(
             return new NextResponse("Portfolio not found", { status: 404 });
         }
 
-        console.log("Data:", data);
         // Get the HTML content from S3
         const htmlUrl = await getFileUrlFromBucket(data.html_s3_path);
 

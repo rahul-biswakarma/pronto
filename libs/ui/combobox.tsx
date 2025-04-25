@@ -47,7 +47,6 @@ export function ComboboxDemo() {
             <PopoverTrigger asChild>
                 <Button
                     variant="outline"
-                    role="combobox"
                     aria-expanded={open}
                     className="w-[200px] justify-between"
                 >

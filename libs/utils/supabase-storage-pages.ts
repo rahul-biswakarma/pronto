@@ -2,21 +2,13 @@
 import { createClient } from "@supabase/supabase-js";
 import logger from "./logger";
 
-
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 const BUCKET_NAME = "portfolios"; // Define bucket name centrally
-const TABLE_NAME = "portfolio_route_map"
 
 // Prevent service role key from being exposed
 if (!SERVICE_ROLE_KEY && process.env.NODE_ENV === "production") {
     logger.error("Missing SUPABASE_SERVICE_ROLE_KEY in production environment");
-}
-
-interface PortfolioUploadResult {
-    success: boolean;
-    publicUrl?: string | null;
-    error?: string;
 }
 
 /**
@@ -35,7 +27,6 @@ function createSecureAdminClient() {
         },
     });
 }
-
 
 interface PortfolioUploadResult {
     success: boolean;
@@ -106,7 +97,7 @@ export async function uploadPortfolioFileInBucket({
         //     })
         //     .eq("id", portfolioId);
 
-        const { data: createData, error: createError } = await supabase
+        const { error: createError } = await supabase
             .from("portfolio_route_map")
             .insert({
                 domain: domain,
@@ -114,7 +105,7 @@ export async function uploadPortfolioFileInBucket({
                 html_s3_path: `${bucket}/${filename}`,
             })
             .select("id")
-            .single();    
+            .single();
 
         if (createError) {
             logger.error(

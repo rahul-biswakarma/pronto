@@ -144,7 +144,6 @@ export const PredefinedThemesSection: React.FC<
 
                         // Use consistent values for all themes instead of light/dark distinction
                         const contentLightness = "0.97"; // Background of the preview
-                        const textLightness = "0.55"; // Text and UI elements - softer appearance
                         const lineLightness = "0.75"; // Border color - more subtle
 
                         // Generate color variants for the boxes
