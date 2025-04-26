@@ -1,6 +1,7 @@
 "use server";
 import { extractCssVariables } from "@/libs/components/editor/modes/theme-editor/utils";
 import { getGeminiClient } from "@/libs/utils/ai/ai-client";
+import { formatPdfData } from "@/libs/utils/ai/format-pdf-prompt";
 import { htmlGenPromptGemini } from "@/libs/utils/ai/html-gen-prompt-gemini";
 import { checkAuthentication } from "@/libs/utils/auth";
 import { uploadPortfolioFileInBucket } from "@/libs/utils/supabase-storage";
@@ -52,9 +53,11 @@ export async function extractThemeVariables(
 export async function generatePortfolioAction({
     content,
     templateId,
+    pageType,
 }: {
     content: string;
     templateId: string;
+    pageType: string;
 }): Promise<PortfolioActionResult> {
     const auth = await checkAuthentication();
 
@@ -72,6 +75,10 @@ export async function generatePortfolioAction({
     let portfolioId: string | undefined;
 
     try {
+        const formattedContent = await formatPdfData(content);
+
+        if (formattedContent) content = formattedContent;
+
         const { data: createData, error: createError } = await supabase
             .from("portfolio")
             .insert({
@@ -102,6 +109,7 @@ export async function generatePortfolioAction({
                 content,
                 templateId,
                 portfolioId: createData?.id,
+                pageType,
             });
 
         if (!success || error) {
@@ -161,14 +169,21 @@ async function generateWithGemini({
     content,
     templateId,
     portfolioId,
+    pageType,
 }: {
     content: string;
     templateId: string;
     portfolioId: string;
+    pageType: string;
 }): Promise<PortfolioActionResult> {
     try {
         const geminiClient = getGeminiClient();
-        const prompt = await htmlGenPromptGemini({ content, templateId });
+
+        const prompt = await htmlGenPromptGemini({
+            content: content,
+            templateId,
+            pageType: pageType,
+        });
 
         const responseText =
             (await geminiClient({ content: prompt })).text ?? "";

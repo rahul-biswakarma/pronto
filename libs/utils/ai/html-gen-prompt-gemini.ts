@@ -12,9 +12,11 @@ interface FileUploadResult {
 export const htmlGenPromptGemini = async ({
     content,
     templateId,
+    pageType,
 }: {
     content: string;
     templateId: string;
+    pageType: string;
 }) => {
     // Get image template URL
     const url = getImageTemplateUrl(templateId);
@@ -42,42 +44,38 @@ export const htmlGenPromptGemini = async ({
     }
 
     // Create prompt text
-    const promptText = `Your goal is to generate a complete portfolio website.
+    const promptText = `Your goal is to generate a complete ${pageType} website.
 
-Here is the content of the portfolio: ${content}
+Here is the data using which we have to build this page:
+${content}
 
-I'm showing you a screenshot of a portfolio website design. Use this screenshot ONLY as a visual reference for layout and styling.
+I'm showing you a screenshot of a ${pageType} design. Use this screenshot ONLY as a visual reference for layout and styling.
 
 REQUIREMENTS:
 1. Generate a COMPLETE HTML document with no comments.
-2. DO NOT use any formatting from the portfolio content - only extract the necessary data.
 3. Only refer to the attached screenshot for design inspiration and layout.
-4. Only use relevant data from the provided content - ignore any PDF styling info or extraneous text.
+4. Only use relevant data from the provided content—ignore any styling info or extraneous text.
 5. CSS, Tailwind & Styling:
    - Include Tailwind CSS: <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
    - Use Tailwind CSS classes extensively.
    - Place additional CSS in a single <style> block in <head>.
-   - Define two base color variables: "--feno-color-hue" and "--feno-color-chroma", derive all other
-     colors using the OKLCH color model.
+   - Define two base color variables: "--feno-color-hue" and "--feno-color-chroma", derive all other colors using the OKLCH color model.
    - Define font families as CSS variables with "--feno-font-family-" prefix.
    - Use CSS variables in Tailwind classes with square bracket notation.
    - DO NOT use HTML-like tags for configuration or attempt to override Tailwind defaults.
-
 6. Layout & Visual Consistency:
    - Match the screenshot's layout and structure using Tailwind classes.
    - Make the layout responsive.
    - Implement hover transitions for interactive elements.
-
 7. Icons:
    - Use Tabler Icons: <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" />
    - Format: <i class="ti ti-[icon-name]"></i>
-
 8. Final Output:
    - Return complete HTML starting with <!DOCTYPE html>
    - Include properly formatted <head> and <body>
    - Ensure visual accuracy to the screenshot
 
-Do not include any content not found in the provided portfolio data.`;
+Do not include any content not found in the provided data.`;
 
     // Create parts array
     const parts = [];
