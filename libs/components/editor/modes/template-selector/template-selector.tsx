@@ -2,7 +2,7 @@ import { generatePortfolioTemplateAction } from "@/app/actions/portfolio-actions
 import { templates } from "@/libs/constants/templates";
 import { Button } from "@/libs/ui/button";
 import { cn } from "@/libs/utils/misc";
-import { DownloadCloud } from "lucide-react";
+import { IconCloud } from "@tabler/icons-react";
 import Image from "next/image";
 import { useState } from "react";
 import { useEditor } from "../../context/editor.context";
@@ -91,7 +91,7 @@ export const TemplateSelectorMode = (): EditorMode => {
                     "feno-mode-active-button": isActive,
                 })}
             >
-                <DownloadCloud className="size-[17px] stroke-[1.8]" />
+                <IconCloud className="size-[17px] stroke-[1.8]" />
             </Button>
         ),
         editorRenderer: () => <TemplateSelector />,
