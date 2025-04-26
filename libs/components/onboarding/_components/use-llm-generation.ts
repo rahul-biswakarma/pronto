@@ -29,6 +29,7 @@ export function useLLMGeneration(): UseLLMGenerationResult {
             const result = await generatePortfolioAction({
                 content: pdfContent,
                 templateId,
+                pageType: "portfolio",
             });
 
             if (!result.success || !result.htmlTemplate) {
