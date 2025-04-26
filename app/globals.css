@@ -4,8 +4,13 @@
 :root {
     /* Feno theme variables */
     --feno-surface-0: #fff;
+    --feno-surface-0-foreground: #272727;
+
     --feno-surface-1: #fafafa;
+    --feno-surface-1-foreground: #272727;
+
     --feno-surface-2: #eee;
+    --feno-surface-2-foreground: #272727;
 
     --feno-border-1: #ddd;
     --feno-border-2: #e6e6e7;

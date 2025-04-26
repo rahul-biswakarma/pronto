@@ -13,14 +13,8 @@ export function TemplateCard({
     onDropPdf,
 }: TemplateCardProps) {
     return (
-        <div className="flex flex-col gap-4">
-            <div
-                className="relative overflow-hidden rounded-3xl aspect-square px-4 bg-surface-0 transition-colors duration-300 ease-out flex items-center justify-center"
-                style={{
-                    minWidth: "max(25vw, 25vh)",
-                    maxWidth: "max(25vw, 25vh)",
-                }}
-            >
+        <div className="flex flex-col gap-4 cursor-pointer">
+            <div className="relative overflow-hidden rounded-3xl aspect-square px-8 bg-surface-1 transition-colors duration-300 ease-out flex items-center justify-center shadow-[var(--feno-minimal-shadow)]">
                 {template.metadata?.isNew && (
                     <div className="absolute top-4 left-4 text-xs text-feno-text-3 px-2 py-1 rounded-lg bg-surface-2">
                         New
@@ -35,7 +29,7 @@ export function TemplateCard({
                     alt={template.name}
                 />
             </div>
-            <div className="flex items-center gap-3 px-4">
+            {/* <div className="flex items-center gap-3 px-4">
                 {template.metadata?.favicon && (
                     <Image
                         className="w-10 rounded-lg"
@@ -49,7 +43,7 @@ export function TemplateCard({
                     <div className="font-bold">{template.name}</div>
                     <div className="">{template.description}</div>
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 }

@@ -1,87 +1,80 @@
 "use client";
-import { ErrorToast } from "@/libs/components/onboarding/_components/error-toast";
-import { LoaderScreen } from "@/libs/components/onboarding/_components/loader-screen";
-import { UploadModal } from "@/libs/components/onboarding/_components/upload-modal";
 import { useLLMGeneration } from "@/libs/components/onboarding/_components/use-llm-generation";
-import { useTemplateData } from "@/libs/components/onboarding/_components/use-template-data";
-import { OnboardingProvider } from "@/libs/components/onboarding/onboarding.context";
-import type { Template } from "@/libs/constants/templates";
+import { useOnboarding } from "@/libs/components/onboarding/onboarding.context";
+import { type Template, templates } from "@/libs/constants/templates";
+import { Button } from "@/libs/ui/button";
 import { Label } from "@/libs/ui/label";
-import React, { useState } from "react";
+import Image from "next/image";
+import { useState } from "react";
+import { Drawer } from "vaul";
+import { FileUploader } from "./_components/pdf-dropzone";
 import { TemplateCard } from "./_components/template-card";
-
 type Category = {
     title: string;
     filter: (template: Template) => boolean;
+    value: string;
 };
 
 const categories: Category[] = [
-    { title: "Portfolios", filter: (t) => t.id.startsWith("feno:") },
-    // { title: "Articles", filter: (t) => t.id.startsWith("feno-article:") },
+    {
+        title: "Portfolios",
+        filter: (t) => t.id.startsWith("feno:"),
+        value: "feno:",
+    },
+    {
+        title: "Articles",
+        filter: (t) => t.id.startsWith("feno-article:"),
+        value: "feno-article:",
+    },
     // TODO: Add more categories as needed
 ];
 
 type Step = "idle" | "modal" | "loading" | "success";
 
 export function OnboardingMain() {
-    const { data: templates, isLoading } = useTemplateData();
+    const { pdfContent } = useOnboarding();
+
     const [step, setStep] = useState<Step>("idle");
+
     const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(
-        null,
+        templates[0],
     );
-    const [pdfFile, setPdfFile] = useState<File | null>(null);
+
+    const [selectedCategory, setSelectedCategory] = useState<Category>(
+        categories[0],
+    );
+
     const {
         html,
         isStreaming,
         error: llmError,
         startGeneration,
     } = useLLMGeneration();
-    const [showError, setShowError] = useState<string | null>(null);
 
     const handleTemplateClick = (template: Template) => {
         setSelectedTemplate(template);
         setStep("modal");
     };
 
-    const handleUpload = (file: File) => {
-        setPdfFile(file);
-    };
-
     const handleGenerate = async () => {
-        if (!pdfFile || !selectedTemplate) {
-            setShowError("Please upload a PDF and select a template.");
+        console.log(pdfContent, selectedTemplate);
+
+        if (!pdfContent || !selectedTemplate) {
             return;
         }
-        setStep("loading");
-        const pdfContent = await fileToText(pdfFile);
         startGeneration({ pdfContent, templateId: selectedTemplate.id });
     };
 
-    const handleModalClose = () => {
-        setStep("idle");
-        setSelectedTemplate(null);
-        setPdfFile(null);
-        setShowError(null);
-    };
-
-    React.useEffect(() => {
-        if (llmError) setShowError(llmError);
-    }, [llmError]);
-
-    React.useEffect(() => {
-        if (step === "loading" && !isStreaming && html) {
-            setTimeout(() => setStep("success"), 400);
-        }
-    }, [step, isStreaming, html]);
-
     return (
-        <OnboardingProvider>
+        <Drawer.Root open={step === "modal"}>
             <main
-                className="min-h-screen w-full flex flex-col items-center bg-surface-1"
-                style={{ fontFamily: "var(--font-sans)" }}
+                className="min-h-screen w-full p-16 flex flex-col items-center bg-surface-0 bg-cover bg-center"
+                style={{
+                    fontFamily: "var(--font-sans)",
+                }}
             >
-                <section className="mt-[130px] mb-8 text-center">
-                    <Label className="text-[40px] font-medium">
+                <section className="mt-16 mb-8 text-center">
+                    <Label className="text-[40px] font-medium text-center">
                         <span className="font-italianno text-6xl">Telling</span>{" "}
                         your{" "}
                         <span className="font-italianno text-6xl">story</span>{" "}
@@ -93,55 +86,106 @@ export function OnboardingMain() {
                         without any coding.
                     </p>
                 </section>
-                <section className="w-full flex items-center justify-center mt-30 flex-wrap gap-x-4 gap-y-12">
-                    {categories.map((cat) => {
-                        const template = templates.filter(cat.filter);
-                        return template.map((template) => (
-                            <TemplateCard
-                                key={template.id}
-                                template={template}
-                                onClick={() => handleTemplateClick(template)}
-                            />
-                        ));
-                    })}
-                </section>
-                <div
-                    className={`fixed inset-0 z-40 flex items-center justify-center transition-all duration-300 ${step === "modal" ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none scale-95"}`}
-                    aria-hidden={step !== "modal"}
-                >
-                    <UploadModal
-                        open={step === "modal"}
-                        template={selectedTemplate}
-                        onClose={handleModalClose}
-                        onUpload={handleUpload}
-                        isLoading={step === "loading"}
-                        error={showError}
-                    />
-                </div>
-                <div
-                    className={`fixed inset-0 z-50 flex items-center justify-center transition-all duration-300 ${step === "loading" ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none scale-95"}`}
-                    aria-hidden={step !== "loading"}
-                >
-                    <LoaderScreen
-                        htmlPreview={html}
-                        isStreaming={isStreaming}
-                    />
-                </div>
-                {step === "success" && (
-                    <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-[var(--color-primary)] text-[var(--color-primary-foreground)] px-6 py-3 rounded-lg shadow-xl fade-in">
-                        <span className="font-semibold">
-                            Site generated successfully!
-                        </span>
+                <div className="max-w-[1440px] mt-24 w-full flex flex-col gap-y-8">
+                    <div className="flex gap-x-2 items-center">
+                        <div className="text-4xl font-italianno mr-4">
+                            Filters:
+                        </div>
+                        {categories.map((cat) => {
+                            return (
+                                <div
+                                    key={cat.title}
+                                    className={`text-md px-3 py-2 rounded-full cursor-pointer transition-colors duration-300 ease-out border ${
+                                        selectedCategory?.value === cat.value
+                                            ? "bg-[var(--feno-surface-1-foreground)] text-[var(--feno-surface-1)]"
+                                            : "bg-[var(--feno-surface-1)] text-[var(--feno-surface-1-foreground)]"
+                                    }`}
+                                    onClick={() => setSelectedCategory(cat)}
+                                >
+                                    {cat.title}
+                                </div>
+                            );
+                        })}
                     </div>
-                )}
-                {showError && (
-                    <ErrorToast
-                        message={showError}
-                        onClose={() => setShowError(null)}
+                    <section className="w-full grid grid-cols-3 items-center justify-center gap-x-4 gap-y-12">
+                        {categories
+                            .filter(
+                                (cat) => cat.value === selectedCategory?.value,
+                            )
+                            .map((cat) => {
+                                const template = templates.filter((t) =>
+                                    t.id.startsWith(selectedCategory?.value),
+                                );
+                                return template.map((template) => (
+                                    <div
+                                        key={template.id}
+                                        onClick={() =>
+                                            handleTemplateClick(template)
+                                        }
+                                    >
+                                        <TemplateCard template={template} />
+                                    </div>
+                                ));
+                            })}
+                    </section>
+                </div>
+                <Drawer.Portal>
+                    <Drawer.Overlay
+                        className="fixed inset-0 bg-black/40"
+                        onClick={() => setStep("idle")}
                     />
-                )}
+
+                    <Drawer.Content className="w-screen fixed bottom-0 left-0 right-0 outline-none overflow-hidden">
+                        <div className=" p-4 rounded-t-[18px] bg-[var(--feno-surface-1)]">
+                            <Drawer.Title className="hidden">
+                                {selectedTemplate?.name}
+                            </Drawer.Title>
+                            <div className="grid grid-cols-3 gap-4">
+                                <div className="relative col-span-2">
+                                    <div
+                                        className="rounded-lg overflow-y-scroll max-h-[90vh]"
+                                        style={{
+                                            scrollbarWidth: "none",
+                                            msOverflowStyle: "none",
+                                        }}
+                                    >
+                                        <Image
+                                            className="w-full -mt-1"
+                                            width={1440}
+                                            height={720}
+                                            alt={selectedTemplate?.name || ""}
+                                            src={selectedTemplate?.image || ""}
+                                        />
+                                        <div className="absolute w-full left-0 bottom-0 h-1/10 bg-gradient-to-t from-background" />
+                                    </div>
+                                </div>
+                                <div className="flex flex-col gap-y-2">
+                                    <FileUploader
+                                        style={{
+                                            border: "1px dashed",
+                                            background: "var(--feno-surface-2)",
+                                            fontFamily: "var(--font-sans)",
+                                            fontSize: "14px",
+                                            maxHeight: "100px",
+                                        }}
+                                    />
+                                    <Button
+                                        className="self-end"
+                                        disabled={isStreaming}
+                                        onClick={handleGenerate}
+                                        // aria-disabled={isStreaming}
+                                    >
+                                        {isStreaming
+                                            ? "Generating..."
+                                            : "Generate"}
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    </Drawer.Content>
+                </Drawer.Portal>
             </main>
-        </OnboardingProvider>
+        </Drawer.Root>
     );
 }
 
