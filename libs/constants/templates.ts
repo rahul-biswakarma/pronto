@@ -5,6 +5,11 @@ export type Template = {
     image: string;
     prompt: string;
     mimeType: string;
+    metadata?: {
+        isNew: boolean;
+        isPopular: boolean;
+        favicon: string;
+    };
 };
 
 export const templates: Template[] = [
@@ -14,6 +19,11 @@ export const templates: Template[] = [
         description: "Programmer & engineering student",
         image: "/templates/image-1.png",
         prompt: "Create a minimalist personal website with a dark background, centered content layout, elegant typography, and subtle interactions. Include sections for biography, current activities (Now page), a Colophon, a newsletter signup, and social media links. Showcase music activity and maintain a conversational tone throughout the site.",
+        metadata: {
+            isNew: true,
+            isPopular: true,
+            favicon: "https://paco.me/twitter-sm.png",
+        },
         mimeType: "image/png",
     },
     {
@@ -23,6 +33,12 @@ export const templates: Template[] = [
         image: "/templates/image-2.png",
         prompt: "Create a personal website with a soft light background, elegant large typography, and a focus on visual essays about programming, design, and anthropology. Include a section called 'The Garden' for essays and notes, with simple card layouts and minimalistic side navigation. Maintain a warm and approachable tone.",
         mimeType: "image/png",
+        metadata: {
+            isNew: true,
+            isPopular: true,
+            favicon:
+                "https://www.google.com/s2/favicons?sz=256&domain_url=https%3A%2F%2Fmaggieappleton.com%2F",
+        },
     },
     {
         id: "feno:3",
@@ -31,6 +47,12 @@ export const templates: Template[] = [
         image: "/templates/image-3.png",
         prompt: "Create a vibrant personal website with a dark background, playful 3D character, and colorful accent animations. Include sections for articles, tutorials, courses, and popular content lists. Use approachable language, clear navigation at the top, and category tags for easy browsing.",
         mimeType: "image/png",
+        metadata: {
+            isNew: true,
+            isPopular: true,
+            favicon:
+                "https://www.google.com/s2/favicons?sz=256&domain_url=https%3A%2F%2Fjoshwcomeau.com%2F",
+        },
     },
     {
         id: "feno:4",
@@ -39,6 +61,12 @@ export const templates: Template[] = [
         image: "/templates/image-4.png",
         prompt: "Create a modern personal website with a dark background, bold typography, and a focus on writing and web development. Include a strong introductory headline, a short biography, and a featured posts section displaying blog articles with thumbnail images. Use clean, simple navigation and emphasize clarity and structure.",
         mimeType: "image/png",
+        metadata: {
+            isNew: true,
+            isPopular: true,
+            favicon:
+                "https://www.google.com/s2/favicons?sz=256&domain_url=https%3A%2F%2Fmxb.dev%2F",
+        },
     },
     {
         id: "feno:5",

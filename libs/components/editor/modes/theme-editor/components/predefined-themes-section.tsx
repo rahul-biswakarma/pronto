@@ -128,12 +128,6 @@ export const PredefinedThemesSection: React.FC<
                         msOverflowStyle: "none" /* IE and Edge */,
                     }}
                 >
-                    <style>
-                        {
-                            ".scrollbar-hide::-webkit-scrollbar { display: none; }"
-                        }
-                    </style>
-
                     {themes.map((theme) => {
                         const isSelected = selectedThemeName === theme.name;
                         const hue = theme.colors["--feno-color-hue"] || "210";

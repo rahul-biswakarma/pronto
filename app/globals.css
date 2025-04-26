@@ -57,7 +57,7 @@
     --sidebar-accent-foreground: #272727;
     --sidebar-border: #ddd;
     --sidebar-ring: #272727;
-    --font-sans: Geist, sans-serif;
+    --font-sans: Inter Display, sans-serif;
     --font-serif: Georgia, serif;
     --font-mono: Geist Mono, monospace;
     --radius: 0.5rem;
@@ -156,6 +156,16 @@
     }
 }
 
+@layer utilities {
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+}
+
 .feno-mod-container {
     background-color: var(--color-surface-1);
     box-shadow: var(--color-minimal-shadow);
@@ -184,8 +194,8 @@
 }
 
 * {
-    @apply border-border outline-ring/50 text-[14px];
+    @apply border-border outline-ring/50;
 }
 body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground text-[14px];
 }

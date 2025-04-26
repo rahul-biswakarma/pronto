@@ -2,6 +2,13 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
     /* config options here */
+    images: {
+        remotePatterns: [
+            {
+                hostname: "*",
+            },
+        ],
+    },
     webpack: (config) => {
         // Enable WebAssembly
         config.experiments = { ...config.experiments, asyncWebAssembly: true };

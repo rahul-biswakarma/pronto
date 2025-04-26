@@ -1,15 +1,32 @@
 import type { Metadata } from "next";
-import {
-    Cormorant_Garamond,
-    Geist,
-    Geist_Mono,
-    Italianno,
-} from "next/font/google";
+import { Cormorant_Garamond, Geist_Mono, Italianno } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-const geistSans = Geist({
-    variable: "--font-geist-sans",
-    subsets: ["latin"],
+const interDisplay = localFont({
+    src: [
+        {
+            path: "../public/fonts/InterDisplay-Light.woff2",
+            weight: "300",
+        },
+        {
+            path: "../public/fonts/InterDisplay-Regular.woff2",
+            weight: "400",
+        },
+        {
+            path: "../public/fonts/InterDisplay-Medium.woff2",
+            weight: "500",
+        },
+        {
+            path: "../public/fonts/InterDisplay-SemiBold.woff2",
+            weight: "600",
+        },
+        {
+            path: "../public/fonts/InterDisplay-Bold.woff2",
+            weight: "700",
+        },
+    ],
+    variable: "--font-inter-display",
 });
 
 const geistMono = Geist_Mono({
@@ -53,7 +70,7 @@ export default function RootLayout({
                 />
             </head>
             <body
-                className={`${geistSans.variable} ${geistMono.variable} ${serif.variable} ${italianno.variable} antialiased`}
+                className={`${interDisplay.variable} ${geistMono.variable} ${serif.variable} ${italianno.variable} antialiased`}
             >
                 <main className="w-full h-screen">{children}</main>
             </body>
