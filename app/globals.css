@@ -3,81 +3,148 @@
 
 :root {
     /* Feno theme variables */
-    --feno-surface-0: #fff;
-    --feno-surface-0-foreground: #272727;
+    --feno-surface-0: oklch(1 0 0);
+    --feno-surface-0-foreground: oklch(0.3 0 0);
 
-    --feno-surface-1: #fafafa;
-    --feno-surface-1-foreground: #272727;
+    --feno-surface-1: oklch(0.98 0 0);
+    --feno-surface-1-foreground: oklch(0.3 0 0);
 
-    --feno-surface-2: #eee;
-    --feno-surface-2-foreground: #272727;
+    --feno-surface-2: oklch(0.93 0 0);
+    --feno-surface-2-foreground: oklch(0.3 0 0);
 
-    --feno-border-1: #ddd;
-    --feno-border-2: #e6e6e7;
+    --feno-border-1: oklch(0.87 0 0);
+    --feno-border-2: oklch(0.9 0.01 90);
 
-    --feno-floating-shadow: 0px 8px 32px rgba(0, 0, 0, 0.1);
-    --feno-minimal-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.03);
+    --feno-floating-shadow: 0px 8px 32px oklch(0 0 0 / 0.1);
+    --feno-minimal-shadow: 0px 0px 0px 1px oklch(0 0 0 / 0.03);
 
-    --feno-interactive-resting-bg: #f6f6f6;
-    --feno-interactive-hover-bg: #f0f0f0;
+    --feno-interactive-resting-bg: oklch(0.96 0 0);
+    --feno-interactive-hover-bg: oklch(0.94 0 0);
 
     --feno-interactive-resting-border: transparent;
-    --feno-interactive-hover-border: #dddddd;
+    --feno-interactive-hover-border: oklch(0.87 0 0);
 
-    --feno-text-1: #272727;
-    --feno-text-2: #6c757d;
-    --feno-text-3: #adb5bd;
-    --feno-text-placeholder: #adb5bd;
+    --feno-text-1: oklch(0.3 0 0);
+    --feno-text-2: oklch(0.5 0 0);
+    --feno-text-3: oklch(0.7 0 0);
+    --feno-text-placeholder: oklch(0.7 0 0);
 
     /* Update existing theme variables to match feno theme */
-    --background: #fff;
-    --foreground: #272727;
-    --card: #fff;
-    --card-foreground: #272727;
-    --popover: #fafafa;
-    --popover-foreground: #272727;
-    --primary: #272727;
-    --primary-foreground: #fff;
-    --secondary: #f6f6f6;
-    --secondary-foreground: #272727;
-    --muted: #fafafa;
-    --muted-foreground: #6c757d;
-    --accent: #f0f0f0;
-    --accent-foreground: #272727;
-    --destructive: oklch(0.63 0.19 23.03);
-    --destructive-foreground: #fff;
-    --border: #ddd;
-    --input: #f6f6f6;
-    --ring: #272727;
-    --chart-1: oklch(0.81 0.17 75.35);
-    --chart-2: oklch(0.55 0.22 264.53);
-    --chart-3: oklch(0.72 0 0);
-    --chart-4: oklch(0.92 0 0);
-    --chart-5: oklch(0.56 0 0);
-    --sidebar: #fafafa;
-    --sidebar-foreground: #272727;
-    --sidebar-primary: #272727;
-    --sidebar-primary-foreground: #fff;
-    --sidebar-accent: #f0f0f0;
-    --sidebar-accent-foreground: #272727;
-    --sidebar-border: #ddd;
-    --sidebar-ring: #272727;
+    --background: var(--feno-surface-0);
+    --foreground: var(--feno-text-1);
+    --card: var(--feno-surface-0);
+    --card-foreground: var(--feno-text-1);
+    --popover: var(--feno-surface-1);
+    --popover-foreground: var(--feno-text-1);
+    --primary: var(--feno-text-1);
+    --primary-foreground: var(--feno-surface-0);
+    --secondary: var(--feno-interactive-resting-bg);
+    --secondary-foreground: var(--feno-text-1);
+    --muted: var(--feno-surface-1);
+    --muted-foreground: var(--feno-text-2);
+    --accent: var(--feno-interactive-hover-bg);
+    --accent-foreground: var(--feno-text-1);
+    --destructive: oklch(0.7 0.16 20);
+    --destructive-foreground: var(--feno-surface-0);
+    --border: var(--feno-border-1);
+    --input: var(--feno-interactive-resting-bg);
+    --ring: oklch(0.3 0 0 / 0.2);
+    --chart-1: oklch(0.75 0.15 75);
+    --chart-2: oklch(0.65 0.12 200);
+    --chart-3: oklch(0.7 0.1 275);
+    --chart-4: oklch(0.8 0.1 130);
+    --chart-5: oklch(0.6 0.1 30);
+    --sidebar: var(--feno-surface-1);
+    --sidebar-foreground: var(--feno-text-1);
+    --sidebar-primary: var(--feno-text-1);
+    --sidebar-primary-foreground: var(--feno-surface-0);
+    --sidebar-accent: var(--feno-interactive-hover-bg);
+    --sidebar-accent-foreground: var(--feno-text-1);
+    --sidebar-border: var(--feno-border-1);
+    --sidebar-ring: oklch(0.3 0 0 / 0.2);
     --font-sans: Inter Display, sans-serif;
     --font-serif: Georgia, serif;
     --font-mono: Geist Mono, monospace;
     --radius: 0.5rem;
     --shadow-2xs: var(--feno-minimal-shadow);
-    --shadow-xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.09);
-    --shadow-sm: 0px 1px 2px 0px hsl(0 0% 0% / 0.18), 0px 1px 2px -1px
-        hsl(0 0% 0% / 0.18);
-    --shadow: 0px 1px 2px 0px hsl(0 0% 0% / 0.18), 0px 1px 2px -1px
-        hsl(0 0% 0% / 0.18);
-    --shadow-md: 0px 1px 2px 0px hsl(0 0% 0% / 0.18), 0px 2px 4px -1px
-        hsl(0 0% 0% / 0.18);
-    --shadow-lg: 0px 1px 2px 0px hsl(0 0% 0% / 0.18), 0px 4px 6px -1px
-        hsl(0 0% 0% / 0.18);
-    --shadow-xl: var(--feno-floating-shadow);
-    --shadow-2xl: 0px 1px 2px 0px hsl(0 0% 0% / 0.45);
+    --shadow-xs: 0px 1px 2px 0px oklch(0 0 0 / 0.04);
+    --shadow-sm: 0px 1px 2px 0px oklch(0 0 0 / 0.06);
+    --shadow: 0px 2px 4px 0px oklch(0 0 0 / 0.06);
+    --shadow-md: 0px 2px 8px -2px oklch(0 0 0 / 0.08);
+    --shadow-lg: 0px 4px 12px -4px oklch(0 0 0 / 0.08);
+    --shadow-xl: 0px 8px 24px -8px oklch(0 0 0 / 0.08);
+    --shadow-2xl: 0px 12px 32px -12px oklch(0 0 0 / 0.12);
+}
+
+.dark {
+    /* Dark mode Feno theme variables */
+    --feno-surface-0: oklch(0.21 0 0);
+    --feno-surface-0-foreground: oklch(0.95 0 0);
+
+    --feno-surface-1: oklch(0.24 0 0);
+    --feno-surface-1-foreground: oklch(0.95 0 0);
+
+    --feno-surface-2: oklch(0.26 0 0);
+    --feno-surface-2-foreground: oklch(0.95 0 0);
+
+    --feno-border-1: oklch(0.3 0 0);
+    --feno-border-2: oklch(0.33 0.01 270);
+
+    --feno-floating-shadow: 0px 8px 32px oklch(0 0 0 / 0.3);
+    --feno-minimal-shadow: 0px 0px 0px 1px oklch(1 0 0 / 0.05);
+
+    --feno-interactive-resting-bg: oklch(0.25 0 0);
+    --feno-interactive-hover-bg: oklch(0.28 0 0);
+
+    --feno-interactive-resting-border: transparent;
+    --feno-interactive-hover-border: oklch(0.35 0 0);
+
+    --feno-text-1: oklch(0.95 0 0);
+    --feno-text-2: oklch(0.75 0 0);
+    --feno-text-3: oklch(0.6 0 0);
+    --feno-text-placeholder: oklch(0.45 0 0);
+
+    /* Update existing theme variables to match dark mode feno theme */
+    --background: var(--feno-surface-0);
+    --foreground: var(--feno-text-1);
+    --card: var(--feno-surface-0);
+    --card-foreground: var(--feno-text-1);
+    --popover: var(--feno-surface-1);
+    --popover-foreground: var(--feno-text-1);
+    --primary: var(--feno-text-1);
+    --primary-foreground: oklch(0.2 0 0);
+    --secondary: var(--feno-interactive-resting-bg);
+    --secondary-foreground: var(--feno-text-1);
+    --muted: var(--feno-surface-1);
+    --muted-foreground: var(--feno-text-2);
+    --accent: var(--feno-interactive-hover-bg);
+    --accent-foreground: var(--feno-text-1);
+    --destructive: oklch(0.7 0.2 20);
+    --destructive-foreground: oklch(0.98 0 0);
+    --border: var(--feno-border-1);
+    --input: var(--feno-interactive-resting-bg);
+    --ring: oklch(0.9 0 0 / 0.3);
+    --chart-1: oklch(0.75 0.17 75);
+    --chart-2: oklch(0.65 0.14 200);
+    --chart-3: oklch(0.7 0.12 275);
+    --chart-4: oklch(0.77 0.12 130);
+    --chart-5: oklch(0.65 0.14 30);
+    --sidebar: var(--feno-surface-1);
+    --sidebar-foreground: var(--feno-text-1);
+    --sidebar-primary: var(--feno-text-1);
+    --sidebar-primary-foreground: oklch(0.2 0 0);
+    --sidebar-accent: var(--feno-interactive-hover-bg);
+    --sidebar-accent-foreground: var(--feno-text-1);
+    --sidebar-border: var(--feno-border-1);
+    --sidebar-ring: oklch(0.9 0 0 / 0.3);
+    --shadow-2xs: var(--feno-minimal-shadow);
+    --shadow-xs: 0px 1px 2px 0px oklch(0 0 0 / 0.15);
+    --shadow-sm: 0px 1px 3px 0px oklch(0 0 0 / 0.25);
+    --shadow: 0px 2px 4px 0px oklch(0 0 0 / 0.3);
+    --shadow-md: 0px 3px 8px -2px oklch(0 0 0 / 0.35);
+    --shadow-lg: 0px 6px 16px -6px oklch(0 0 0 / 0.4);
+    --shadow-xl: 0px 10px 24px -10px oklch(0 0 0 / 0.4);
+    --shadow-2xl: 0px 16px 42px -16px oklch(0 0 0 / 0.5);
 }
 
 @theme inline {
