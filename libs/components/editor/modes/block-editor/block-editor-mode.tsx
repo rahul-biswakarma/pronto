@@ -1,5 +1,6 @@
+import { Button } from "@/libs/ui/button";
+import { cn } from "@/libs/utils/misc";
 import { IconPuzzle } from "@tabler/icons-react";
-import { ModerActionRenderer } from "../../_components/moder-action-renderer";
 import type { EditorMode } from "../../types/editor.types";
 import { BlockEditor } from "./block-editor";
 
@@ -8,11 +9,15 @@ export const BlockEditorMode = (): EditorMode => {
         id: "block-editor",
         label: "Block Editor",
         actionRenderer: (isActive) => (
-            <ModerActionRenderer
-                icon={IconPuzzle}
-                label="Add Blocks"
-                active={isActive}
-            />
+            <Button
+                variant="custom"
+                size="icon"
+                className={cn("feno-mode-button", {
+                    "feno-mode-active-button": isActive,
+                })}
+            >
+                <IconPuzzle size={16} />
+            </Button>
         ),
         editorRenderer: () => <BlockEditor />,
     };
