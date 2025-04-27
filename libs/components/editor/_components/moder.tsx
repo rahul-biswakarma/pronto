@@ -55,8 +55,6 @@ export const Moder = () => {
         }
     };
 
-    console.log(modeId);
-
     return (
         <div className="flex justify-center items-center fixed bottom-6 left-0 right-0 w-full">
             <div
