@@ -1,6 +1,7 @@
 import { cn } from "@/libs/utils/misc";
 import { useEffect } from "react";
 import { useEditor } from "../context/editor.context";
+import { useRouteContext } from "../context/route.context";
 import { BlockEditorMode } from "../modes/block-editor/block-editor-mode";
 import { ContentEditorMode } from "../modes/content-editor";
 import { DeploymentMode } from "../modes/deployment/deployment";
@@ -20,7 +21,9 @@ export const Moder = () => {
         invalidateRegisteredModes,
     } = useEditor();
 
-    const isPageExists = Boolean(iframeDocument?.body.innerHTML);
+    const { activeRouteHtmlPath } = useRouteContext();
+
+    const isPageExists = !!activeRouteHtmlPath;
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         invalidateRegisteredModes();
@@ -37,6 +40,10 @@ export const Moder = () => {
             registerMode(ProfileSettingsMode());
             setModeId("template-selector");
         }
+
+        return () => {
+            setModeId("");
+        };
     }, [isPageExists, iframeDocument]);
 
     const handleModeClick = (id: string) => {
@@ -47,6 +54,8 @@ export const Moder = () => {
             setModeId(id);
         }
     };
+
+    console.log(modeId);
 
     return (
         <div className="flex justify-center items-center fixed bottom-6 left-0 right-0 w-full">
@@ -73,7 +82,7 @@ export const Moder = () => {
                             <div
                                 key={mode.id}
                                 className={cn(
-                                    modeId !== "" && "py-1.5",
+                                    modeId && "py-1.5",
                                     mode.id === "deployment" && "ml-auto",
                                     mode.id === "deployment" &&
                                         modeId === "" &&
