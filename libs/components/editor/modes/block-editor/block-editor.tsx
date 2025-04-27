@@ -1,20 +1,12 @@
 import { Button } from "@/libs/ui/button";
 import { Input } from "@/libs/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/libs/ui/tabs";
-import {
-    IconAlertCircle,
-    IconBlockquote,
-    IconBrandMailgun,
-    IconMessageCircle,
-    IconPlus,
-    IconQuote,
-    IconSearch,
-    IconX,
-} from "@tabler/icons-react";
+import { IconAlertCircle, IconSearch, IconX } from "@tabler/icons-react";
 import { useCallback, useState } from "react";
 import { useEditor } from "../../context/editor.context";
 import { getAllBlocks, searchBlocks } from "./block-registry";
 import type { BlockInfo } from "./block-registry";
+import { BlockCard } from "./components/block-card";
 import { BlockConfigurationPanel } from "./components/block-configuration-panel";
 import { BlockInsertionHighlighting } from "./components/block-insertion-highlighting";
 
@@ -116,20 +108,8 @@ export const BlockEditor: React.FC = () => {
         setSelectedInsertionElement(null);
     };
 
-    // Map the icon string to an actual icon component
-    const getIconComponent = (iconName: string) => {
-        const icons: Record<string, React.ReactNode> = {
-            mail: <IconBrandMailgun size={20} />,
-            "message-circle": <IconMessageCircle size={20} />,
-            quote: <IconQuote size={20} />,
-            default: <IconBlockquote size={20} />,
-        };
-
-        return icons[iconName] || icons.default;
-    };
-
     return (
-        <div className="p-4 w-full max-w-[80vw] mx-auto">
+        <div className="p-4 w-full max-w-[80vw] mx-auto feno-mod-container">
             <BlockInsertionHighlighting
                 iframeDocument={iframeDocument}
                 isSelectingInsertionPoint={isSelectingInsertionPoint}
@@ -177,93 +157,58 @@ export const BlockEditor: React.FC = () => {
                                 placeholder="Search blocks..."
                                 value={searchQuery}
                                 onChange={handleSearchChange}
-                                className="pl-8"
+                                className="pl-8 !bg-[var(--feno-surface-0)] !border-none !shadow-[var(--feno-minimal-shadow)]"
                             />
                         </div>
                     </div>
 
                     <Tabs defaultValue="all" className="w-full">
-                        <TabsList className="mb-4">
-                            <TabsTrigger value="all">All Blocks</TabsTrigger>
-                            <TabsTrigger value="marketing">
-                                Marketing
-                            </TabsTrigger>
-                            <TabsTrigger value="communication">
-                                Communication
-                            </TabsTrigger>
+                        <TabsList className="mb-2 !bg-[var(--feno-surface-2)] border border-[var(--feno-border-2)]">
+                            {[
+                                { label: "All Blocks", value: "all" },
+                                { label: "Marketing", value: "marketing" },
+                                {
+                                    label: "Communication",
+                                    value: "communication",
+                                },
+                            ].map((tab) => (
+                                <TabsTrigger
+                                    className=""
+                                    key={tab.value}
+                                    value={tab.value}
+                                >
+                                    {tab.label}
+                                </TabsTrigger>
+                            ))}
                         </TabsList>
 
                         <TabsContent
                             value="all"
-                            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+                            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2"
                         >
                             {blocks.map((block) => (
-                                <div
+                                <BlockCard
                                     key={block.id}
-                                    className="border rounded-lg p-4 hover:border-[var(--feno-primary)] hover:shadow-sm transition-all cursor-pointer"
-                                    onClick={() => handleBlockSelect(block)}
-                                >
-                                    <div className="flex items-center justify-between mb-2">
-                                        <div className="flex items-center gap-2">
-                                            <div className="bg-[var(--feno-surface-2)] p-2 rounded-md">
-                                                {getIconComponent(block.icon)}
-                                            </div>
-                                            <h3 className="font-medium">
-                                                {block.name}
-                                            </h3>
-                                        </div>
-                                        <Button
-                                            size="icon"
-                                            variant="ghost"
-                                            className="h-8 w-8"
-                                        >
-                                            <IconPlus size={16} />
-                                        </Button>
-                                    </div>
-                                    <p className="text-sm text-muted-foreground">
-                                        {block.description}
-                                    </p>
-                                </div>
+                                    block={block}
+                                    onSelect={handleBlockSelect}
+                                />
                             ))}
                         </TabsContent>
 
                         <TabsContent
                             value="marketing"
-                            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+                            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2"
                         >
                             {blocks
                                 .filter((block) =>
                                     block.tags.includes("marketing"),
                                 )
                                 .map((block) => (
-                                    <div
+                                    <BlockCard
                                         key={block.id}
-                                        className="border rounded-lg p-4 hover:border-[var(--feno-primary)] hover:shadow-sm transition-all cursor-pointer"
-                                        onClick={() => handleBlockSelect(block)}
-                                    >
-                                        <div className="flex items-center justify-between mb-2">
-                                            <div className="flex items-center gap-2">
-                                                <div className="bg-[var(--feno-surface-2)] p-2 rounded-md">
-                                                    {getIconComponent(
-                                                        block.icon,
-                                                    )}
-                                                </div>
-                                                <h3 className="font-medium">
-                                                    {block.name}
-                                                </h3>
-                                            </div>
-                                            <Button
-                                                size="icon"
-                                                variant="ghost"
-                                                className="h-8 w-8"
-                                            >
-                                                <IconPlus size={16} />
-                                            </Button>
-                                        </div>
-                                        <p className="text-sm text-muted-foreground">
-                                            {block.description}
-                                        </p>
-                                    </div>
+                                        block={block}
+                                        onSelect={handleBlockSelect}
+                                    />
                                 ))}
                         </TabsContent>
 
@@ -276,34 +221,11 @@ export const BlockEditor: React.FC = () => {
                                     block.tags.includes("communication"),
                                 )
                                 .map((block) => (
-                                    <div
+                                    <BlockCard
                                         key={block.id}
-                                        className="border rounded-lg p-4 hover:border-[var(--feno-primary)] hover:shadow-sm transition-all cursor-pointer"
-                                        onClick={() => handleBlockSelect(block)}
-                                    >
-                                        <div className="flex items-center justify-between mb-2">
-                                            <div className="flex items-center gap-2">
-                                                <div className="bg-[var(--feno-surface-2)] p-2 rounded-md">
-                                                    {getIconComponent(
-                                                        block.icon,
-                                                    )}
-                                                </div>
-                                                <h3 className="font-medium">
-                                                    {block.name}
-                                                </h3>
-                                            </div>
-                                            <Button
-                                                size="icon"
-                                                variant="ghost"
-                                                className="h-8 w-8"
-                                            >
-                                                <IconPlus size={16} />
-                                            </Button>
-                                        </div>
-                                        <p className="text-sm text-muted-foreground">
-                                            {block.description}
-                                        </p>
-                                    </div>
+                                        block={block}
+                                        onSelect={handleBlockSelect}
+                                    />
                                 ))}
                         </TabsContent>
                     </Tabs>
