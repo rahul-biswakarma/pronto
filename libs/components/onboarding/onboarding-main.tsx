@@ -1,4 +1,5 @@
 "use client";
+
 import { useLLMGeneration } from "@/libs/components/onboarding/_components/use-llm-generation";
 import { useOnboarding } from "@/libs/components/onboarding/onboarding.context";
 import { type Template, templates } from "@/libs/constants/templates";
@@ -57,8 +58,6 @@ export function OnboardingMain() {
     };
 
     const handleGenerate = async () => {
-        console.log(pdfContent, selectedTemplate);
-
         if (!pdfContent || !selectedTemplate) {
             return;
         }
@@ -112,7 +111,7 @@ export function OnboardingMain() {
                             .filter(
                                 (cat) => cat.value === selectedCategory?.value,
                             )
-                            .map((cat) => {
+                            .map(() => {
                                 const template = templates.filter((t) =>
                                     t.id.startsWith(selectedCategory?.value),
                                 );
