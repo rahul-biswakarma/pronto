@@ -1,6 +1,7 @@
 import { cn } from "@/libs/utils/misc";
 import { useEffect } from "react";
 import { useEditor } from "../context/editor.context";
+import { BlockEditorMode } from "../modes/block-editor/block-editor-mode";
 import { ContentEditorMode } from "../modes/content-editor";
 import { DeploymentMode } from "../modes/deployment/deployment";
 import { PageEditorMode } from "../modes/page-editor/page-editor";
@@ -26,6 +27,7 @@ export const Moder = () => {
         if (isPageExists) {
             registerMode(PageEditorMode());
             registerMode(ContentEditorMode());
+            registerMode(BlockEditorMode());
             registerMode(ThemeEditorMode());
             registerMode(DeploymentMode());
             registerMode(ProfileSettingsMode());
