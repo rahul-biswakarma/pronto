@@ -3,7 +3,7 @@
 import { getGeminiClient } from "@/libs/utils/ai/ai-client";
 import { htmlGenPromptGeminiDynamic } from "@/libs/utils/ai/html-gen-prompt-gemini-dynamic";
 import { checkAuthentication } from "@/libs/utils/auth";
-import { uploadPortfolioFileInBucket } from "@/libs/utils/supabase-storage";
+import { uploadFileInBucket } from "@/libs/utils/supabase-storage";
 
 type PortfolioActionResult = {
     success: boolean;
@@ -120,13 +120,11 @@ async function generateWithGeminiTemplate({
             console.error("Failed to parse AI response:", error);
             throw new Error("Failed to generate valid HTML content");
         }
-        const { error: uploadError, htmlPath } =
-            await uploadPortfolioFileInBucket({
-                portfolioId,
-                content: htmlTemplate,
-                filename: `portfolio-${portfolioId}-${route.split("/").join("-")}.html`,
-                contentType: "text/html",
-            });
+        const { error: uploadError, htmlPath } = await uploadFileInBucket({
+            content: htmlTemplate,
+            filename: `portfolio-${portfolioId}-${route.split("/").join("-")}.html`,
+            contentType: "text/html",
+        });
 
         if (uploadError) {
             throw new Error("Failed to upload portfolio file");

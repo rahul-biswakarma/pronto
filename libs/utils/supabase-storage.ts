@@ -36,14 +36,12 @@ export async function createSecureAdminClient() {
 }
 
 type uploadPortfolioFileInBucketProps = {
-    portfolioId: string;
     content: string;
     filename: string;
     contentType: string;
 };
 
-export async function uploadPortfolioFileInBucket({
-    portfolioId,
+export async function uploadFileInBucket({
     content,
     filename,
     contentType,
@@ -94,7 +92,6 @@ export async function uploadPortfolioFileInBucket({
         logger.error(
             {
                 operationId,
-                portfolioId,
                 error: error instanceof Error ? error.message : "Unknown error",
                 stack: error instanceof Error ? error.stack : undefined,
             },

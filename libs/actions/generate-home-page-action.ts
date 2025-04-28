@@ -1,15 +1,15 @@
 "use server";
+
 import { extractCssVariables } from "@/libs/components/editor/modes/theme-editor/utils";
 import { getGeminiClient } from "@/libs/utils/ai/ai-client";
 import { htmlGenPromptGemini } from "@/libs/utils/ai/html-gen-prompt-gemini";
 import { checkAuthentication } from "@/libs/utils/auth";
-import { uploadPortfolioFileInBucket } from "@/libs/utils/supabase-storage";
 import ShortUniqueId from "short-unique-id";
-import { extractThemeVariables } from "../utils/web/css";
+import { uploadFileInBucket } from "../utils/supabase-storage";
 
 type GenerateHomePageActionResult = {
     success: boolean;
-    portfolioId?: string;
+    websiteId?: string;
     error?: string;
     htmlPath?: string | null;
     domain?: string;
@@ -39,110 +39,101 @@ export async function generateHomePageAction({
     const userId = auth.userId;
     const domain = new ShortUniqueId({ length: 6 }).rnd().toLowerCase();
 
-    let portfolioId: string | undefined;
+    let websiteId: string | undefined;
 
     try {
         const { data: createData, error: createError } = await supabase
-            .from("portfolio")
+            .from("websites")
             .insert({
                 user_id: userId,
-                content,
                 domain,
-                theme_variables: "{}",
+                is_first_visit: true,
+                is_published: false,
             })
             .select("id")
             .single();
 
         if (createError || !createData?.id) {
             throw new Error(
-                `Failed to create portfolio record: ${
+                `Failed to create website record: ${
                     createError?.message || "Unknown error"
                 }`,
             );
         }
 
-        await supabase.from("portfolio_route_map").insert({
-            portfolio_id: createData?.id,
-            route: "/",
-            domain: domain,
-        });
+        websiteId = createData.id;
+
+        if (!websiteId) {
+            throw new Error("Failed to create website record");
+        }
 
         const { success, htmlPath, error, cssVariables, htmlTemplate } =
             await generateWithGemini({
                 content,
                 templateId,
-                portfolioId: createData?.id,
+                websiteId,
                 pageType,
             });
 
         if (!success || error) {
-            throw new Error("Failed to generate portfolio");
+            throw new Error("Failed to generate website");
         }
 
-        const themeVariables = extractThemeVariables(htmlTemplate ?? "");
+        // Insert the route for the homepage
+        const { error: routeError } = await supabase.from("routes").insert({
+            website_id: websiteId,
+            path: "/",
+            html_file_path: htmlPath || "",
+        });
 
-        const { error: themeVariablesError } = await supabase
-            .from("portfolio")
-            .update({
-                theme_variables: themeVariables,
-            })
-            .eq("id", createData?.id);
-
-        if (themeVariablesError) {
-            throw new Error("Failed to update theme variables");
+        if (routeError) {
+            throw new Error(`Failed to create route: ${routeError.message}`);
         }
 
-        const { error: updateError } = await supabase
-            .from("portfolio_route_map")
-            .update({
-                html_s3_path: htmlPath,
-            })
-            .eq("portfolio_id", createData?.id)
-            .eq("domain", domain)
-            .eq("route", "/");
+        // Create a custom domain entry
+        const { error: domainError } = await supabase.from("domains").insert({
+            website_id: websiteId,
+            domain,
+            user_id: userId,
+            is_custom: false,
+        });
 
-        await supabase
-            .from("portfolio")
-            .update({
-                theme_variables: cssVariables,
-            })
-            .eq("id", createData?.id);
-
-        if (updateError) {
-            throw new Error("Failed to update portfolio route map");
+        if (domainError) {
+            throw new Error(`Failed to create domain: ${domainError.message}`);
         }
 
         return {
             success,
-            portfolioId: createData?.id,
+            websiteId,
             htmlPath,
             htmlTemplate,
             domain,
+            cssVariables,
         };
     } catch (error: unknown) {
-        console.error("Server-side portfolio generation error:", error);
+        console.error("Server-side website generation error:", error);
         const errorMessage =
             error instanceof Error ? error.message : "Unknown generation error";
         return {
             success: false,
-            portfolioId,
+            websiteId,
             error: errorMessage,
         };
     }
 }
 
 /**
- * Generate portfolio HTML using Gemini via Vercel AI SDK
+ * Generate website HTML using Gemini via Vercel AI SDK
  */
 async function generateWithGemini({
     content,
     templateId,
-    portfolioId,
     pageType,
+    websiteId,
 }: {
     content: string;
+    websiteId: string;
     templateId: string;
-    portfolioId: string;
     pageType: string;
 }): Promise<GenerateHomePageActionResult> {
     try {
@@ -182,21 +173,18 @@ async function generateWithGemini({
 
         const cssVariables = extractCssVariables(htmlTemplate);
 
-        const { error: uploadError, htmlPath } =
-            await uploadPortfolioFileInBucket({
-                portfolioId,
-                content: htmlTemplate,
-                filename: `portfolio-${portfolioId}.html`,
-                contentType: "text/html",
-            });
+        const { error: uploadError, htmlPath } = await uploadFileInBucket({
+            content: htmlTemplate,
+            filename: `website-${websiteId}.html`,
+            contentType: "text/html",
+        });
 
         if (uploadError) {
-            throw new Error("Failed to upload portfolio file");
+            throw new Error("Failed to upload website file");
         }
 
         return {
             success: true,
-            portfolioId,
             htmlPath,
             cssVariables,
             htmlTemplate,
@@ -209,7 +197,7 @@ async function generateWithGemini({
                 : "Unknown Gemini generation error";
         return {
             success: false,
-            portfolioId,
+            websiteId,
             error: errorMessage,
         };
     }
