@@ -10,9 +10,9 @@ enabled = true
 port = 54321
 # Schemas to expose in your API. Tables, views and stored procedures in this schema will get API
 # endpoints. `public` and `graphql_public` schemas are included by default.
-schemas = ["public", "graphql_public"]
+schemas = ["public", "graphql_public", "storage"]
 # Extra schemas to add to the search_path of every request.
-extra_search_path = ["public", "extensions"]
+extra_search_path = ["public", "extensions", "storage"]
 # The maximum number of rows returns from a view, table, or stored procedure. Limits payload size
 # for accidental or malicious requests.
 max_rows = 1000
@@ -94,12 +94,21 @@ file_size_limit = "50MiB"
 # [storage.image_transformation]
 # enabled = true
 
-# Uncomment to configure local storage buckets
-# [storage.buckets.images]
-# public = false
-# file_size_limit = "50MiB"
-# allowed_mime_types = ["image/png", "image/jpeg"]
-# objects_path = "./images"
+# Configure storage buckets
+[storage.buckets.portfolios]
+public = true
+file_size_limit = "10MiB"
+allowed_mime_types = ["text/html", "application/json"]
+
+[storage.buckets.website_pages]
+public = true
+file_size_limit = "10MiB"
+allowed_mime_types = ["text/html", "application/json"]
+
+[storage.buckets.website_assets]
+public = true
+file_size_limit = "50MiB"
+allowed_mime_types = ["image/png", "image/jpeg", "image/gif", "image/svg+xml", "image/webp", "video/mp4", "audio/mpeg", "application/pdf", "font/woff", "font/woff2", "font/ttf"]
 
 [auth]
 enabled = true

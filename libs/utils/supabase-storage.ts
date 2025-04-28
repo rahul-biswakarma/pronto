@@ -4,7 +4,13 @@ import logger from "./logger";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
-const BUCKET_NAME = "portfolios"; // Define bucket name centrally
+
+// Define bucket names centrally
+const BUCKET_NAMES = {
+    PORTFOLIOS: "portfolios",
+    WEBSITE_PAGES: "website_pages",
+    WEBSITE_ASSETS: "website_assets",
+} as const;
 
 // Prevent service role key from being exposed
 if (!SERVICE_ROLE_KEY && process.env.NODE_ENV === "production") {
@@ -16,6 +22,13 @@ interface PortfolioUploadResult {
     publicUrl?: string | null;
     error?: string;
     htmlPath?: string | null;
+}
+
+interface WebsiteUploadResult {
+    success: boolean;
+    publicUrl?: string | null;
+    error?: string;
+    filePath?: string | null;
 }
 
 /**
@@ -57,7 +70,7 @@ export async function uploadFileInBucket({
         const htmlBuffer = Buffer.from(content);
 
         // Use the existing "portfolios" bucket
-        const bucket = "portfolios";
+        const bucket = BUCKET_NAMES.PORTFOLIOS;
 
         // Upload the file
         const { error } = await supabase.storage
@@ -108,6 +121,169 @@ export async function uploadFileInBucket({
     }
 }
 
+/**
+ * Upload a website page HTML file to the website_pages bucket
+ */
+export async function uploadWebsitePage({
+    content,
+    filename,
+    userId,
+    websiteId,
+}: {
+    content: string;
+    filename: string;
+    userId: string;
+    websiteId: string;
+}): Promise<WebsiteUploadResult> {
+    const operationId = crypto.randomUUID();
+    logger.info(
+        { operationId, filename, websiteId },
+        "Starting website page upload",
+    );
+
+    try {
+        // Create secure admin client
+        const supabase = await createSecureAdminClient();
+
+        // For server-side environments, use Buffer instead of Blob
+        const htmlBuffer = Buffer.from(content);
+
+        // Store in user-specific folder within website_pages bucket
+        const bucket = BUCKET_NAMES.WEBSITE_PAGES;
+        const storagePath = `${userId}/${websiteId}/${filename}`;
+
+        // Upload the file
+        const { error } = await supabase.storage
+            .from(bucket)
+            .upload(storagePath, htmlBuffer, {
+                cacheControl: "3600", // 1 hour
+                upsert: true,
+                contentType: "text/html",
+            });
+
+        if (error) {
+            logger.error(
+                { operationId, filename, error: error.message },
+                "Failed to upload website page to storage",
+            );
+            return { success: false, error: error.message };
+        }
+
+        // Get the URL to the uploaded file
+        const { data: urlData } = supabase.storage
+            .from(bucket)
+            .getPublicUrl(storagePath);
+
+        const url = urlData.publicUrl;
+
+        return {
+            success: true,
+            publicUrl: url,
+            filePath: `${bucket}/${storagePath}`,
+        };
+    } catch (error) {
+        logger.error(
+            {
+                operationId,
+                error: error instanceof Error ? error.message : "Unknown error",
+                stack: error instanceof Error ? error.stack : undefined,
+            },
+            "Error during website page upload",
+        );
+
+        return {
+            success: false,
+            error:
+                error instanceof Error
+                    ? error.message
+                    : "Unknown error occurred",
+        };
+    }
+}
+
+/**
+ * Upload a website asset file (image, etc.) to the website_assets bucket
+ */
+export async function uploadWebsiteAsset({
+    content,
+    filename,
+    userId,
+    websiteId,
+    contentType,
+}: {
+    content: Buffer | string;
+    filename: string;
+    userId: string;
+    websiteId: string;
+    contentType: string;
+}): Promise<WebsiteUploadResult> {
+    const operationId = crypto.randomUUID();
+    logger.info(
+        { operationId, filename, websiteId },
+        "Starting website asset upload",
+    );
+
+    try {
+        // Create secure admin client
+        const supabase = await createSecureAdminClient();
+
+        // Convert to Buffer if it's a string
+        const fileBuffer =
+            typeof content === "string" ? Buffer.from(content) : content;
+
+        // Store in user-specific folder within website_assets bucket
+        const bucket = BUCKET_NAMES.WEBSITE_ASSETS;
+        const storagePath = `${userId}/${websiteId}/${filename}`;
+
+        // Upload the file
+        const { error } = await supabase.storage
+            .from(bucket)
+            .upload(storagePath, fileBuffer, {
+                cacheControl: "3600", // 1 hour
+                upsert: true,
+                contentType,
+            });
+
+        if (error) {
+            logger.error(
+                { operationId, filename, error: error.message },
+                "Failed to upload website asset to storage",
+            );
+            return { success: false, error: error.message };
+        }
+
+        // Get the URL to the uploaded file
+        const { data: urlData } = supabase.storage
+            .from(bucket)
+            .getPublicUrl(storagePath);
+
+        const url = urlData.publicUrl;
+
+        return {
+            success: true,
+            publicUrl: url,
+            filePath: `${bucket}/${storagePath}`,
+        };
+    } catch (error) {
+        logger.error(
+            {
+                operationId,
+                error: error instanceof Error ? error.message : "Unknown error",
+                stack: error instanceof Error ? error.stack : undefined,
+            },
+            "Error during website asset upload",
+        );
+
+        return {
+            success: false,
+            error:
+                error instanceof Error
+                    ? error.message
+                    : "Unknown error occurred",
+        };
+    }
+}
+
 export async function getFileFromBucket(path: string): Promise<{
     data: string | null;
     error: Error | null;
@@ -117,19 +293,21 @@ export async function getFileFromBucket(path: string): Promise<{
     }
 
     const supabase = await createSecureAdminClient();
-    // Assume path might be like "portfolios/content-xyz.json"
+
+    // Parse the bucket name from the path
+    const parts = path.split("/");
+    const bucketName = parts[0];
+
     // We only need the part after the bucket name for download
-    const objectPath = path.startsWith(`${BUCKET_NAME}/`)
-        ? path.substring(BUCKET_NAME.length + 1)
-        : path;
+    const objectPath = parts.slice(1).join("/");
 
     logger.info(
         { objectPath },
-        `Attempting to download from bucket ${BUCKET_NAME}`,
+        `Attempting to download from bucket ${bucketName}`,
     );
 
     const { data: blob, error } = await supabase.storage
-        .from(BUCKET_NAME)
+        .from(bucketName)
         .download(objectPath);
 
     if (error) {
@@ -222,7 +400,7 @@ export async function updatePortfolioAccess(
             };
         }
 
-        const bucket = "portfolios";
+        const bucket = BUCKET_NAMES.PORTFOLIOS;
         const filename = `portfolio-${userId}.html`;
 
         logger.debug(
@@ -310,15 +488,85 @@ export async function updatePortfolioAccess(
     }
 }
 
+/**
+ * Makes a website public or private
+ */
+export async function updateWebsitePublicStatus(
+    userId: string,
+    websiteId: string,
+    publish: boolean,
+): Promise<WebsiteUploadResult> {
+    const operationId = crypto.randomUUID();
+    logger.info(
+        { operationId, userId, websiteId, publish },
+        "Updating website public status",
+    );
+
+    try {
+        const supabase = await createSecureAdminClient();
+
+        // Update website record
+        const { error: updateError } = await supabase
+            .from("websites")
+            .update({
+                is_published: publish,
+                updated_at: new Date().toISOString(),
+            })
+            .eq("id", websiteId)
+            .eq("user_id", userId);
+
+        if (updateError) {
+            logger.error(
+                {
+                    operationId,
+                    userId,
+                    websiteId,
+                    error: updateError.message,
+                },
+                "Failed to update website public status",
+            );
+
+            return {
+                success: false,
+                error: updateError.message,
+            };
+        }
+
+        return {
+            success: true,
+        };
+    } catch (error) {
+        logger.error(
+            {
+                operationId,
+                userId,
+                websiteId,
+                error: error instanceof Error ? error.message : "Unknown error",
+                stack: error instanceof Error ? error.stack : undefined,
+            },
+            "Error updating website public status",
+        );
+
+        return {
+            success: false,
+            error:
+                error instanceof Error
+                    ? error.message
+                    : "Unknown error occurred",
+        };
+    }
+}
+
 export const getFileUrlFromBucket = async (path: string) => {
     const supabase = await createSecureAdminClient();
 
-    const objectPath = path.startsWith(`${BUCKET_NAME}/`)
-        ? path.substring(BUCKET_NAME.length + 1)
-        : path;
+    // Parse the bucket name and object path from the full path
+    const parts = path.split("/");
+    const bucketName = parts[0];
+    const objectPath = parts.slice(1).join("/");
 
     const { data: urlData } = supabase.storage
-        .from(BUCKET_NAME)
+        .from(bucketName)
         .getPublicUrl(objectPath);
 
     return urlData.publicUrl;
@@ -326,9 +574,17 @@ export const getFileUrlFromBucket = async (path: string) => {
 
 export const updateFileInBucket = async (path: string, content: string) => {
     const supabase = await createSecureAdminClient();
+
+    // Parse the bucket name and object path from the full path
+    const parts = path.split("/");
+    const bucketName = parts[0];
+    const objectPath = parts.slice(1).join("/");
+
     const { error } = await supabase.storage
-        .from(BUCKET_NAME)
-        .upload(path, content);
+        .from(bucketName)
+        .upload(objectPath, content, {
+            upsert: true,
+        });
 
     return error;
 };

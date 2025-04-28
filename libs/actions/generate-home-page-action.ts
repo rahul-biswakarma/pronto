@@ -5,7 +5,7 @@ import { getGeminiClient } from "@/libs/utils/ai/ai-client";
 import { htmlGenPromptGemini } from "@/libs/utils/ai/html-gen-prompt-gemini";
 import { checkAuthentication } from "@/libs/utils/auth";
 import ShortUniqueId from "short-unique-id";
-import { uploadFileInBucket } from "../utils/supabase-storage";
+import { uploadWebsitePage } from "../utils/supabase-storage";
 
 type GenerateHomePageActionResult = {
     success: boolean;
@@ -73,6 +73,7 @@ export async function generateHomePageAction({
                 templateId,
                 websiteId,
                 pageType,
+                userId,
             });
 
         if (!success || error) {
@@ -130,11 +131,13 @@ async function generateWithGemini({
     templateId,
     pageType,
     websiteId,
+    userId,
 }: {
     content: string;
     websiteId: string;
     templateId: string;
     pageType: string;
+    userId: string;
 }): Promise<GenerateHomePageActionResult> {
     try {
         const geminiClient = getGeminiClient();
@@ -173,14 +176,20 @@ async function generateWithGemini({
 
         const cssVariables = extractCssVariables(htmlTemplate);
 
-        const { error: uploadError, htmlPath } = await uploadFileInBucket({
+        // Use new uploadWebsitePage function instead of uploadFileInBucket
+        const {
+            success,
+            error,
+            filePath: htmlPath,
+        } = await uploadWebsitePage({
             content: htmlTemplate,
-            filename: `website-${websiteId}.html`,
-            contentType: "text/html",
+            filename: "index.html",
+            websiteId,
+            userId,
         });
 
-        if (uploadError) {
-            throw new Error("Failed to upload website file");
+        if (!success || error) {
+            throw new Error(error || "Failed to upload website file");
         }
 
         return {
