@@ -63,7 +63,7 @@ REQUIREMENTS:
    - Define font families as CSS variables with "--feno-font-family-" prefix.
    - Use CSS variables in Tailwind classes with square bracket notation.
    - DO NOT use HTML-like tags for configuration or attempt to override Tailwind defaults.
-   - DO NOT use tailwind-config tags, <tailwind>, or any other non-valid HTML tags.
+   - IMPORTANT: DO NOT use <tailwind-config> tags, <tailwind>, or any other non-valid HTML tags.
    - Also create a --feno-color-lightness variable for reference, DO NOT use this in your code.
 5. Layout & Visual Consistency:
    - Match the screenshot's layout and structure using Tailwind classes.

@@ -22,7 +22,7 @@ interface PortfolioUploadResult {
  * Creates a secure admin client for server operations that require elevated privileges
  * @returns Supabase client with admin privileges
  */
-function createSecureAdminClient() {
+export async function createSecureAdminClient() {
     if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
         throw new Error("Missing Supabase configuration for admin operations");
     }
@@ -53,7 +53,7 @@ export async function uploadPortfolioFileInBucket({
 
     try {
         // Create secure admin client
-        const supabase = createSecureAdminClient();
+        const supabase = await createSecureAdminClient();
 
         // For server-side environments, use Buffer instead of Blob
         const htmlBuffer = Buffer.from(content);
@@ -119,7 +119,7 @@ export async function getFileFromBucket(path: string): Promise<{
         return { data: null, error: new Error("File path cannot be empty.") };
     }
 
-    const supabase = createSecureAdminClient();
+    const supabase = await createSecureAdminClient();
     // Assume path might be like "portfolios/content-xyz.json"
     // We only need the part after the bucket name for download
     const objectPath = path.startsWith(`${BUCKET_NAME}/`)
@@ -314,7 +314,7 @@ export async function updatePortfolioAccess(
 }
 
 export const getFileUrlFromBucket = async (path: string) => {
-    const supabase = createSecureAdminClient();
+    const supabase = await createSecureAdminClient();
 
     const objectPath = path.startsWith(`${BUCKET_NAME}/`)
         ? path.substring(BUCKET_NAME.length + 1)
@@ -328,7 +328,7 @@ export const getFileUrlFromBucket = async (path: string) => {
 };
 
 export const updateFileInBucket = async (path: string, content: string) => {
-    const supabase = createSecureAdminClient();
+    const supabase = await createSecureAdminClient();
     const { error } = await supabase.storage
         .from(BUCKET_NAME)
         .upload(path, content);
