@@ -1,20 +1,24 @@
 "use client";
 
-import { useLLMGeneration } from "@/libs/components/onboarding/_components/use-llm-generation";
+import { generateHomePageAction } from "@/libs/actions/generate-home-page-action";
+import { ApolloDialog } from "@/libs/components/onboarding/_components/apollo-dialog";
 import { useOnboarding } from "@/libs/components/onboarding/onboarding.context";
 import { type Template, templates } from "@/libs/constants/templates";
+import { usePDFJS } from "@/libs/hooks/use-pdf";
+import { Dialog } from "@/libs/ui/dialog";
 import { Label } from "@/libs/ui/label";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { TemplateCard } from "./_components/template-card";
-import { TemplateFilters } from "./template-filters";
-
-import { ApolloDialog } from "@/components/onboarding/apollo-dialog";
-
-import { Dialog } from "@/libs/ui/dialog";
+import { TemplateFilters } from "./_components/template-filters";
 
 export function OnboardingMain() {
-    const { pdfContent } = useOnboarding();
+    const { pdfContent, setPdfContent } = useOnboarding();
     const [open, setOpen] = useState(false);
+    const [isStreaming, setIsStreaming] = useState(false);
+    const [llmError, setLlmError] = useState<string | null>(null);
+    const router = useRouter();
+    const { extractTextFromPDF } = usePDFJS();
 
     const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(
         templates[0],
@@ -22,23 +26,52 @@ export function OnboardingMain() {
 
     const { categories, selectedCategory } = useOnboarding();
 
-    const {
-        html,
-        isStreaming,
-        error: llmError,
-        startGeneration,
-    } = useLLMGeneration();
-
     const handleTemplateClick = (template: Template) => {
         setSelectedTemplate(template);
         setOpen(true);
     };
 
+    const handlePdfUpload = async (file: File) => {
+        try {
+            const extractedText = await extractTextFromPDF(file);
+            setPdfContent(extractedText);
+        } catch (error) {
+            console.error("Error extracting text from PDF:", error);
+            setLlmError("Failed to process PDF. Please try another file.");
+        }
+    };
+
     const handleGenerate = async () => {
         if (!pdfContent || !selectedTemplate) {
+            setLlmError("Please upload your resume first");
             return;
         }
-        startGeneration({ pdfContent, templateId: selectedTemplate.id });
+
+        setLlmError(null);
+        setIsStreaming(true);
+
+        try {
+            const result = await generateHomePageAction({
+                content: pdfContent,
+                templateId: selectedTemplate.id,
+                pageType: "homepage",
+            });
+
+            if (result.success && result.domain) {
+                router.push(`/${result.domain}`);
+            } else {
+                setLlmError(result.error || "Failed to generate portfolio");
+            }
+        } catch (error) {
+            console.error("Error generating homepage:", error);
+            setLlmError(
+                error instanceof Error
+                    ? error.message
+                    : "An unexpected error occurred",
+            );
+        } finally {
+            setIsStreaming(false);
+        }
     };
 
     return (
@@ -88,6 +121,7 @@ export function OnboardingMain() {
                         onOpenChange={setOpen}
                         template={selectedTemplate ?? templates[0]}
                         onGenerate={handleGenerate}
+                        onPdfUpload={handlePdfUpload}
                         isGenerating={isStreaming}
                         error={llmError ?? undefined}
                     />

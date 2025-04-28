@@ -1,4 +1,4 @@
-import { generatePortfolioTemplateAction } from "@/app/actions/portfolio-actions-template";
+import { generatePortfolioTemplateAction } from "@/libs/actions/portfolio-actions-template";
 import { templates } from "@/libs/constants/templates";
 import { Button } from "@/libs/ui/button";
 import { cn } from "@/libs/utils/misc";

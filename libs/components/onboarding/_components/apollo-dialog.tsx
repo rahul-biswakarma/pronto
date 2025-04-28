@@ -5,7 +5,7 @@ import type { Template } from "@/libs/constants/templates";
 import { Button } from "@/libs/ui/button";
 import { Dialog, DialogClose, DialogContent } from "@/libs/ui/dialog";
 import { Separator } from "@/libs/ui/separator";
-import { Loader2, X } from "lucide-react";
+import { IconLoader2, IconX } from "@tabler/icons-react";
 import Image from "next/image";
 import type { FC } from "react";
 import { useState } from "react";
@@ -33,7 +33,9 @@ export const ApolloDialog: FC<ApolloDialogProps> = ({
 
     const handlePdfUpload = (file: File | null) => {
         setPdfFile(file);
-        onPdfUpload?.(file!);
+        if (file && onPdfUpload) {
+            onPdfUpload(file);
+        }
     };
 
     return (
@@ -70,7 +72,7 @@ export const ApolloDialog: FC<ApolloDialogProps> = ({
                         />
                         <DialogClose asChild>
                             <Button variant="ghost" size="icon">
-                                <X />
+                                <IconX />
                             </Button>
                         </DialogClose>
                     </div>
@@ -101,7 +103,7 @@ export const ApolloDialog: FC<ApolloDialogProps> = ({
                             disabled={!pdfFile || isGenerating}
                         >
                             {isGenerating && (
-                                <Loader2 className="animate-spin mr-2 w-4 h-4" />
+                                <IconLoader2 className="animate-spin mr-2 w-4 h-4" />
                             )}
                             {isGenerating ? "Generating..." : "Generate"}
                         </button>

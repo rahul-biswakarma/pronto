@@ -5,8 +5,9 @@ import { htmlGenPromptGemini } from "@/libs/utils/ai/html-gen-prompt-gemini";
 import { checkAuthentication } from "@/libs/utils/auth";
 import { uploadPortfolioFileInBucket } from "@/libs/utils/supabase-storage";
 import ShortUniqueId from "short-unique-id";
+import { extractThemeVariables } from "../utils/web/css";
 
-type PortfolioActionResult = {
+type GenerateHomePageActionResult = {
     success: boolean;
     portfolioId?: string;
     error?: string;
@@ -16,40 +17,7 @@ type PortfolioActionResult = {
     cssVariables?: { name: string; value: string }[];
 };
 
-export async function extractThemeVariables(
-    htmlTemplate: string,
-): Promise<Record<string, string>> {
-    const themeVariables: Record<string, string> = {};
-
-    // Find all style tags in case there are multiple
-    const styleMatches = htmlTemplate.matchAll(
-        /<style[^>]*>([\s\S]*?)<\/style>/g,
-    );
-
-    for (const match of styleMatches) {
-        const cssContent = match[1];
-
-        // Find all :root and html selectors that might contain variables
-        const rootMatches = cssContent.matchAll(/(?::root|html)\s*{([^}]*)}/g);
-
-        for (const rootMatch of rootMatches) {
-            const rootContent = rootMatch[1];
-            // More precise regex to catch variable declarations
-            const variableRegex = /--([a-zA-Z0-9-_]+)\s*:\s*([^;]+)\s*;/g;
-
-            let varMatch: RegExpExecArray | null;
-            // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
-            while ((varMatch = variableRegex.exec(rootContent)) !== null) {
-                const [, name, value] = varMatch;
-                themeVariables[name.trim()] = value.trim();
-            }
-        }
-    }
-
-    return themeVariables;
-}
-
-export async function generatePortfolioAction({
+export async function generateHomePageAction({
     content,
     templateId,
     pageType,
@@ -57,7 +25,7 @@ export async function generatePortfolioAction({
     content: string;
     templateId: string;
     pageType: string;
-}): Promise<PortfolioActionResult> {
+}): Promise<GenerateHomePageActionResult> {
     const auth = await checkAuthentication();
 
     if (!auth.authenticated) {
@@ -111,7 +79,7 @@ export async function generatePortfolioAction({
             throw new Error("Failed to generate portfolio");
         }
 
-        const themeVariables = await extractThemeVariables(htmlTemplate ?? "");
+        const themeVariables = extractThemeVariables(htmlTemplate ?? "");
 
         const { error: themeVariablesError } = await supabase
             .from("portfolio")
@@ -176,7 +144,7 @@ async function generateWithGemini({
     templateId: string;
     portfolioId: string;
     pageType: string;
-}): Promise<PortfolioActionResult> {
+}): Promise<GenerateHomePageActionResult> {
     try {
         const geminiClient = getGeminiClient();
 

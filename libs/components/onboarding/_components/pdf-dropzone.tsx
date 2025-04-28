@@ -2,7 +2,7 @@
 
 import { usePDFJS } from "@/libs/hooks/use-pdf";
 import { Button } from "@/libs/ui/button";
-import { FileText, Upload, X } from "lucide-react";
+import { IconFileText, IconUpload, IconX } from "@tabler/icons-react";
 import { useRef, useState } from "react";
 import { useOnboarding } from "../onboarding.context";
 
@@ -78,7 +78,7 @@ export function PdfDropzone({
                 />
                 {pdfFile ? (
                     <div className="flex items-center gap-2">
-                        <FileText className="text-primary-500" />
+                        <IconFileText className="text-primary-500" />
                         <span className="font-medium text-black/80">
                             {pdfFile.name}
                         </span>
@@ -89,12 +89,12 @@ export function PdfDropzone({
                             aria-label="Remove PDF"
                             type="button"
                         >
-                            <X className="w-4 h-4" />
+                            <IconX className="w-4 h-4" />
                         </Button>
                     </div>
                 ) : (
                     <div className="flex flex-col items-center gap-2">
-                        <Upload className="w-6 h-6 text-primary-500" />
+                        <IconUpload className="w-6 h-6 text-primary-500" />
                         <span className="text-black/70 font-medium">
                             Drag & Drop your Resume here, or{" "}
                             <span className="underline">click to upload</span>

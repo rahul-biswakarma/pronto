@@ -1,4 +1,4 @@
-import { useOnboarding } from "./onboarding.context";
+import { useOnboarding } from "../onboarding.context";
 
 export const TemplateFilters = () => {
     const { categories, selectedCategory, setSelectedCategory } =
