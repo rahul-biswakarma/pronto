@@ -1,7 +1,6 @@
 "use server";
 import { extractCssVariables } from "@/libs/components/editor/modes/theme-editor/utils";
 import { getGeminiClient } from "@/libs/utils/ai/ai-client";
-import { formatPdfData } from "@/libs/utils/ai/format-pdf-prompt";
 import { htmlGenPromptGemini } from "@/libs/utils/ai/html-gen-prompt-gemini";
 import { checkAuthentication } from "@/libs/utils/auth";
 import { uploadPortfolioFileInBucket } from "@/libs/utils/supabase-storage";
@@ -75,10 +74,6 @@ export async function generatePortfolioAction({
     let portfolioId: string | undefined;
 
     try {
-        const formattedContent = await formatPdfData(content);
-
-        if (formattedContent) content = formattedContent;
-
         const { data: createData, error: createError } = await supabase
             .from("portfolio")
             .insert({
@@ -149,7 +144,13 @@ export async function generatePortfolioAction({
             throw new Error("Failed to update portfolio route map");
         }
 
-        return { success, portfolioId: createData?.id, htmlPath, domain };
+        return {
+            success,
+            portfolioId: createData?.id,
+            htmlPath,
+            htmlTemplate,
+            domain,
+        };
     } catch (error: unknown) {
         console.error("Server-side portfolio generation error:", error);
         const errorMessage =

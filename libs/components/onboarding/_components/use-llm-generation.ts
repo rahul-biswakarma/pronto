@@ -1,4 +1,6 @@
 import { generatePortfolioAction } from "@/app/actions/portfolio-actions";
+import { ROUTES } from "@/libs/constants/routes";
+import { redirect } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 export interface UseLLMGenerationResult {
@@ -35,6 +37,7 @@ export function useLLMGeneration(): UseLLMGenerationResult {
             if (!result.success || !result.htmlTemplate) {
                 setError(result.error || "Failed to generate HTML");
                 setIsStreaming(false);
+                redirect(ROUTES.SelectPortfolio);
                 return;
             }
 

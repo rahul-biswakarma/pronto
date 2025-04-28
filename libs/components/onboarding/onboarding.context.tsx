@@ -1,5 +1,6 @@
 "use client";
 
+import type { Template } from "@/libs/constants/templates";
 import {
     type Dispatch,
     type SetStateAction,
@@ -8,18 +9,44 @@ import {
     useState,
 } from "react";
 
+type Category = {
+    title: string;
+    filter: (template: Template) => boolean;
+    value: string;
+};
+
 interface OnboardingContextType {
-    selectedTemplateId: string | null;
-    setSelectedTemplateId: Dispatch<SetStateAction<string | null>>;
+    selectedTemplate: Template | null;
+    setSelectedTemplate: Dispatch<SetStateAction<Template | null>>;
     pdfContent: string | null;
     setPdfContent: Dispatch<SetStateAction<string | null>>;
+    selectedCategory: string | null;
+    setSelectedCategory: Dispatch<SetStateAction<string | null>>;
+    categories: Category[];
 }
 
+const categories: Category[] = [
+    {
+        title: "Portfolios",
+        filter: (t) => t.id.startsWith("feno:"),
+        value: "feno:",
+    },
+    {
+        title: "Articles",
+        filter: (t) => t.id.startsWith("feno-article:"),
+        value: "feno-article:",
+    },
+    // TODO: Add more categories as needed
+];
+
 const defaultData: OnboardingContextType = {
-    selectedTemplateId: null,
-    setSelectedTemplateId: () => {},
+    selectedTemplate: null,
+    setSelectedTemplate: () => {},
     pdfContent: null,
     setPdfContent: () => {},
+    selectedCategory: categories[0].value,
+    setSelectedCategory: () => {},
+    categories,
 };
 
 export const OnboardingContext = createContext(defaultData);
@@ -27,18 +54,27 @@ export const OnboardingContext = createContext(defaultData);
 export const OnboardingProvider = ({
     children,
 }: { children: React.ReactNode }) => {
-    const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(
+    const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(
         null,
     );
     const [pdfContent, setPdfContent] = useState<string | null>(null);
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(
+        categories[0].value,
+    );
 
     return (
         <OnboardingContext.Provider
             value={{
-                selectedTemplateId,
-                setSelectedTemplateId,
+                categories,
+
+                selectedTemplate,
+                setSelectedTemplate,
+
                 pdfContent,
                 setPdfContent,
+
+                selectedCategory,
+                setSelectedCategory,
             }}
         >
             {children}
