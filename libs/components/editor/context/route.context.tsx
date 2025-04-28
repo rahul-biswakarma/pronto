@@ -1,6 +1,6 @@
 "use client";
 
-import { getFileFromBucket } from "@/libs/utils/supabase-storage";
+import { getWebsitePreviewHTML } from "@/libs/actions/website-actions";
 import {
     type Dispatch,
     type SetStateAction,
@@ -62,8 +62,8 @@ export const RouteProvider = ({
         const htmlPath = routeMap[activeRoute];
 
         const getHtml = async () => {
-            const html = await getFileFromBucket(htmlPath);
-            setActiveRouteHtml(html.data ?? "");
+            const result = await getWebsitePreviewHTML(htmlPath);
+            setActiveRouteHtml(result.html ?? "");
         };
 
         getHtml();
