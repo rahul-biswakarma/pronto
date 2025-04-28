@@ -1,4 +1,5 @@
 "use client";
+
 import { useLLMGeneration } from "@/libs/components/onboarding/_components/use-llm-generation";
 import { useOnboarding } from "@/libs/components/onboarding/onboarding.context";
 import { type Template, templates } from "@/libs/constants/templates";
@@ -66,7 +67,7 @@ export function OnboardingMain() {
                     <section className="w-full grid grid-cols-3 items-center justify-center gap-x-4 gap-y-12">
                         {categories
                             .filter((cat) => cat.value === selectedCategory)
-                            .map((cat) => {
+                            .map(() => {
                                 const template = templates.filter((t) =>
                                     t.id.startsWith(selectedCategory ?? ""),
                                 );

@@ -1,6 +1,8 @@
 import { cn } from "@/libs/utils/misc";
 import { useEffect } from "react";
 import { useEditor } from "../context/editor.context";
+import { useRouteContext } from "../context/route.context";
+import { BlockEditorMode } from "../modes/block-editor/block-editor-mode";
 import { ContentEditorMode } from "../modes/content-editor";
 import { DeploymentMode } from "../modes/deployment/deployment";
 import { PageEditorMode } from "../modes/page-editor/page-editor";
@@ -19,13 +21,16 @@ export const Moder = () => {
         invalidateRegisteredModes,
     } = useEditor();
 
-    const isPageExists = Boolean(iframeDocument?.body.innerHTML);
+    const { activeRouteHtmlPath } = useRouteContext();
+
+    const isPageExists = !!activeRouteHtmlPath;
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         invalidateRegisteredModes();
         if (isPageExists) {
             registerMode(PageEditorMode());
             registerMode(ContentEditorMode());
+            registerMode(BlockEditorMode());
             registerMode(ThemeEditorMode());
             registerMode(DeploymentMode());
             registerMode(ProfileSettingsMode());
@@ -35,6 +40,10 @@ export const Moder = () => {
             registerMode(ProfileSettingsMode());
             setModeId("template-selector");
         }
+
+        return () => {
+            setModeId("");
+        };
     }, [isPageExists, iframeDocument]);
 
     const handleModeClick = (id: string) => {
@@ -71,7 +80,7 @@ export const Moder = () => {
                             <div
                                 key={mode.id}
                                 className={cn(
-                                    modeId !== "" && "py-1.5",
+                                    modeId && "py-1.5",
                                     mode.id === "deployment" && "ml-auto",
                                     mode.id === "deployment" &&
                                         modeId === "" &&
