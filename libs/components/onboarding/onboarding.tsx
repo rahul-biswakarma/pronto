@@ -1,6 +1,4 @@
 "use client";
-
-import { generatePortfolioAction } from "@/app/actions/portfolio-actions";
 import { templates } from "@/libs/constants/templates";
 import { Button } from "@/libs/ui/button";
 import {
@@ -15,8 +13,8 @@ import Image from "next/image";
 import { IconArrowRight, IconLoader } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { NewsLetter } from "../waitlist/waitlist";
-import { FileUploader } from "./_components/pdf-dropzone";
+// import { NewsLetter } from "../waitlist/waitlist";
+// import { FileUploader } from "./_components/pdf-dropzone";
 import { OnboardingProvider, useOnboarding } from "./onboarding.context";
 
 export type Template = {
@@ -42,27 +40,27 @@ const PDFUpload = ({ template }: { template: Template }) => {
 
         setError(null);
 
-        startTransition(async () => {
-            try {
-                const result = await generatePortfolioAction({
-                    content: pdfContent,
-                    templateId: template.id,
-                });
+        // startTransition(async () => {
+        //     try {
+        //         // const result = await generatePortfolioAction({
+        //         //     content: pdfContent,
+        //         //     templateId: template.id,
+        //         // });
 
-                if (result.success && result.portfolioId) {
-                    router.push(`/${result.domain}`);
-                } else {
-                    setError(result.error || "Failed to generate portfolio");
-                }
-            } catch (err) {
-                console.error("Error calling generatePortfolioAction:", err);
-                setError(
-                    err instanceof Error
-                        ? err.message
-                        : "An unexpected error occurred",
-                );
-            }
-        });
+        //         // if (result.success && result.portfolioId) {
+        //         //     router.push(`/${result.domain}`);
+        //         // } else {
+        //         //     setError(result.error || "Failed to generate portfolio");
+        //         // }
+        //     } catch (err) {
+        //         console.error("Error calling generatePortfolioAction:", err);
+        //         setError(
+        //             err instanceof Error
+        //                 ? err.message
+        //                 : "An unexpected error occurred",
+        //         );
+        //     }
+        // });
     };
     return (
         <>
@@ -97,14 +95,14 @@ const PDFUpload = ({ template }: { template: Template }) => {
                     <h1 className="text-md italic text-muted-foreground font-serif">
                         upload your resume here
                     </h1>
-                    <FileUploader
+                    {/* <FileUploader
                         style={{
                             border: "dashed 1px",
                             background: "var(--background)",
                             fontFamily: "var(--font-serif)",
                             fontSize: "14px",
                         }}
-                    />
+                    /> */}
                 </div>
 
                 {error && (
