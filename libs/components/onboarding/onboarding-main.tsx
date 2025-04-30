@@ -6,11 +6,11 @@ import { useOnboarding } from "@/libs/components/onboarding/onboarding.context";
 import { type Template, templates } from "@/libs/constants/templates";
 import { usePDFJS } from "@/libs/hooks/use-pdf";
 import { Dialog } from "@/libs/ui/dialog";
-import { Label } from "@/libs/ui/label";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Navigation } from "../common/nav";
+import { Header } from "./_components/header";
 import { TemplateCard } from "./_components/template-card";
-import { TemplateFilters } from "./_components/template-filters";
 
 export function OnboardingMain() {
     const { pdfContent, setPdfContent } = useOnboarding();
@@ -76,28 +76,19 @@ export function OnboardingMain() {
 
     return (
         <Dialog open={open}>
-            <main
-                className="min-h-screen w-full p-16 flex flex-col items-center bg-surface-0 bg-cover bg-center"
-                style={{
-                    fontFamily: "var(--font-sans)",
-                }}
-            >
-                <section className="mt-16 mb-8 text-center">
-                    <Label className="text-[40px] font-medium text-center">
-                        <span className="font-italianno text-6xl">Telling</span>{" "}
-                        your{" "}
-                        <span className="font-italianno text-6xl">story</span>{" "}
-                        should be{" "}
-                        <span className="font-italianno text-6xl">simple</span>
-                    </Label>
-                    <p className="text-lg text-[var(--color-text-2)]">
-                        We'll help you create a beautiful site in seconds,
-                        without any coding.
-                    </p>
-                </section>
-                <div className="max-w-[1440px] mt-24 w-full flex flex-col gap-y-8">
-                    <TemplateFilters />
-                    <section className="w-full grid grid-cols-3 items-center justify-center gap-x-4 gap-y-12">
+            <main className="relative min-h-screen w-full py-14 pt-10 flex flex-col items-center bg-gradient-to-b from-surface-0 to-surface-0/95">
+                <img
+                    className="absolute -top-7 w-[80vw] max-w-[900px] z-[2]"
+                    src="blur.png"
+                    alt=""
+                />
+
+                <Navigation />
+
+                <Header />
+
+                <div className="w-full z-10 max-w-[1200px] flex flex-col gap-y-10 mt-20 p-6">
+                    <section className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {categories
                             .filter((cat) => cat.value === selectedCategory)
                             .map(() => {
@@ -116,6 +107,7 @@ export function OnboardingMain() {
                                 ));
                             })}
                     </section>
+
                     <ApolloDialog
                         open={open}
                         onOpenChange={setOpen}
