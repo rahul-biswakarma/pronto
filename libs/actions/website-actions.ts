@@ -11,6 +11,7 @@ import {
 } from "@/libs/utils/supabase-storage";
 import ShortUniqueId from "short-unique-id";
 import { formatPdfData } from "../utils/ai/format-pdf-prompt";
+import { replaceImagesWithUnsplash } from "../utils/ai/image-replacer";
 
 export type Website = {
     id: string;
@@ -398,6 +399,11 @@ async function generateWithGemini({
             if (!htmlTemplate) {
                 throw new Error("No valid HTML content in response");
             }
+
+            console.log("HTML Template:", htmlTemplate);
+
+            // Replace images with Unsplash images
+            htmlTemplate = await replaceImagesWithUnsplash(htmlTemplate);
         } catch (error) {
             console.error("Failed to parse AI response:", error);
             throw new Error("Failed to generate valid HTML content");
