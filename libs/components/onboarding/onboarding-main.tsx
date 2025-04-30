@@ -1,6 +1,6 @@
 "use client";
 
-import { generateHomePageAction } from "@/libs/actions/generate-home-page-action";
+import { generateHomePageAction } from "@/libs/actions/website-actions";
 import { ApolloDialog } from "@/libs/components/onboarding/_components/apollo-dialog";
 import { useOnboarding } from "@/libs/components/onboarding/onboarding.context";
 import { type Template, templates } from "@/libs/constants/templates";

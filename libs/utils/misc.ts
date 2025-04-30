@@ -26,9 +26,8 @@ export function getTemplateFromLocalStorage(): Template {
 
 export const createDomainRouteMap = async (
     routes: {
-        domain: string;
-        route: string;
-        html_s3_path: string;
+        path: string;
+        html_file_path: string;
         id: string;
     }[],
 ): Promise<{
@@ -36,8 +35,8 @@ export const createDomainRouteMap = async (
 }> => {
     return routes.reduce(
         (acc, route) => {
-            acc[route.route === "/" ? "/" : `${route.route}`] =
-                route.html_s3_path;
+            acc[route.path === "/" ? "/" : `${route.path}`] =
+                route.html_file_path;
             return acc;
         },
         {} as { [key: string]: string },

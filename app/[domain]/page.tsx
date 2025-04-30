@@ -20,40 +20,41 @@ const PortfolioEditorPage = async ({
         redirect("/");
     }
 
-    const { data: portfolioData, error: portfolioError } = await supabase
-        .from("portfolio")
-        .select("domain, id, theme_variables")
+    const { data: websiteData, error: websiteError } = await supabase
+        .from("websites")
+        .select("id, domain, is_first_visit")
         .eq("domain", domain)
         .single();
 
-    if (portfolioError) {
+    if (websiteError) {
         redirect(ROUTES.SelectPortfolio);
     }
 
-    const { data: portfolioRoutes, error: portfolioRoutesError } =
-        await supabase
-            .from("portfolio_route_map")
-            .select("*")
-            .eq("domain", domain);
+    const { data: routesData, error: routesError } = await supabase
+        .from("routes")
+        .select("id, path, html_file_path")
+        .eq("website_id", websiteData.id);
 
-    if (portfolioError || portfolioRoutesError) {
+    if (websiteError || routesError) {
         redirect(ROUTES.SelectPortfolio);
     }
 
-    const portfolioId = portfolioData?.id;
-    const themeVariables = portfolioData?.theme_variables;
-    const routeMap = await createDomainRouteMap(portfolioRoutes ?? []);
+    if (websiteData.is_first_visit) {
+        redirect(ROUTES.SelectPortfolio);
+    }
+    const websiteId = websiteData?.id;
+    const routeMap = await createDomainRouteMap(routesData ?? []);
 
     return (
         <RouteProvider
             domain={domain}
-            portfolioId={portfolioId}
+            portfolioId={websiteId}
             routeMap={routeMap}
         >
             <EditorProvider
-                dls={{ theme: themeVariables }}
+                dls={{ theme: {} }} // Theme variables are no longer stored in the database
                 user={user}
-                portfolioId={portfolioId}
+                portfolioId={websiteId}
             >
                 <Editor />
             </EditorProvider>
