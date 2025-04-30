@@ -72,7 +72,13 @@ REQUIREMENTS:
 6. Icons:
    - Use Tabler Icons: <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" />
    - Format: <i class="ti ti-[icon-name]"></i>
-7. Final Output:
+7. Images:
+   - For placeholder images, use: https://picsum.photos/[width]/[height]
+   - Set appropriate width and height attributes on all img tags
+   - Add data-keyword attribute containing comma-separated keywords relevant to the image content
+   - Example: <img src="https://picsum.photos/800/600" width="800" height="600" data-keyword="nature,landscape,mountain" alt="Scenic landscape" class="w-full h-auto object-cover rounded-lg">
+   - Ensure responsive image handling using appropriate Tailwind classes
+8. Final Output:
    - Return complete HTML starting with <!DOCTYPE html>
    - Include properly formatted <head> and <body>
    - Ensure visual accuracy to the screenshot

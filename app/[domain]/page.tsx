@@ -17,7 +17,7 @@ const PortfolioEditorPage = async ({
         await checkAuthentication();
 
     if (!authenticated || errorResponse) {
-        redirect("/");
+        redirect("/login");
     }
 
     const { data: websiteData, error: websiteError } = await supabase
@@ -39,9 +39,6 @@ const PortfolioEditorPage = async ({
         redirect(ROUTES.SelectPortfolio);
     }
 
-    if (websiteData.is_first_visit) {
-        redirect(ROUTES.SelectPortfolio);
-    }
     const websiteId = websiteData?.id;
     const routeMap = await createDomainRouteMap(routesData ?? []);
 

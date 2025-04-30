@@ -10,6 +10,7 @@ import {
     uploadWebsitePage,
 } from "@/libs/utils/supabase-storage";
 import ShortUniqueId from "short-unique-id";
+import { formatPdfData } from "../utils/ai/format-pdf-prompt";
 
 export type Website = {
     id: string;
@@ -368,8 +369,10 @@ async function generateWithGemini({
     try {
         const geminiClient = getGeminiClient();
 
+        const betterContent = await formatPdfData(content);
+
         const prompt = await htmlGenPromptGemini({
-            content: content,
+            content: betterContent ?? content,
             templateId,
             pageType: pageType,
         });

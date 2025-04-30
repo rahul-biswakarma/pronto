@@ -4,24 +4,15 @@ import { redirect } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 export const PortfolioSelector = ({
-    data,
+    domains,
 }: {
-    data: {
-        html: string;
-        route: string;
-        domain: string;
-    }[];
+    domains: string[];
 }) => {
     return (
         <div className="flex flex-col">
             <div className="grid grid-cols-4 gap-4">
-                {data.map(({ html, route, domain }) => (
-                    <IframeCard
-                        key={route}
-                        html={html}
-                        domain={domain}
-                        route={route}
-                    />
+                {domains.map((domain) => (
+                    <div key={domain}>{domain}</div>
                 ))}
             </div>
         </div>

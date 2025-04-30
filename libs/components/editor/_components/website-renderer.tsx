@@ -5,9 +5,9 @@ import { useEditor } from "../context/editor.context";
 import { Moder } from "./moder";
 import { Navigation } from "./navigation/navigation";
 
-export const PortfolioRenderer: React.FC<{
-    portfolioHtml: string;
-}> = ({ portfolioHtml }) => {
+export const WebsiteRenderer: React.FC<{
+    html: string;
+}> = ({ html }) => {
     const { setIframeDocument, iframeRef } = useEditor();
 
     useEffect(() => {
@@ -38,7 +38,7 @@ export const PortfolioRenderer: React.FC<{
             <iframe
                 ref={iframeRef}
                 className="w-screen h-screen"
-                srcDoc={portfolioHtml}
+                srcDoc={html}
                 title="Portfolio"
                 allow="cross-origin-isolated"
                 sandbox="allow-same-origin allow-scripts"

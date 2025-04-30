@@ -46,15 +46,17 @@ export const EditorProvider: React.FC<
         // Function to update the theme class based on feno-color-lightness
         const updateThemeClass = () => {
             // Get the current value of --feno-color-lightness from dls (if it exists)
-            let colorLightness = 0;
+            let colorLightness = 1;
             if (
                 dls?.theme &&
                 typeof dls.theme["--feno-color-lightness"] === "number"
             ) {
                 colorLightness = dls.theme["--feno-color-lightness"];
-            } else {
+            } else if (iframeDocument) {
                 // Try to get it from CSS variables as fallback
-                const lightness = getComputedStyle(document.documentElement)
+                const lightness = getComputedStyle(
+                    iframeDocument.documentElement,
+                )
                     .getPropertyValue("--feno-color-lightness")
                     .trim();
                 if (lightness) {
@@ -74,25 +76,7 @@ export const EditorProvider: React.FC<
 
         // Initial update
         updateThemeClass();
-
-        // Set up a MutationObserver to watch for changes to the dls property
-        // This handles cases where the dls object is replaced entirely
-        const observer = new MutationObserver((mutations) => {
-            updateThemeClass();
-        });
-
-        // Also set up a listener for CSS variable changes (if possible)
-        const mediaQueryList = window.matchMedia(
-            "(prefers-color-scheme: dark)",
-        );
-        mediaQueryList.addEventListener("change", updateThemeClass);
-
-        return () => {
-            // Clean up
-            mediaQueryList.removeEventListener("change", updateThemeClass);
-            observer.disconnect();
-        };
-    }, [dls]);
+    }, [dls, iframeDocument]);
 
     return (
         <EditorContext.Provider
