@@ -6,6 +6,7 @@ import { useOnboarding } from "@/libs/components/onboarding/onboarding.context";
 import { type Template, templates } from "@/libs/constants/templates";
 import { usePDFJS } from "@/libs/hooks/use-pdf";
 import { Dialog } from "@/libs/ui/dialog";
+import { IconBolt } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Navigation } from "../common/nav";
@@ -107,7 +108,6 @@ export function OnboardingMain() {
                                 ));
                             })}
                     </section>
-
                     <ApolloDialog
                         open={open}
                         onOpenChange={setOpen}
@@ -118,16 +118,35 @@ export function OnboardingMain() {
                         error={llmError ?? undefined}
                     />
                 </div>
+
+                <div className="px-2 flex w-full justify-center">
+                    <div className="flex flex-col justify-center items-center flex-1 relative max-w-[1400px] bg-black/5 min-h-[300px] w-full mt-20 overflow-hidden rounded-3xl py-15 px-5 gap-2">
+                        <div className="bg-black/10 text-black w-fit inline-flex items-center cursor-pointer justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all h-9 px-4 py-2">
+                            <IconBolt className="text-[#6C52FF] w-5" />
+                            Experience
+                        </div>
+                        <h3 className="text-black/80 text-center mt-10 text-5xl">
+                            Effortless Creation, Powerful Impact
+                        </h3>
+                        <p className="text-black/50 text-[17px] mt-2">
+                            Smart agent, custom themes, and SEO
+                            optimization - all working together to showcase your
+                            best work
+                        </p>
+
+                        <div>
+                            Need-First Interface No clutter. No overload. Feno
+                            reveals just the right tools at the right time — so
+                            you stay focused, in flow, and in control.
+                        </div>
+                        <div>
+                            With Feno, you’re not building a site — you’re
+                            crafting a presence that grows with you and adapts
+                            to your journey.
+                        </div>
+                    </div>
+                </div>
             </main>
         </Dialog>
     );
-}
-
-export async function fileToText(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsText(file);
-    });
 }
