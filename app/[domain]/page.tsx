@@ -12,6 +12,7 @@ const PortfolioEditorPage = async ({
     params: { domain: string };
 }) => {
     const { domain } = await params;
+
     const { authenticated, errorResponse, supabase, user } =
         await checkAuthentication();
 
