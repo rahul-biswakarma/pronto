@@ -48,16 +48,16 @@ export const ApolloDialog: FC<ApolloDialogProps> = ({
             <DialogContent
                 hideTitle
                 title={template?.name}
-                className="max-w-[90vw] aspect-video bg-surface-0 shadow-2xl border-none overflow-y-auto sm:max-w-[90vw] gap-0 p-0 rounded-3xl"
+                className="max-w-[95vw] md:max-w-[90vw] max-h-[90vh] aspect-auto md:aspect-video bg-surface-0 shadow-2xl border-none overflow-y-auto gap-0 p-0 rounded-3xl"
                 style={{
                     scrollbarWidth: "none",
                     msOverflowStyle: "none",
                 }}
             >
-                <div className="p-10 grid gap-10 grid-cols-[30%_auto] max-h-full h-full overflow-hidden">
-                    <div className="flex flex-col justify-between">
+                <div className="p-4 lg:p-10 grid max-md:grid-cols-[1fr] md:grid-cols-[40%_auto] lg:grid-cols-[30%_auto] gap-6 md:gap-10 max-h-[90vh] md:max-h-full h-full overflow-y-auto md:overflow-hidden">
+                    <div className="flex flex-col gap-20 justify-between max-h-full overflow-y-auto no-scrollbar">
                         <div>
-                            <h2 className="text-[40px]/[116.67%] font-semibold pt-10">
+                            <h2 className="text-[28px]/[116.67%] lg:text-[40px]/[116.67%] font-semibold pt-3 md:pt-10">
                                 {
                                     HEADING_PICKUP_LINES[
                                         Math.floor(
@@ -89,7 +89,7 @@ export const ApolloDialog: FC<ApolloDialogProps> = ({
 
                             <p
                                 className={cn(
-                                    "mt-10 text-[var(--feno-text-3)] font-medium text-[16px]",
+                                    "mt-6 md:mt-10 text-[var(--feno-text-3)] font-medium text-[14px] md:text-[16px]",
                                     !pdfFile
                                         ? "text-[var(--feno-text-3)]/30"
                                         : "text-[var(--feno-text-3)]",
@@ -122,7 +122,7 @@ export const ApolloDialog: FC<ApolloDialogProps> = ({
                             </div>
                         </DialogClose>
                     </div>
-                    <div className="overflow-y-auto no-scrollbar max-h-full rounded-3xl">
+                    <div className="overflow-y-auto no-scrollbar max-h-full rounded-3xl max-md:hidden">
                         <Image
                             src={template?.image}
                             alt={template?.name}
