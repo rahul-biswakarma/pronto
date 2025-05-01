@@ -88,7 +88,7 @@ export function OnboardingMain() {
 
                 <Header />
 
-                <div className="w-full z-10 max-w-[1200px] flex flex-col gap-y-10 mt-20 p-6">
+                <div className="w-full z-10 max-w-[1400px] flex flex-col gap-y-10 mt-20 p-6">
                     <section className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {categories
                             .filter((cat) => cat.value === selectedCategory)
