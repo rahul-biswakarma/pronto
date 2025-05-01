@@ -5,23 +5,27 @@ export const TemplateFilters = () => {
         useOnboarding();
 
     return (
-        <div className="flex gap-x-2 items-center">
-            <div className="text-4xl font-italianno mr-4">Filters:</div>
-            {categories.map((cat) => {
-                return (
-                    <div
-                        key={cat.title}
-                        className={`text-md px-3 py-2 rounded-full cursor-pointer transition-colors duration-300 ease-out border ${
-                            selectedCategory === cat.value
-                                ? "bg-[var(--feno-surface-1-foreground)] text-[var(--feno-surface-1)]"
-                                : "bg-[var(--feno-surface-1)] text-[var(--feno-surface-1-foreground)]"
-                        }`}
-                        onClick={() => setSelectedCategory(cat.value)}
-                    >
-                        {cat.title}
-                    </div>
-                );
-            })}
+        <div className="w-full mb-6">
+            <h2 className="text-xl font-medium mb-4">
+                Start with the best PowerPoint templates
+            </h2>
+            <div className="flex flex-wrap gap-2 items-center">
+                {categories.map((cat) => {
+                    return (
+                        <div
+                            key={cat.title}
+                            className={`px-4 py-2 rounded-full cursor-pointer transition-all duration-300 ${
+                                selectedCategory === cat.value
+                                    ? "bg-black text-white"
+                                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                            }`}
+                            onClick={() => setSelectedCategory(cat.value)}
+                        >
+                            {cat.title}
+                        </div>
+                    );
+                })}
+            </div>
         </div>
     );
 };

@@ -62,9 +62,9 @@
     --sidebar-accent-foreground: var(--feno-text-1);
     --sidebar-border: var(--feno-border-1);
     --sidebar-ring: oklch(0.3 0 0 / 0.2);
-    --font-sans: Inter Display, sans-serif;
-    --font-serif: Georgia, serif;
-    --font-mono: Geist Mono, monospace;
+    --font-sans: "Host Grotesk", sans-serif;
+    --font-serif: "Cormorant Garamond", serif;
+    --font-mono: "JetBrains Mono", monospace;
     --radius: 0.5rem;
     --shadow-2xs: var(--feno-minimal-shadow);
     --shadow-xs: 0px 1px 2px 0px oklch(0 0 0 / 0.04);
