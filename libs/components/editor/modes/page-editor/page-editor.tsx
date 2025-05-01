@@ -12,13 +12,16 @@ import { SectionEditorInput } from "./page-editor-input";
 
 // Section Editor component
 const PageEditor: React.FC = () => {
-    const { iframeDocument, modeId, iframeRef } = useEditor();
+    const {
+        iframeDocument,
+        modeId,
+        iframeRef,
+        selectedElement,
+        setSelectedElement,
+    } = useEditor();
 
     const [prompt, setPrompt] = useState<string>("");
     const [loading, setLoading] = useState(false);
-    const [selectedElement, setSelectedElement] = useState<HTMLElement | null>(
-        null,
-    );
 
     // Handle prompt change
     const handlePromptChange = useCallback((value: string) => {

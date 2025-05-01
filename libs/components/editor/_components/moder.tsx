@@ -2,14 +2,13 @@ import { cn } from "@/libs/utils/misc";
 import { useEffect } from "react";
 import { useEditor } from "../context/editor.context";
 import { useRouteContext } from "../context/route.context";
-import { AssetManagementMode } from "../modes/asset-management/asset-management";
-import { BlockEditorMode } from "../modes/block-editor/block-editor-mode";
 import { ContentEditorMode } from "../modes/content-editor";
 import { DeploymentMode } from "../modes/deployment/deployment";
 import { PageEditorMode } from "../modes/page-editor/page-editor";
 import { TemplateSelectorMode } from "../modes/template-selector/template-selector";
 import { ThemeEditorMode } from "../modes/theme-editor/theme-editor";
 import { ProfileSettingsMode } from "../modes/user-setting/user-setting";
+
 export const Moder = () => {
     const {
         modes,
@@ -31,9 +30,7 @@ export const Moder = () => {
         if (isPageExists) {
             registerMode(PageEditorMode());
             registerMode(ContentEditorMode());
-            registerMode(BlockEditorMode());
             registerMode(ThemeEditorMode());
-            registerMode(AssetManagementMode());
             registerMode(DeploymentMode());
             registerMode(ProfileSettingsMode());
         } else {

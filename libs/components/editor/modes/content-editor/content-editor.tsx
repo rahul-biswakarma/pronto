@@ -1,56 +1,64 @@
 "use client";
-import { Button } from "@/libs/ui/button";
-import { TiptapEditor } from "@/libs/ui/tiptap/tiptap-editor";
 import { cn } from "@/libs/utils/misc";
-import { IconEdit } from "@tabler/icons-react";
 import DOMPurify from "dompurify";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+
+import { Button } from "@/libs/ui/button";
+import { TiptapEditor } from "@/libs/ui/tiptap/tiptap-editor";
+import { IconEdit } from "@tabler/icons-react";
 import { useEditor } from "../../context/editor.context";
 
 // Constants for element class names
+
 const CONTENT_EDITOR_HOVER_ELEMENT_CLASS = "content-editor-hover-element";
 const CONTENT_EDITOR_SELECTED_ELEMENT_CLASS = "content-editor-selected-element";
 
+// Function to check if an element has direct text content
+const hasDirectTextContent = (element: HTMLElement): boolean => {
+    // Check if element has text nodes as direct children
+    let hasText = false;
+    let hasOnlyTextAndElements = true;
+
+    for (const node of Array.from(element.childNodes)) {
+        if (node.nodeType === Node.TEXT_NODE) {
+            // Check if the text node has non-whitespace content
+            if (node.textContent?.trim()) {
+                hasText = true;
+            }
+        } else if (node.nodeType === Node.COMMENT_NODE) {
+            // If it has comment nodes, we're not interested
+            hasOnlyTextAndElements = false;
+            break;
+        }
+    }
+
+    return hasText && hasOnlyTextAndElements;
+};
+
 const ContentEditor = () => {
-    const { iframeDocument } = useEditor();
-    const [selectedNode, setSelectedNode] = useState<HTMLElement | null>(null);
+    const { iframeDocument, selectedElement, setSelectedElement } = useEditor();
     const [selectedHtml, setSelectedHtml] = useState<string>("");
 
     // Add event listeners and styles to iframe document
     useEffect(() => {
         if (!iframeDocument) return;
 
-        // Function to check if an element has direct text content
-        const hasDirectTextContent = (element: HTMLElement): boolean => {
-            // Check if element has text nodes as direct children
-            let hasText = false;
-            let hasOnlyTextAndElements = true;
-
-            for (const node of Array.from(element.childNodes)) {
-                if (node.nodeType === Node.TEXT_NODE) {
-                    // Check if the text node has non-whitespace content
-                    if (node.textContent?.trim()) {
-                        hasText = true;
-                    }
-                } else if (node.nodeType === Node.COMMENT_NODE) {
-                    // If it has comment nodes, we're not interested
-                    hasOnlyTextAndElements = false;
-                    break;
-                }
-            }
-
-            return hasText && hasOnlyTextAndElements;
-        };
+        if (selectedElement && hasDirectTextContent(selectedElement)) {
+            selectedElement.classList.add(
+                CONTENT_EDITOR_SELECTED_ELEMENT_CLASS,
+            );
+            setSelectedHtml(selectedElement.innerHTML);
+        }
 
         // Keep reference to currently selected element
-        let currentSelectedElement: HTMLElement | null = null;
 
         // Apply styles to selected element
         const applySelectedStyles = (element: HTMLElement) => {
             // Reset previous selection if exists
-            if (currentSelectedElement && currentSelectedElement !== element) {
-                currentSelectedElement.classList.remove(
+
+            if (selectedElement && selectedElement !== element) {
+                selectedElement.classList.remove(
                     CONTENT_EDITOR_SELECTED_ELEMENT_CLASS,
                 );
             }
@@ -59,14 +67,7 @@ const ContentEditor = () => {
             element.classList.remove(CONTENT_EDITOR_HOVER_ELEMENT_CLASS);
             element.classList.add(CONTENT_EDITOR_SELECTED_ELEMENT_CLASS);
 
-            // Update reference
-            currentSelectedElement = element;
-
-            // Extract content for editing
-            const htmlContent = element.innerHTML;
-
-            setSelectedNode(element);
-            setSelectedHtml(htmlContent);
+            setSelectedElement(element);
         };
 
         // Event handler for mouse over elements
@@ -74,10 +75,7 @@ const ContentEditor = () => {
             const target = e.target as HTMLElement;
 
             // Only highlight elements with direct text content
-            if (
-                hasDirectTextContent(target) &&
-                target !== currentSelectedElement
-            ) {
+            if (hasDirectTextContent(target) && target !== selectedElement) {
                 target.classList.add(CONTENT_EDITOR_HOVER_ELEMENT_CLASS);
             }
         };
@@ -86,7 +84,7 @@ const ContentEditor = () => {
         const handleMouseOut = (e: MouseEvent) => {
             const target = e.target as HTMLElement;
 
-            if (target !== currentSelectedElement) {
+            if (target !== selectedElement) {
                 target.classList.remove(CONTENT_EDITOR_HOVER_ELEMENT_CLASS);
             }
         };
@@ -156,8 +154,8 @@ const ContentEditor = () => {
             }
 
             // Remove styles and classes from all elements
-            if (currentSelectedElement) {
-                currentSelectedElement.classList.remove(
+            if (selectedElement) {
+                selectedElement.classList.remove(
                     CONTENT_EDITOR_SELECTED_ELEMENT_CLASS,
                 );
             }
@@ -174,11 +172,11 @@ const ContentEditor = () => {
                 style.remove();
             }
         };
-    }, [iframeDocument]);
+    }, [iframeDocument, selectedElement]);
 
     // Handle content replacement with live update
     const handleContentUpdate = (html: string) => {
-        if (!selectedNode || !iframeDocument) return;
+        if (!selectedElement || !iframeDocument) return;
 
         // Sanitize the HTML to prevent XSS
         const sanitizedHtml = DOMPurify.sanitize(html);
@@ -187,32 +185,32 @@ const ContentEditor = () => {
         setSelectedHtml(sanitizedHtml);
 
         // Immediately apply changes to the DOM
-        selectedNode.innerHTML = sanitizedHtml;
+        selectedElement.innerHTML = sanitizedHtml;
     };
 
     // Reset selection
     const clearSelection = () => {
-        if (selectedNode) {
-            selectedNode.classList.remove(
+        if (selectedElement) {
+            selectedElement.classList.remove(
                 CONTENT_EDITOR_SELECTED_ELEMENT_CLASS,
             );
         }
-        setSelectedNode(null);
+        setSelectedElement(null);
         setSelectedHtml("");
     };
 
     return (
         <div className="min-w-[500px] max-w-[500px] feno-mod-container overflow-hidden">
-            {selectedNode ? (
+            {selectedElement ? (
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                 >
                     <TiptapEditor
+                        liveChange={true}
                         onClose={clearSelection}
                         initialContent={selectedHtml}
                         onChange={handleContentUpdate}
-                        liveChange={true}
                         placeholder="Edit the selected content..."
                     />
                 </motion.div>

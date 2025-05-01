@@ -24,6 +24,9 @@ export const EditorProvider: React.FC<
     const [modes, setModes] = useState<Record<string, EditorMode>>({});
 
     const [iframeDocument, setIframeDocument] = useState<Document | null>(null);
+    const [selectedElement, setSelectedElement] = useState<HTMLElement | null>(
+        null,
+    );
 
     const registerMode = (mode: EditorMode) => {
         setModes((prevModes) => ({
@@ -95,6 +98,9 @@ export const EditorProvider: React.FC<
 
                 iframeDocument,
                 setIframeDocument,
+
+                selectedElement,
+                setSelectedElement,
             }}
         >
             {children}

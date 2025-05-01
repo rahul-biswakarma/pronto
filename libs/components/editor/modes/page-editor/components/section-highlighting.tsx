@@ -17,21 +17,19 @@ interface SectionHighlightingProps {
 export const SectionHighlighting: React.FC<SectionHighlightingProps> = ({
     iframeDocument,
     setSelectedElement,
+    selectedElement,
     isGenerating,
 }) => {
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         if (!iframeDocument) return;
 
-        // Keep a direct reference to the currently selected element
-        let currentSelectedElement: HTMLElement | null = null;
-
-        // Apply both styles and classes to the element
         const applySelectedStyles = (element: HTMLElement) => {
             // Reset previous selection if exists
-            if (currentSelectedElement && currentSelectedElement !== element) {
-                currentSelectedElement.style.outline = "";
-                currentSelectedElement.style.outlineOffset = "";
-                currentSelectedElement.classList.remove(
+            if (selectedElement && selectedElement !== element) {
+                selectedElement.style.outline = "";
+                selectedElement.style.outlineOffset = "";
+                selectedElement.classList.remove(
                     PAGE_EDITOR_SELECTED_ELEMENT_CLASS,
                 );
             }
@@ -43,20 +41,21 @@ export const SectionHighlighting: React.FC<SectionHighlightingProps> = ({
             // Also add class (for compatibility with other components)
             element.classList.add(PAGE_EDITOR_SELECTED_ELEMENT_CLASS);
 
-            // Update our direct reference
-            currentSelectedElement = element;
-
             // Defer React state update to avoid interference
             setTimeout(() => {
                 setSelectedElement(element);
             }, 50);
         };
 
+        if (selectedElement) {
+            applySelectedStyles(selectedElement);
+        }
+
         // Event handler for mouse over elements
         const handleMouseOver = (e: MouseEvent) => {
             if (isGenerating) return;
             const target = e.target as HTMLElement;
-            if (target !== currentSelectedElement) {
+            if (target !== selectedElement) {
                 target.style.outline = "1px dashed #0ea5e9";
                 target.style.outlineOffset = "1px";
                 target.classList.add(PAGE_EDITOR_HOVER_ELEMENT_CLASS);
@@ -67,7 +66,7 @@ export const SectionHighlighting: React.FC<SectionHighlightingProps> = ({
         const handleMouseOut = (e: MouseEvent) => {
             if (isGenerating) return;
             const target = e.target as HTMLElement;
-            if (target !== currentSelectedElement) {
+            if (target !== selectedElement) {
                 target.style.outline = "";
                 target.style.outlineOffset = "";
                 target.classList.remove(PAGE_EDITOR_HOVER_ELEMENT_CLASS);
@@ -153,10 +152,10 @@ export const SectionHighlighting: React.FC<SectionHighlightingProps> = ({
             }
 
             // Remove styles and classes from all elements
-            if (currentSelectedElement) {
-                currentSelectedElement.style.outline = "";
-                currentSelectedElement.style.outlineOffset = "";
-                currentSelectedElement.classList.remove(
+            if (selectedElement) {
+                selectedElement.style.outline = "";
+                selectedElement.style.outlineOffset = "";
+                selectedElement.classList.remove(
                     PAGE_EDITOR_SELECTED_ELEMENT_CLASS,
                 );
             }
@@ -175,7 +174,7 @@ export const SectionHighlighting: React.FC<SectionHighlightingProps> = ({
                 style.remove();
             }
         };
-    }, [iframeDocument, setSelectedElement, isGenerating]);
+    }, [iframeDocument, selectedElement, isGenerating]);
 
     return null; // This component doesn't render anything, it just adds event handlers
 };

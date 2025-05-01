@@ -27,4 +27,7 @@ export type EditorContextType = {
 
     iframeDocument: Document | null;
     setIframeDocument: (doc: Document | null) => void;
+
+    selectedElement: HTMLElement | null;
+    setSelectedElement: (element: HTMLElement | null) => void;
 };
