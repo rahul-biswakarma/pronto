@@ -64,7 +64,7 @@ export const ApolloDialog: FC<ApolloDialogProps> = ({
                     msOverflowStyle: "none",
                 }}
             >
-                <div className="p-4 lg:p-10 grid max-md:grid-cols-[1fr] md:grid-cols-[40%_auto] lg:grid-cols-[30%_auto] gap-6 md:gap-10 max-h-[90vh] md:max-h-full h-full overflow-y-auto md:overflow-hidden">
+                <div className="p-4 lg:p-10 grid max-md:grid-cols-[1fr] md:grid-cols-[40%_auto] lg:grid-cols-[30%_auto] gap-6 lg:gap-12 max-h-[90vh] md:max-h-full h-full overflow-y-auto md:overflow-hidden">
                     <div className="flex flex-col gap-20 justify-between max-h-full overflow-y-auto no-scrollbar">
                         <div>
                             <h2 className="text-[28px]/[116.67%] lg:text-[40px]/[116.67%] font-semibold pt-3 md:pt-10">

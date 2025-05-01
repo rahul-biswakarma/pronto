@@ -139,7 +139,7 @@ export function OnboardingMain() {
                         <h3 className="text-5xl/[116.667%] text-center font-semibold">
                             Three simple steps to
                             <br />
-                            organized bliss
+                            stunning portfolio
                         </h3>
                         <div className="relative flex mt-[4rem] flex-wrap gap-[4rem] justify-center items-center">
                             <img
