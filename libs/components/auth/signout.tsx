@@ -4,19 +4,26 @@ import { Button } from "@/libs/ui/button";
 import { IconLogout } from "@tabler/icons-react";
 import { redirect } from "next/navigation";
 
-export const SignOut = () => {
+export const SignOut = ({
+    children,
+    className,
+}: {
+    children?: React.ReactNode;
+    className?: string;
+}) => {
     const supabase = createSupabaseBrowserClient(supabaseOption);
 
     return (
         <Button
-            size="icon"
+            className={className}
+            size={children ? "default" : "icon"}
             onClick={async () => {
                 await supabase.auth.signOut().then(() => {
                     redirect("/");
                 });
             }}
         >
-            <IconLogout size={20} />
+            {children ?? <IconLogout size={20} />}
         </Button>
     );
 };

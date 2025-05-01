@@ -1,6 +1,7 @@
 "use client";
 
 import type { Template } from "@/libs/constants/templates";
+import type { User } from "@supabase/supabase-js";
 import {
     type Dispatch,
     type SetStateAction,
@@ -16,6 +17,7 @@ type Category = {
 };
 
 interface OnboardingContextType {
+    user: User | null;
     selectedTemplate: Template | null;
     setSelectedTemplate: Dispatch<SetStateAction<Template | null>>;
     pdfContent: string | null;
@@ -40,6 +42,7 @@ const categories: Category[] = [
 ];
 
 const defaultData: OnboardingContextType = {
+    user: null,
     selectedTemplate: null,
     setSelectedTemplate: () => {},
     pdfContent: null,
@@ -53,7 +56,8 @@ export const OnboardingContext = createContext(defaultData);
 
 export const OnboardingProvider = ({
     children,
-}: { children: React.ReactNode }) => {
+    user,
+}: { children: React.ReactNode; user: User }) => {
     const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(
         null,
     );
@@ -65,6 +69,8 @@ export const OnboardingProvider = ({
     return (
         <OnboardingContext.Provider
             value={{
+                user,
+
                 categories,
 
                 selectedTemplate,

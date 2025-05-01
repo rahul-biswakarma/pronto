@@ -79,7 +79,7 @@ export function OnboardingMain() {
         <Dialog open={open}>
             <main className="relative min-h-screen w-full py-14 pb-0 pt-10 flex flex-col items-center bg-gradient-to-b from-surface-0 to-surface-0/95">
                 <img
-                    className="absolute -top-7 w-[80vw] max-w-[900px] z-[2]"
+                    className="absolute -top-7 w-[80vw] max-w-[900px] z-[2] select-none pointer-events-none"
                     src="/assets/blur.png"
                     alt=""
                 />
