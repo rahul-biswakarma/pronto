@@ -8,7 +8,7 @@ import { cn } from "@/libs/utils/misc";
 import { IconArrowLeft, IconLoader2 } from "@tabler/icons-react";
 import Image from "next/image";
 import type { FC } from "react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
     GENERATE_PICKUP_LINES,
     HEADING_PICKUP_LINES,
@@ -36,6 +36,16 @@ export const ApolloDialog: FC<ApolloDialogProps> = ({
 }) => {
     const [pdfFile, setPdfFile] = useState<File | null>(null);
 
+    const headingPickupLineNumber = useRef(
+        Math.floor(Math.random() * HEADING_PICKUP_LINES.length),
+    );
+    const uploadPickupLineNumber = useRef(
+        Math.floor(Math.random() * UPLOAD_PICKUP_LINES.length),
+    );
+    const generatePickupLineNumber = useRef(
+        Math.floor(Math.random() * GENERATE_PICKUP_LINES.length),
+    );
+
     const handlePdfUpload = (file: File | null) => {
         setPdfFile(file);
         if (file && onPdfUpload) {
@@ -60,10 +70,7 @@ export const ApolloDialog: FC<ApolloDialogProps> = ({
                             <h2 className="text-[28px]/[116.67%] lg:text-[40px]/[116.67%] font-semibold pt-3 md:pt-10">
                                 {
                                     HEADING_PICKUP_LINES[
-                                        Math.floor(
-                                            Math.random() *
-                                                HEADING_PICKUP_LINES.length,
-                                        )
+                                        headingPickupLineNumber.current
                                     ]
                                 }
                             </h2>
@@ -71,10 +78,7 @@ export const ApolloDialog: FC<ApolloDialogProps> = ({
                             <p className="mt-10 text-[var(--feno-text-3)] font-medium text-[16px]">
                                 {
                                     UPLOAD_PICKUP_LINES[
-                                        Math.floor(
-                                            Math.random() *
-                                                UPLOAD_PICKUP_LINES.length,
-                                        )
+                                        uploadPickupLineNumber.current
                                     ]
                                 }
                             </p>
@@ -97,10 +101,7 @@ export const ApolloDialog: FC<ApolloDialogProps> = ({
                             >
                                 {
                                     GENERATE_PICKUP_LINES[
-                                        Math.floor(
-                                            Math.random() *
-                                                GENERATE_PICKUP_LINES.length,
-                                        )
+                                        generatePickupLineNumber.current
                                     ]
                                 }
                             </p>

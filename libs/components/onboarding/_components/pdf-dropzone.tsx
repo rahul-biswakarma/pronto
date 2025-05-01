@@ -19,6 +19,7 @@ export function PdfDropzone({
 }: PdfDropzoneProps) {
     const { extractTextFromPDF } = usePDFJS();
     const { setPdfContent } = useOnboarding();
+
     const [dragActive, setDragActive] = useState(false);
     const [pdfFile, setPdfFile] = useState<File | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -50,6 +51,9 @@ export function PdfDropzone({
         setPdfFile(null);
         onPdfUpload(null);
         setPdfContent("");
+        if (inputRef.current) {
+            inputRef.current.value = "";
+        }
     };
 
     return (
@@ -62,7 +66,7 @@ export function PdfDropzone({
                 }}
             >
                 <div
-                    className={`${dragActive ? "border-primary-500 bg-primary-50" : "border-black/10 bg-surface-1"} relative flex flex-col items-center justify-center rounded-xl p-6 transition-colors select-none ${disabled ? "opacity-60 pointer-events-none" : "cursor-pointer"}`}
+                    className={`${dragActive ? "bg-white/60 backdrop-blur-3xl" : "border-black/10 bg-surface-1"} relative flex flex-col items-center justify-center rounded-xl p-6 transition-colors select-none ${disabled ? "opacity-60 pointer-events-none" : "cursor-pointer"}`}
                     onDragOver={(e) => {
                         e.preventDefault();
                         setDragActive(true);
@@ -148,7 +152,7 @@ export function PdfDropzone({
                                         y2="42.947"
                                         gradientUnits="userSpaceOnUse"
                                     >
-                                        <stop stop-color="#EBEBEB" />
+                                        <stop stopColor="#EBEBEB" />
                                         <stop offset="1" stopColor="#C4C4C4" />
                                     </linearGradient>
                                 </defs>
