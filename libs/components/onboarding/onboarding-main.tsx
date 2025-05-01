@@ -8,6 +8,7 @@ import { usePDFJS } from "@/libs/hooks/use-pdf";
 import { Dialog } from "@/libs/ui/dialog";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Footer } from "../common/footer";
 import { Navigation } from "../common/nav";
 import { Header } from "./_components/header";
 import { TemplateCard } from "./_components/template-card";
@@ -76,7 +77,7 @@ export function OnboardingMain() {
 
     return (
         <Dialog open={open}>
-            <main className="relative min-h-screen w-full py-14 pt-10 flex flex-col items-center bg-gradient-to-b from-surface-0 to-surface-0/95">
+            <main className="relative min-h-screen w-full py-14 pb-0 pt-10 flex flex-col items-center bg-gradient-to-b from-surface-0 to-surface-0/95">
                 <img
                     className="absolute -top-7 w-[80vw] max-w-[900px] z-[2]"
                     src="/assets/blur.png"
@@ -161,6 +162,8 @@ export function OnboardingMain() {
                         </div>
                     </div>
                 </div>
+
+                <Footer />
             </main>
         </Dialog>
     );
