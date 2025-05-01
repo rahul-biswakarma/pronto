@@ -1,43 +1,21 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Geist_Mono, Italianno } from "next/font/google";
-import localFont from "next/font/local";
+import {
+    Cormorant_Garamond,
+    Host_Grotesk,
+    JetBrains_Mono,
+} from "next/font/google";
 import "./globals.css";
 
-const interDisplay = localFont({
-    src: [
-        {
-            path: "../public/fonts/InterDisplay-Light.woff2",
-            weight: "300",
-        },
-        {
-            path: "../public/fonts/InterDisplay-Regular.woff2",
-            weight: "400",
-        },
-        {
-            path: "../public/fonts/InterDisplay-Medium.woff2",
-            weight: "500",
-        },
-        {
-            path: "../public/fonts/InterDisplay-SemiBold.woff2",
-            weight: "600",
-        },
-        {
-            path: "../public/fonts/InterDisplay-Bold.woff2",
-            weight: "700",
-        },
-    ],
-    variable: "--font-inter-display",
+const hostGrotesk = Host_Grotesk({
+    variable: "--font-host",
+    subsets: ["latin"],
+    weight: ["400", "500", "600", "700"],
 });
 
-const geistMono = Geist_Mono({
-    variable: "--font-geist-mono",
+const jetbrains = JetBrains_Mono({
+    variable: "--font-jetbrains",
     subsets: ["latin"],
-});
-
-const italianno = Italianno({
-    variable: "--font-italianno",
-    subsets: ["latin"],
-    weight: "400",
+    weight: ["400", "500", "600", "700"],
 });
 
 const serif = Cormorant_Garamond({
@@ -70,7 +48,7 @@ export default function RootLayout({
                 />
             </head>
             <body
-                className={`${interDisplay.variable} ${geistMono.variable} ${serif.variable} ${italianno.variable} antialiased`}
+                className={`${hostGrotesk.variable} ${serif.variable} ${jetbrains.variable}  antialiased`}
             >
                 <main className="w-full h-screen">{children}</main>
             </body>

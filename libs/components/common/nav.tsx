@@ -7,7 +7,7 @@ export const Navigation = () => {
                 <div
                     className="absolute w-full h-full -ml-4"
                     style={{
-                        background: "url(/noise.png)",
+                        background: "url(/assets/noise.png)",
                         backgroundRepeat: "repeat",
                         backgroundSize: "50px",
                         backgroundPosition: "center",

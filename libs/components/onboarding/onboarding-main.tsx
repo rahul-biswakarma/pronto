@@ -6,7 +6,6 @@ import { useOnboarding } from "@/libs/components/onboarding/onboarding.context";
 import { type Template, templates } from "@/libs/constants/templates";
 import { usePDFJS } from "@/libs/hooks/use-pdf";
 import { Dialog } from "@/libs/ui/dialog";
-import { IconBolt } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Navigation } from "../common/nav";
@@ -80,7 +79,7 @@ export function OnboardingMain() {
             <main className="relative min-h-screen w-full py-14 pt-10 flex flex-col items-center bg-gradient-to-b from-surface-0 to-surface-0/95">
                 <img
                     className="absolute -top-7 w-[80vw] max-w-[900px] z-[2]"
-                    src="blur.png"
+                    src="/assets/blur.png"
                     alt=""
                 />
 
@@ -119,30 +118,46 @@ export function OnboardingMain() {
                     />
                 </div>
 
-                <div className="px-2 flex w-full justify-center">
-                    <div className="flex flex-col justify-center items-center flex-1 relative max-w-[1400px] bg-black/5 min-h-[300px] w-full mt-20 overflow-hidden rounded-3xl py-15 px-5 gap-2">
-                        <div className="bg-black/10 text-black w-fit inline-flex items-center cursor-pointer justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all h-9 px-4 py-2">
-                            <IconBolt className="text-[#6C52FF] w-5" />
-                            Experience
+                <div className="relative px-6 w-full mt-34 flex justify-center">
+                    <div className="flex-1 max-w-[1400px] bg-[#fafafa]  rounded-2xl flex flex-col items-center justify-center gap-5 p-6 py-20 w-full">
+                        <div className="font-mono font-medium text-xs px-2 py-1 border border-white/40 rounded-full">
+                            HOW IT WORKS
                         </div>
-                        <h3 className="text-black/80 text-center mt-10 text-5xl">
-                            Effortless Creation, Powerful Impact
+                        <h3 className="text-5xl/[116.667%] text-center font-semibold">
+                            Three simple steps to
+                            <br />
+                            organized bliss
                         </h3>
-                        <p className="text-black/50 text-[17px] mt-2">
-                            Smart agent, custom themes, and SEO
-                            optimization - all working together to showcase your
-                            best work
-                        </p>
+                        <div className="relative flex mt-[4rem] flex-wrap gap-[4rem] justify-center items-center">
+                            <img
+                                src="/assets/upload.png"
+                                alt="upload"
+                                className="rounded-3xl"
+                                style={{
+                                    width: "100%",
+                                    maxWidth: "500px",
+                                    maxHeight: "500px",
+                                }}
+                            />
 
-                        <div>
-                            Need-First Interface No clutter. No overload. Feno
-                            reveals just the right tools at the right time — so
-                            you stay focused, in flow, and in control.
-                        </div>
-                        <div>
-                            With Feno, you’re not building a site — you’re
-                            crafting a presence that grows with you and adapts
-                            to your journey.
+                            <img
+                                src="/assets/templates.png"
+                                alt="template"
+                                style={{
+                                    width: "100%",
+                                    maxWidth: "500px",
+                                    maxHeight: "500px",
+                                }}
+                            />
+                            <img
+                                src="/assets/deploy.png"
+                                alt="deploy"
+                                style={{
+                                    width: "100%",
+                                    maxWidth: "500px",
+                                    maxHeight: "500px",
+                                }}
+                            />
                         </div>
                     </div>
                 </div>
