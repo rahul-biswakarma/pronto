@@ -13,42 +13,27 @@ export function TemplateCard({
     onDropPdf,
 }: TemplateCardProps) {
     return (
-        <div className="group flex flex-col h-full overflow-hidden transition-all duration-300 hover:translate-y-[-4px]">
-            <div className="relative overflow-hidden rounded-xl aspect-video bg-surface-1 flex items-center justify-center shadow-sm hover:shadow-md transition-all duration-300">
-                {/* New badge */}
+        <div className="flex flex-col gap-4">
+            <div
+                className="relative overflow-hidden rounded-3xl aspect-square px-8 bg-surface-1 transition-colors duration-300 ease-out flex items-center justify-center"
+                style={{
+                    minWidth: "max(25vw, 25vh)",
+                    maxWidth: "max(25vw, 25vh)",
+                }}
+            >
                 {template.metadata?.isNew && (
-                    <div className="absolute top-3 left-3 z-10 bg-black text-white text-xs font-medium px-2 py-1 rounded-full">
+                    <div className="absolute top-4 left-4 text-xs text-feno-text-3 px-2 py-1 rounded-lg bg-surface-2">
                         New
                     </div>
                 )}
-
-                {/* Template image with overlay */}
-                <div className="relative w-full h-full overflow-hidden">
-                    <Image
-                        className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
-                        src={template.image}
-                        width={1080}
-                        height={720}
-                        alt={template.name}
-                    />
-
-                    {/* Hover overlay with info */}
-                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-                        <h3 className="text-white font-medium text-lg mb-1">
-                            {template.name}
-                        </h3>
-                        <p className="text-white/80 text-sm line-clamp-2">
-                            {template.description}
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            {/* Template name below card */}
-            <div className="mt-3 px-1">
-                <h3 className="font-medium text-[var(--feno-text-1)]">
-                    {template.name}
-                </h3>
+                <div className="absolute inset-0 bg-feno-surface-0/50 backdrop-blur-sm -z-10" />
+                <Image
+                    className="object-cover object-top aspect-video rounded-xl border"
+                    src={template.image}
+                    width={1080}
+                    height={1080}
+                    alt={template.name}
+                />
             </div>
         </div>
     );
