@@ -1,6 +1,3 @@
-import { EditorProvider } from "@/libs/components/editor/context/editor.context";
-import { RouteProvider } from "@/libs/components/editor/context/route.context";
-import { Editor } from "@/libs/components/editor/editor";
 import { ROUTES } from "@/libs/constants/routes";
 import { checkAuthentication } from "@/libs/utils/auth";
 import { createDomainRouteMap } from "@/libs/utils/misc";
@@ -42,21 +39,7 @@ const PortfolioEditorPage = async ({
     const websiteId = websiteData?.id;
     const routeMap = await createDomainRouteMap(routesData ?? []);
 
-    return (
-        <RouteProvider
-            domain={domain}
-            portfolioId={websiteId}
-            routeMap={routeMap}
-        >
-            <EditorProvider
-                dls={{ theme: {} }} // Theme variables are no longer stored in the database
-                user={user}
-                portfolioId={websiteId}
-            >
-                <Editor />
-            </EditorProvider>
-        </RouteProvider>
-    );
+    return <div>Editor</div>;
 };
 
 export default PortfolioEditorPage;
