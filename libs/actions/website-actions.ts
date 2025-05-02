@@ -400,8 +400,6 @@ async function generateWithGemini({
                 throw new Error("No valid HTML content in response");
             }
 
-            console.log("HTML Template:", htmlTemplate);
-
             // Replace images with Unsplash images
             htmlTemplate = await replaceImagesWithUnsplash(htmlTemplate);
         } catch (error) {
