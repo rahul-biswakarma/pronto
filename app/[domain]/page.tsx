@@ -1,45 +1,86 @@
-import { ROUTES } from "@/libs/constants/routes";
-import { checkAuthentication } from "@/libs/utils/auth";
-import { createDomainRouteMap } from "@/libs/utils/misc";
-import { redirect } from "next/navigation";
+"use client";
+import { Canvas } from "@/libs/components/canvas/canvas";
+import { CanvasProvider } from "@/libs/contexts/canvas-context";
+import { RouteProvider } from "@/libs/contexts/route-context";
+import { Button } from "@/libs/ui/button";
+import { Card } from "@/libs/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/libs/ui/tabs";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
-const PortfolioEditorPage = async ({
-    params,
-}: {
-    params: { domain: string };
-}) => {
-    const { domain } = await params;
+export default function DomainPage({ params }: { params: { domain: string } }) {
+    const { domain } = params;
+    const searchParams = useSearchParams();
+    const variantId = searchParams.get("variant");
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [websites, setWebsites] = useState<
+        Array<{ id: string; html: string; complete: boolean }>
+    >([]);
 
-    const { authenticated, errorResponse, supabase, user } =
-        await checkAuthentication();
+    useEffect(() => {
+        // Initial setup
+        setIsLoading(true);
+        setError(null);
+    }, [domain]);
 
-    if (!authenticated || errorResponse) {
-        redirect("/login");
-    }
+    return (
+        <RouteProvider domain={domain} currentRoute="/">
+            <CanvasProvider>
+                <div className="flex flex-col w-full min-h-screen bg-background">
+                    <header className="border-b border-border p-4 flex justify-between items-center">
+                        <h1 className="text-xl font-semibold">
+                            Website Editor: {domain}
+                        </h1>
+                        <div className="flex gap-2">
+                            <Button variant="outline" size="sm">
+                                Save
+                            </Button>
+                            <Button size="sm">Publish</Button>
+                        </div>
+                    </header>
 
-    const { data: websiteData, error: websiteError } = await supabase
-        .from("websites")
-        .select("id, domain, is_first_visit")
-        .eq("domain", domain)
-        .single();
+                    <main className="flex-1 p-4">
+                        <Tabs defaultValue="canvas" className="w-full">
+                            <TabsList className="mb-4">
+                                <TabsTrigger value="canvas">Canvas</TabsTrigger>
+                                <TabsTrigger value="code">Code</TabsTrigger>
+                                <TabsTrigger value="settings">
+                                    Settings
+                                </TabsTrigger>
+                            </TabsList>
 
-    if (websiteError) {
-        redirect(ROUTES.SelectPortfolio);
-    }
+                            <TabsContent
+                                value="canvas"
+                                className="w-full h-[calc(100vh-180px)]"
+                            >
+                                <Canvas
+                                    websites={websites}
+                                    isLoading={isLoading}
+                                />
+                            </TabsContent>
 
-    const { data: routesData, error: routesError } = await supabase
-        .from("routes")
-        .select("id, path, html_file_path")
-        .eq("website_id", websiteData.id);
+                            <TabsContent value="code">
+                                <Card className="p-4">
+                                    <h2 className="text-lg font-medium mb-2">
+                                        HTML Editor
+                                    </h2>
+                                    {/* Code editor would go here */}
+                                </Card>
+                            </TabsContent>
 
-    if (websiteError || routesError) {
-        redirect(ROUTES.SelectPortfolio);
-    }
-
-    const websiteId = websiteData?.id;
-    const routeMap = await createDomainRouteMap(routesData ?? []);
-
-    return <div>Editor</div>;
-};
-
-export default PortfolioEditorPage;
+                            <TabsContent value="settings">
+                                <Card className="p-4">
+                                    <h2 className="text-lg font-medium mb-2">
+                                        Website Settings
+                                    </h2>
+                                    {/* Settings form would go here */}
+                                </Card>
+                            </TabsContent>
+                        </Tabs>
+                    </main>
+                </div>
+            </CanvasProvider>
+        </RouteProvider>
+    );
+}

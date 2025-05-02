@@ -2,149 +2,108 @@
 @import "tw-animate-css";
 
 :root {
-    /* Feno theme variables */
-    --feno-surface-0: oklch(1 0 0);
-    --feno-surface-0-foreground: oklch(0.3 0 0);
-
-    --feno-surface-1: oklch(0.98 0 0);
-    --feno-surface-1-foreground: oklch(0.3 0 0);
-
-    --feno-surface-2: oklch(0.93 0 0);
-    --feno-surface-2-foreground: oklch(0.3 0 0);
-
-    --feno-border-1: oklch(0.87 0 0);
-    --feno-border-2: oklch(0.9 0.01 90);
-
-    --feno-floating-shadow: 0px 8px 32px oklch(0 0 0 / 0.1);
-    --feno-minimal-shadow: 0px 0px 0px 1px oklch(0 0 0 / 0.03);
-
-    --feno-interactive-resting-bg: oklch(0.96 0 0);
-    --feno-interactive-hover-bg: oklch(0.94 0 0);
-
-    --feno-interactive-resting-border: transparent;
-    --feno-interactive-hover-border: oklch(0.87 0 0);
-
-    --feno-text-1: oklch(0.3 0 0);
-    --feno-text-2: oklch(0.5 0 0);
-    --feno-text-3: oklch(0.7 0 0);
-    --feno-text-placeholder: oklch(0.7 0 0);
-
-    /* Update existing theme variables to match feno theme */
-    --background: var(--feno-surface-0);
-    --foreground: var(--feno-text-1);
-    --card: var(--feno-surface-0);
-    --card-foreground: var(--feno-text-1);
-    --popover: var(--feno-surface-1);
-    --popover-foreground: var(--feno-text-1);
-    --primary: var(--feno-text-1);
-    --primary-foreground: var(--feno-surface-0);
-    --secondary: var(--feno-interactive-resting-bg);
-    --secondary-foreground: var(--feno-text-1);
-    --muted: var(--feno-surface-1);
-    --muted-foreground: var(--feno-text-2);
-    --accent: var(--feno-interactive-hover-bg);
-    --accent-foreground: var(--feno-text-1);
-    --destructive: oklch(0.7 0.16 20);
-    --destructive-foreground: var(--feno-surface-0);
-    --border: var(--feno-border-1);
-    --input: var(--feno-interactive-resting-bg);
-    --ring: oklch(0.3 0 0 / 0.2);
-    --chart-1: oklch(0.75 0.15 75);
-    --chart-2: oklch(0.65 0.12 200);
-    --chart-3: oklch(0.7 0.1 275);
-    --chart-4: oklch(0.8 0.1 130);
-    --chart-5: oklch(0.6 0.1 30);
-    --sidebar: var(--feno-surface-1);
-    --sidebar-foreground: var(--feno-text-1);
-    --sidebar-primary: var(--feno-text-1);
-    --sidebar-primary-foreground: var(--feno-surface-0);
-    --sidebar-accent: var(--feno-interactive-hover-bg);
-    --sidebar-accent-foreground: var(--feno-text-1);
-    --sidebar-border: var(--feno-border-1);
-    --sidebar-ring: oklch(0.3 0 0 / 0.2);
-    --font-sans: "Host Grotesk", sans-serif;
-    --font-serif: "Cormorant Garamond", serif;
-    --font-mono: "JetBrains Mono", monospace;
+    --background: oklch(0.99 0 0);
+    --foreground: oklch(0.2 0 0);
+    --card: oklch(0.99 0 0);
+    --card-foreground: oklch(0.2 0 0);
+    --popover: oklch(0.99 0 0);
+    --popover-foreground: oklch(0.44 0 0);
+    --primary: oklch(0.83 0.13 160.91);
+    --primary-foreground: oklch(0.26 0.01 166.46);
+    --secondary: oklch(0.99 0 0);
+    --secondary-foreground: oklch(0.2 0 0);
+    --muted: oklch(0.95 0 0);
+    --muted-foreground: oklch(0.24 0 0);
+    --accent: oklch(0.95 0 0);
+    --accent-foreground: oklch(0.24 0 0);
+    --destructive: oklch(0.55 0.19 32.73);
+    --destructive-foreground: oklch(0.99 0.0 17.21);
+    --border: oklch(0.9 0 0);
+    --input: oklch(0.97 0 0);
+    --ring: oklch(0.83 0.13 160.91);
+    --chart-1: oklch(0.83 0.13 160.91);
+    --chart-2: oklch(0.62 0.19 259.81);
+    --chart-3: oklch(0.61 0.22 292.72);
+    --chart-4: oklch(0.77 0.16 70.08);
+    --chart-5: oklch(0.7 0.15 162.48);
+    --sidebar: oklch(0.99 0 0);
+    --sidebar-foreground: oklch(0.55 0 0);
+    --sidebar-primary: oklch(0.83 0.13 160.91);
+    --sidebar-primary-foreground: oklch(0.26 0.01 166.46);
+    --sidebar-accent: oklch(0.95 0 0);
+    --sidebar-accent-foreground: oklch(0.24 0 0);
+    --sidebar-border: oklch(0.9 0 0);
+    --sidebar-ring: oklch(0.83 0.13 160.91);
+    --font-sans: Outfit, sans-serif;
+    --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+    --font-mono: monospace;
     --radius: 0.5rem;
-    --shadow-2xs: var(--feno-minimal-shadow);
-    --shadow-xs: 0px 1px 2px 0px oklch(0 0 0 / 0.04);
-    --shadow-sm: 0px 1px 2px 0px oklch(0 0 0 / 0.06);
-    --shadow: 0px 2px 4px 0px oklch(0 0 0 / 0.06);
-    --shadow-md: 0px 2px 8px -2px oklch(0 0 0 / 0.08);
-    --shadow-lg: 0px 4px 12px -4px oklch(0 0 0 / 0.08);
-    --shadow-xl: 0px 8px 24px -8px oklch(0 0 0 / 0.08);
-    --shadow-2xl: 0px 12px 32px -12px oklch(0 0 0 / 0.12);
+    --shadow-2xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.09);
+    --shadow-xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.09);
+    --shadow-sm: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 1px 2px -1px
+        hsl(0 0% 0% / 0.17);
+    --shadow: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 1px 2px -1px
+        hsl(0 0% 0% / 0.17);
+    --shadow-md: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 2px 4px -1px
+        hsl(0 0% 0% / 0.17);
+    --shadow-lg: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 4px 6px -1px
+        hsl(0 0% 0% / 0.17);
+    --shadow-xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 8px 10px -1px
+        hsl(0 0% 0% / 0.17);
+    --shadow-2xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.43);
+    --tracking-normal: 0.025em;
 }
 
 .dark {
-    /* Dark mode Feno theme variables */
-    --feno-surface-0: oklch(0.21 0 0);
-    --feno-surface-0-foreground: oklch(0.95 0 0);
-
-    --feno-surface-1: oklch(0.24 0 0);
-    --feno-surface-1-foreground: oklch(0.95 0 0);
-
-    --feno-surface-2: oklch(0.26 0 0);
-    --feno-surface-2-foreground: oklch(0.95 0 0);
-
-    --feno-border-1: oklch(0.3 0 0);
-    --feno-border-2: oklch(0.33 0.01 270);
-
-    --feno-floating-shadow: 0px 8px 32px oklch(0 0 0 / 0.3);
-    --feno-minimal-shadow: 0px 0px 0px 1px oklch(1 0 0 / 0.05);
-
-    --feno-interactive-resting-bg: oklch(0.25 0 0);
-    --feno-interactive-hover-bg: oklch(0.28 0 0);
-
-    --feno-interactive-resting-border: transparent;
-    --feno-interactive-hover-border: oklch(0.35 0 0);
-
-    --feno-text-1: oklch(0.95 0 0);
-    --feno-text-2: oklch(0.75 0 0);
-    --feno-text-3: oklch(0.6 0 0);
-    --feno-text-placeholder: oklch(0.45 0 0);
-
-    /* Update existing theme variables to match dark mode feno theme */
-    --background: var(--feno-surface-0);
-    --foreground: var(--feno-text-1);
-    --card: var(--feno-surface-0);
-    --card-foreground: var(--feno-text-1);
-    --popover: var(--feno-surface-1);
-    --popover-foreground: var(--feno-text-1);
-    --primary: var(--feno-text-1);
-    --primary-foreground: oklch(0.2 0 0);
-    --secondary: var(--feno-interactive-resting-bg);
-    --secondary-foreground: var(--feno-text-1);
-    --muted: var(--feno-surface-1);
-    --muted-foreground: var(--feno-text-2);
-    --accent: var(--feno-interactive-hover-bg);
-    --accent-foreground: var(--feno-text-1);
-    --destructive: oklch(0.7 0.2 20);
-    --destructive-foreground: oklch(0.98 0 0);
-    --border: var(--feno-border-1);
-    --input: var(--feno-interactive-resting-bg);
-    --ring: oklch(0.9 0 0 / 0.3);
-    --chart-1: oklch(0.75 0.17 75);
-    --chart-2: oklch(0.65 0.14 200);
-    --chart-3: oklch(0.7 0.12 275);
-    --chart-4: oklch(0.77 0.12 130);
-    --chart-5: oklch(0.65 0.14 30);
-    --sidebar: var(--feno-surface-1);
-    --sidebar-foreground: var(--feno-text-1);
-    --sidebar-primary: var(--feno-text-1);
-    --sidebar-primary-foreground: oklch(0.2 0 0);
-    --sidebar-accent: var(--feno-interactive-hover-bg);
-    --sidebar-accent-foreground: var(--feno-text-1);
-    --sidebar-border: var(--feno-border-1);
-    --sidebar-ring: oklch(0.9 0 0 / 0.3);
-    --shadow-2xs: var(--feno-minimal-shadow);
-    --shadow-xs: 0px 1px 2px 0px oklch(0 0 0 / 0.15);
-    --shadow-sm: 0px 1px 3px 0px oklch(0 0 0 / 0.25);
-    --shadow: 0px 2px 4px 0px oklch(0 0 0 / 0.3);
-    --shadow-md: 0px 3px 8px -2px oklch(0 0 0 / 0.35);
-    --shadow-lg: 0px 6px 16px -6px oklch(0 0 0 / 0.4);
-    --shadow-xl: 0px 10px 24px -10px oklch(0 0 0 / 0.4);
-    --shadow-2xl: 0px 16px 42px -16px oklch(0 0 0 / 0.5);
+    --background: oklch(0.18 0 0);
+    --foreground: oklch(0.93 0.01 255.51);
+    --card: oklch(0.2 0 0);
+    --card-foreground: oklch(0.93 0.01 255.51);
+    --popover: oklch(0.26 0 0);
+    --popover-foreground: oklch(0.73 0 0);
+    --primary: oklch(0.44 0.1 156.76);
+    --primary-foreground: oklch(0.92 0.01 167.16);
+    --secondary: oklch(0.26 0 0);
+    --secondary-foreground: oklch(0.99 0 0);
+    --muted: oklch(0.24 0 0);
+    --muted-foreground: oklch(0.71 0 0);
+    --accent: oklch(0.31 0 0);
+    --accent-foreground: oklch(0.99 0 0);
+    --destructive: oklch(0.31 0.09 29.79);
+    --destructive-foreground: oklch(0.94 0.0 34.31);
+    --border: oklch(0.28 0 0);
+    --input: oklch(0.26 0 0);
+    --ring: oklch(0.8 0.18 151.71);
+    --chart-1: oklch(0.8 0.18 151.71);
+    --chart-2: oklch(0.71 0.14 254.62);
+    --chart-3: oklch(0.71 0.16 293.54);
+    --chart-4: oklch(0.84 0.16 84.43);
+    --chart-5: oklch(0.78 0.13 181.91);
+    --sidebar: oklch(0.18 0 0);
+    --sidebar-foreground: oklch(0.63 0 0);
+    --sidebar-primary: oklch(0.44 0.1 156.76);
+    --sidebar-primary-foreground: oklch(0.92 0.01 167.16);
+    --sidebar-accent: oklch(0.31 0 0);
+    --sidebar-accent-foreground: oklch(0.99 0 0);
+    --sidebar-border: oklch(0.28 0 0);
+    --sidebar-ring: oklch(0.8 0.18 151.71);
+    --font-sans: Outfit, sans-serif;
+    --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+    --font-mono: monospace;
+    --radius: 0.5rem;
+    --shadow-2xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.09);
+    --shadow-xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.09);
+    --shadow-sm: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 1px 2px -1px
+        hsl(0 0% 0% / 0.17);
+    --shadow: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 1px 2px -1px
+        hsl(0 0% 0% / 0.17);
+    --shadow-md: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 2px 4px -1px
+        hsl(0 0% 0% / 0.17);
+    --shadow-lg: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 4px 6px -1px
+        hsl(0 0% 0% / 0.17);
+    --shadow-xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 8px 10px -1px
+        hsl(0 0% 0% / 0.17);
+    --shadow-2xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.43);
 }
 
 @theme inline {
@@ -181,26 +140,9 @@
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
 
-    /* Map feno variables to color variables for consistency */
-    --color-surface-0: var(--feno-surface-0);
-    --color-surface-1: var(--feno-surface-1);
-    --color-surface-2: var(--feno-surface-2);
-    --color-border-1: var(--feno-border-1);
-    --color-border-2: var(--feno-border-2);
-    --color-text-1: var(--feno-text-1);
-    --color-text-2: var(--feno-text-2);
-    --color-text-3: var(--feno-text-3);
-    --color-text-placeholder: var(--feno-text-placeholder);
-    --color-interactive-resting-bg: var(--feno-interactive-resting-bg);
-    --color-interactive-hover-bg: var(--feno-interactive-hover-bg);
-    --color-interactive-resting-border: var(--feno-interactive-resting-border);
-    --color-interactive-hover-border: var(--feno-interactive-hover-border);
-    --color-floating-shadow: var(--feno-floating-shadow);
-    --color-minimal-shadow: var(--feno-minimal-shadow);
-
     --font-sans: var(--font-sans);
     --font-mono: var(--font-mono);
-    --font-italianno: var(--font-italianno);
+    --font-serif: var(--font-serif);
 
     --radius-sm: calc(var(--radius) - 4px);
     --radius-md: calc(var(--radius) - 2px);
@@ -216,16 +158,16 @@
     --shadow-xl: var(--shadow-xl);
     --shadow-2xl: var(--shadow-2xl);
 
-    --animate-marquee: marquee var(--duration) infinite linear;
+    --tracking-tighter: calc(var(--tracking-normal) - 0.05em);
+    --tracking-tight: calc(var(--tracking-normal) - 0.025em);
+    --tracking-normal: var(--tracking-normal);
+    --tracking-wide: calc(var(--tracking-normal) + 0.025em);
+    --tracking-wider: calc(var(--tracking-normal) + 0.05em);
+    --tracking-widest: calc(var(--tracking-normal) + 0.1em);
+}
 
-    @keyframes marquee {
-        from {
-            transform: translateX(0);
-        }
-        to {
-            transform: translateX(calc(-100% - var(--gap)));
-        }
-    }
+body {
+    letter-spacing: var(--tracking-normal);
 }
 
 @layer utilities {
