@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { updateSession } from "./libs/supabase/middleware";
+import { updateSession } from "./supabase/utils/middleware";
 import logger from "./libs/utils/logger";
 import { apiRatelimit, ratelimit } from "./libs/utils/ratelimit";
 

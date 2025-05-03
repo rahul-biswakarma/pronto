@@ -1,6 +1,6 @@
-import { createSupabaseBrowserClient } from "@/libs/supabase/client/browser";
-import { supabaseOption } from "@/libs/supabase/config";
 import { Button } from "@/libs/ui/button";
+import { createSupabaseBrowserClient } from "@/supabase/utils/client/browser";
+import { supabaseOption } from "@/supabase/utils/config";
 import { IconLogout } from "@tabler/icons-react";
 import { redirect } from "next/navigation";
 

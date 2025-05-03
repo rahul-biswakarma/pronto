@@ -9,6 +9,14 @@ const nextConfig: NextConfig = {
             },
         ],
     },
+    turbopack: {
+        rules: {
+            "*.svg": {
+                loaders: ["@svgr/webpack"],
+                as: "*.js",
+            },
+        },
+    },
     webpack: (config) => {
         // Enable WebAssembly
         config.experiments = { ...config.experiments, asyncWebAssembly: true };

@@ -1,24 +1,24 @@
 "use server";
 
-import { createSupabaseServerClient } from "@/libs/supabase/client/server";
-import { supabaseOption } from "@/libs/supabase/config";
+import { createSupabaseServerClient } from "@/supabase/utils/client/server";
+import { supabaseOption } from "@/supabase/utils/config";
 import type { SupabaseClient, User } from "@supabase/supabase-js";
 
 type AuthResult =
     | {
-          authenticated: false;
-          errorResponse: Response;
-          supabase?: never;
-          userId?: never;
-          user?: never;
-      }
+        authenticated: false;
+        errorResponse: Response;
+        supabase?: never;
+        userId?: never;
+        user?: never;
+    }
     | {
-          authenticated: true;
-          userId: string;
-          supabase: SupabaseClient;
-          user: User;
-          errorResponse?: never;
-      };
+        authenticated: true;
+        userId: string;
+        supabase: SupabaseClient;
+        user: User;
+        errorResponse?: never;
+    };
 
 /**
  * Checks if the user is authenticated and returns the user ID.
