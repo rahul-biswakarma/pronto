@@ -1,10 +1,10 @@
 import axios, {
     type AxiosError,
     type AxiosInstance,
-    type InternalAxiosRequestConfig,
     type AxiosResponse,
+    type InternalAxiosRequestConfig,
 } from "axios";
-import logger from "./logger";
+import logger from "../logger";
 
 // Create a base axios instance
 const axiosInstance: AxiosInstance = axios.create({

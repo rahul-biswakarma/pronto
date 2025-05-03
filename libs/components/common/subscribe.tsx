@@ -1,5 +1,5 @@
 import { Button } from "@/libs/ui/button";
-import dataLayer from "@/libs/utils/data-layer";
+import dataLayer from "@/libs/utils/api/data-layer";
 import { IconMail } from "@tabler/icons-react";
 import { useState } from "react";
 

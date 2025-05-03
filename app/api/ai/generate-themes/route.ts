@@ -3,7 +3,7 @@ import {
     createErrorResponse,
     createSuccessResponse,
     withErrorHandling,
-} from "@/libs/utils/api-response";
+} from "@/libs/utils/api/api-response";
 
 /**
  * POST /api/ai/generate-themes - Generate theme suggestions using Gemini AI
@@ -97,7 +97,9 @@ export const POST = withErrorHandling(
         } catch (error) {
             console.error("Error generating themes:", error);
             return createErrorResponse(
-                `Failed to generate themes: ${error instanceof Error ? error.message : "Unknown error"}`,
+                `Failed to generate themes: ${
+                    error instanceof Error ? error.message : "Unknown error"
+                }`,
                 requestId,
                 500,
             );
