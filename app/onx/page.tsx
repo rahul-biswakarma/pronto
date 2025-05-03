@@ -4,14 +4,14 @@ import { checkAuthentication } from "@/libs/utils/auth";
 import { redirect } from "next/navigation";
 
 export default async function OnboardingPage() {
-    const { authenticated, errorResponse } = await checkAuthentication();
+    const { authenticated, errorResponse, user } = await checkAuthentication();
 
     if (!authenticated || errorResponse) {
         redirect("/login");
     }
 
     return (
-        <OnboardingProvider>
+        <OnboardingProvider user={user}>
             <OnboardingMain />
         </OnboardingProvider>
     );

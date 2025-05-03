@@ -7,7 +7,7 @@ import { type Template, templates } from "@/libs/constants/templates";
 import { usePDFJS } from "@/libs/hooks/use-pdf";
 import { Dialog } from "@/libs/ui/dialog";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Footer } from "../common/footer";
 import { Navigation } from "../common/nav";
 import { Header } from "./_components/header";
@@ -75,11 +75,23 @@ export function OnboardingMain() {
         }
     };
 
+    const [scrollPosition, setScrollPosition] = useState(0);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrollPosition(window.scrollY);
+        };
+
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
     return (
         <Dialog open={open}>
             <main className="relative min-h-screen w-full py-14 pb-0 pt-10 flex flex-col items-center bg-gradient-to-b from-surface-0 to-surface-0/95">
                 <img
-                    className="absolute -top-7 w-[80vw] max-w-[900px] z-[2]"
+                    className="fixed -top-7 w-[80vw] max-w-[900px] z-[2] select-none pointer-events-none"
+                    style={{ transform: `translateY(${-scrollPosition}px)` }}
                     src="/assets/blur.png"
                     alt=""
                 />
@@ -88,7 +100,7 @@ export function OnboardingMain() {
 
                 <Header />
 
-                <div className="w-full z-10 max-w-[1200px] flex flex-col gap-y-10 mt-20 p-6">
+                <div className="w-full z-10 max-w-[1400px] flex flex-col gap-y-10 mt-20 p-6">
                     <section className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {categories
                             .filter((cat) => cat.value === selectedCategory)
@@ -127,7 +139,7 @@ export function OnboardingMain() {
                         <h3 className="text-5xl/[116.667%] text-center font-semibold">
                             Three simple steps to
                             <br />
-                            organized bliss
+                            stunning portfolio
                         </h3>
                         <div className="relative flex mt-[4rem] flex-wrap gap-[4rem] justify-center items-center">
                             <img

@@ -1,6 +1,5 @@
 "use server";
 
-import { extractCssVariables } from "@/libs/components/editor/modes/theme-editor/utils";
 import { getGeminiClient } from "@/libs/utils/ai/ai-client";
 import { htmlGenPromptGemini } from "@/libs/utils/ai/html-gen-prompt-gemini";
 import { checkAuthentication } from "@/libs/utils/auth";
@@ -399,8 +398,6 @@ async function generateWithGemini({
             if (!htmlTemplate) {
                 throw new Error("No valid HTML content in response");
             }
-
-            console.log("HTML Template:", htmlTemplate);
 
             // Replace images with Unsplash images
             htmlTemplate = await replaceImagesWithUnsplash(htmlTemplate);

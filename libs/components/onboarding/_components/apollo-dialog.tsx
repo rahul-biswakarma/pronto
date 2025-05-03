@@ -4,11 +4,16 @@ import { PdfDropzone } from "@/libs/components/onboarding/_components/pdf-dropzo
 import type { Template } from "@/libs/constants/templates";
 import { Button } from "@/libs/ui/button";
 import { Dialog, DialogClose, DialogContent } from "@/libs/ui/dialog";
-import { Separator } from "@/libs/ui/separator";
-import { IconLoader2, IconX } from "@tabler/icons-react";
+import { cn } from "@/libs/utils/misc";
+import { IconArrowLeft, IconLoader2 } from "@tabler/icons-react";
 import Image from "next/image";
 import type { FC } from "react";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import {
+    GENERATE_PICKUP_LINES,
+    HEADING_PICKUP_LINES,
+    UPLOAD_PICKUP_LINES,
+} from "../constant";
 
 interface ApolloDialogProps {
     open: boolean;
@@ -31,6 +36,16 @@ export const ApolloDialog: FC<ApolloDialogProps> = ({
 }) => {
     const [pdfFile, setPdfFile] = useState<File | null>(null);
 
+    const headingPickupLineNumber = useRef(
+        Math.floor(Math.random() * HEADING_PICKUP_LINES.length),
+    );
+    const uploadPickupLineNumber = useRef(
+        Math.floor(Math.random() * UPLOAD_PICKUP_LINES.length),
+    );
+    const generatePickupLineNumber = useRef(
+        Math.floor(Math.random() * GENERATE_PICKUP_LINES.length),
+    );
+
     const handlePdfUpload = (file: File | null) => {
         setPdfFile(file);
         if (file && onPdfUpload) {
@@ -43,76 +58,81 @@ export const ApolloDialog: FC<ApolloDialogProps> = ({
             <DialogContent
                 hideTitle
                 title={template?.name}
-                className="max-w-[90vw]  aspect-video bg-surface-0 rounded-2xl shadow-2xl border-0 overflow-y-auto sm:max-w-[90vw] gap-0 p-0"
+                className="max-w-[95vw] md:max-w-[90vw] max-h-[90vh] aspect-auto md:aspect-video bg-surface-0 shadow-2xl border-none overflow-y-auto gap-0 p-0 rounded-3xl"
                 style={{
                     scrollbarWidth: "none",
                     msOverflowStyle: "none",
                 }}
             >
-                <div className="flex justify-between sticky top-0 bg-surface-0 p-3 mb-1">
-                    <div className="flex items-center gap-2">
-                        <Image
-                            className="p-1 bg-surface-1 rounded-lg border aspect-square"
-                            src={template?.metadata?.favicon ?? ""}
-                            alt={template?.name}
-                            width={32}
-                            height={32}
-                        />
-                        <h2 className="text-md">{template?.name}</h2>
-                    </div>
-                    <div className="flex items-center">
-                        {template?.metadata?.isNew && (
-                            <span className="bg-primary-500 text-primary-foreground px-2 py-1 rounded text-xs ml-2">
-                                New
-                            </span>
-                        )}
-                        <Separator
-                            orientation="vertical"
-                            className="mx-2 h-6"
-                        />
-                        <DialogClose asChild>
-                            <Button variant="ghost" size="icon">
-                                <IconX />
+                <div className="p-4 lg:p-10 grid max-md:grid-cols-[1fr] md:grid-cols-[40%_auto] lg:grid-cols-[30%_auto] gap-6 lg:gap-12 max-h-[90vh] md:max-h-full h-full overflow-y-auto md:overflow-hidden">
+                    <div className="flex flex-col gap-20 justify-between max-h-full overflow-y-auto no-scrollbar">
+                        <div>
+                            <h2 className="text-[28px]/[116.67%] lg:text-[40px]/[116.67%] font-semibold pt-3 md:pt-10">
+                                {
+                                    HEADING_PICKUP_LINES[
+                                        headingPickupLineNumber.current
+                                    ]
+                                }
+                            </h2>
+
+                            <p className="mt-10 text-[var(--feno-text-3)] font-medium text-[16px]">
+                                {
+                                    UPLOAD_PICKUP_LINES[
+                                        uploadPickupLineNumber.current
+                                    ]
+                                }
+                            </p>
+
+                            <div className="pt-2">
+                                <PdfDropzone
+                                    onPdfUpload={handlePdfUpload}
+                                    disabled={isGenerating}
+                                    error={error}
+                                />
+                            </div>
+
+                            <p
+                                className={cn(
+                                    "mt-6 md:mt-10 text-[var(--feno-text-3)] font-medium text-[14px] md:text-[16px]",
+                                    !pdfFile
+                                        ? "text-[var(--feno-text-3)]/30"
+                                        : "text-[var(--feno-text-3)]",
+                                )}
+                            >
+                                {
+                                    GENERATE_PICKUP_LINES[
+                                        generatePickupLineNumber.current
+                                    ]
+                                }
+                            </p>
+
+                            <Button
+                                className="bg-black mt-2 text-white px-6 py-2 rounded-lg font-semibold hover:bg-gray-900 transition"
+                                onClick={onGenerate}
+                                disabled={!pdfFile || isGenerating}
+                            >
+                                {isGenerating && (
+                                    <IconLoader2 className="animate-spin mr-2 w-4 h-4" />
+                                )}
+                                {isGenerating ? "Generating..." : "Generate"}
                             </Button>
+                        </div>
+                        <DialogClose asChild>
+                            <div className="flex gap-1 items-center font-medium font-mono hover:border-b cursor-pointer w-fit border-black pl-1 pr-2.5">
+                                <IconArrowLeft /> Back
+                            </div>
                         </DialogClose>
                     </div>
-                </div>
-
-                <div className="flex flex-col md:flex-row items-center md:items-start gap-8 px-4">
-                    <div className="max-w-[90%] mx-auto w-full">
+                    <div className="overflow-y-auto no-scrollbar max-h-full rounded-3xl max-md:hidden">
                         <Image
                             src={template?.image}
                             alt={template?.name}
                             width={1440}
                             height={1440}
-                            className="rounded-xl w-full object-cover shadow-lg border border-black/10 -mt-0.5"
+                            className="w-full object-cover shadow-lg border border-black/10 -mt-0.5"
                             priority
                         />
                     </div>
-                </div>
-
-                <div className="sticky bottom-0 flex flex-col gap-4 p-4 bg-gradient-to-t from-background z-10">
-                    <div className="flex items-center justify-between gap-4 mt-2">
-                        <span className="text-sm text-muted-foreground bg-surface-1 border rounded-lg px-2 py-1 w-fit">
-                            {template?.description}
-                        </span>
-                        <button
-                            type="button"
-                            className="bg-black text-white px-6 py-2 rounded-lg font-semibold hover:bg-gray-900 transition"
-                            onClick={onGenerate}
-                            disabled={!pdfFile || isGenerating}
-                        >
-                            {isGenerating && (
-                                <IconLoader2 className="animate-spin mr-2 w-4 h-4" />
-                            )}
-                            {isGenerating ? "Generating..." : "Generate"}
-                        </button>
-                    </div>
-                    <PdfDropzone
-                        onPdfUpload={handlePdfUpload}
-                        disabled={isGenerating}
-                        error={error}
-                    />
                 </div>
             </DialogContent>
         </Dialog>
