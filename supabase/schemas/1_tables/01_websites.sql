@@ -8,5 +8,3 @@ create table if not exists public.websites (
   updated_at timestamp with time zone default now(),
   is_first_visit boolean default true
 );
-
-create index if not exists idx_websites_created_by on public.websites(created_by);

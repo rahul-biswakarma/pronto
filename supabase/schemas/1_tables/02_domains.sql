@@ -7,6 +7,3 @@ create table if not exists public.domains (
   created_at timestamp with time zone default now(),
   updated_at timestamp with time zone default now()
 );
-
-create index if not exists idx_domains_domain on public.domains(domain);
-create index if not exists idx_domains_created_by on public.domains(created_by);

@@ -8,5 +8,3 @@ create table if not exists public.canvas_workspaces (
   created_at timestamp with time zone default now(),
   updated_at timestamp with time zone default now()
 );
-
-create index if not exists idx_canvas_workspaces_website_id on public.canvas_workspaces(website_id);

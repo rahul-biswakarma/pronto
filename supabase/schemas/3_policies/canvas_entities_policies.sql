@@ -10,7 +10,7 @@ create policy "Users can view canvas entities" on public.canvas_entities
         select website_id from public.website_variants
         where website_variants.id = canvas_entities.html_variant_id
       )
-      and collaborators.user_id = auth.uid()
+      and collaborators.created_by = auth.uid()
     )
   );
 

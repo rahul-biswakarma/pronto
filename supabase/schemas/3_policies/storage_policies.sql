@@ -59,6 +59,7 @@ CREATE POLICY "Users can update their own website assets"
   );
 
 -- Allow public access to published website files (this depends on websites and routes tables)
+-- In the "Public access to published website files" policy, change:
 CREATE POLICY "Public access to published website files"
   ON storage.objects
   FOR SELECT
@@ -68,6 +69,7 @@ CREATE POLICY "Public access to published website files"
     EXISTS (
       SELECT 1 FROM public.websites w
       JOIN public.routes r ON w.id = r.website_id
-      WHERE w.is_published = true AND r.html_file_path = name
+      JOIN public.website_variants v ON r.published_variant_id = v.id
+      WHERE w.is_published = true AND v.html_path = name
     )
   );

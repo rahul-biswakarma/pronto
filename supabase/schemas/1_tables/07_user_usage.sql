@@ -7,5 +7,3 @@ create table if not exists public.user_usage (
   created_at timestamp with time zone default now(),
   updated_at timestamp with time zone default now()
 );
-
-create index if not exists idx_user_usage_created_by on public.user_usage(created_by);

@@ -16,6 +16,6 @@ CREATE POLICY "Users can manage their own routes"
       SELECT 1
       FROM public.websites
       WHERE websites.id = routes.website_id
-        AND websites.user_id = auth.uid()
+        AND websites.created_by = auth.uid()
     )
   );

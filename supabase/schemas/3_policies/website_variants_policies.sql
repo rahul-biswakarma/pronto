@@ -7,7 +7,7 @@ create policy "Users can view website variants" on public.website_variants
     exists (
       select 1 from public.collaborators
       where collaborators.website_id = website_variants.website_id
-      and collaborators.user_id = auth.uid()
+      and collaborators.created_by = auth.uid()
     )
   );
 
@@ -18,7 +18,7 @@ create policy "Editors and owners can manage website variants" on public.website
     exists (
       select 1 from public.collaborators
       where collaborators.website_id = website_variants.website_id
-      and collaborators.user_id = auth.uid()
+      and collaborators.created_by = auth.uid()
       and collaborators.role in ('editor', 'owner')
     )
   );

@@ -9,6 +9,3 @@ create table if not exists public.invites (
 
   unique (website_id, email)
 );
-
-create index if not exists idx_invites_website_id on public.invites(website_id);
-create index if not exists idx_invites_email on public.invites(email);

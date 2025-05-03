@@ -7,6 +7,3 @@ create table if not exists public.assets (
   file_type text,
   created_at timestamp with time zone default now()
 );
-
-create index if not exists idx_assets_created_by on public.assets(created_by);
-create index if not exists idx_assets_website_id on public.assets(website_id);

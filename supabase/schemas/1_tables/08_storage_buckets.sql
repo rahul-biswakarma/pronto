@@ -5,7 +5,7 @@ VALUES (
   'website_pages',
   'website_pages',
   true,
-  '10485760', -- 10MB limit
+  '5242880', -- 5MB limit
   ARRAY['text/html', 'application/json']::text[]
 )
 ON CONFLICT (id) DO NOTHING;
@@ -20,8 +20,3 @@ VALUES (
   ARRAY['image/png', 'image/jpeg', 'image/gif', 'image/svg+xml', 'image/webp', 'video/mp4', 'audio/mpeg', 'application/pdf', 'font/woff', 'font/woff2', 'font/ttf']::text[]
 )
 ON CONFLICT (id) DO NOTHING;
-
--- Update routes table to reference storage objects
-ALTER TABLE public.routes
-ADD CONSTRAINT "html_file_path_format"
-CHECK (html_file_path LIKE 'website_pages/%' OR html_file_path LIKE 'portfolios/%');

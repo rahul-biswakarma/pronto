@@ -8,8 +8,5 @@ create table if not exists public.collaborators (
   created_at timestamp with time zone default now(),
   updated_at timestamp with time zone default now(),
 
-  unique (website_id, user_id)
+  unique (website_id, created_by)
 );
-
-create index if not exists idx_collaborators_website_id on public.collaborators(website_id);
-create index if not exists idx_collaborators_created_by on public.collaborators(created_by);

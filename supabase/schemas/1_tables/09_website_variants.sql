@@ -7,8 +7,7 @@ create table if not exists public.website_variants (
   created_at timestamp with time zone default now(),
   updated_at timestamp with time zone default now(),
   created_by uuid not null references auth.users(id) on delete cascade,
-  updated_by uuid not null references auth.users(id) on delete cascade
-);
+  updated_by uuid not null references auth.users(id) on delete cascade,
 
-create index if not exists idx_website_variants_route_id on public.website_variants(route_id);
-create index if not exists idx_website_variants_website_id on public.website_variants(website_id);
+  CONSTRAINT "html_path_format" CHECK (html_path LIKE 'website_pages/%')
+);
