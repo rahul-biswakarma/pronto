@@ -1,14 +1,26 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/libs/ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/libs/ui/popover";
+import { createSupabaseBrowserClient } from "@/supabase/utils";
+import { supabaseOption } from "@/supabase/utils/config";
+import type { User } from "@supabase/supabase-js";
 import { IconLogout } from "@tabler/icons-react";
 import { redirect } from "next/navigation";
+import { useEffect, useState } from "react";
 import { SignOut } from "../auth/signout";
-import { useOnboarding } from "../onboarding/onboarding.context";
 
 export const UserCard = () => {
-    const { user } = useOnboarding();
+    const [user, setUser] = useState<User | null>(null);
 
-    if (!user) redirect("/login");
+    const supabase = createSupabaseBrowserClient(supabaseOption);
+
+    useEffect(() => {
+        const getUser = async () => {
+            const { data } = await supabase.auth.getUser();
+            if (!data.user) redirect("/login");
+            setUser(data.user);
+        };
+        getUser();
+    }, [supabase]);
 
     return (
         <Popover>
