@@ -479,6 +479,7 @@ export type Database = {
                     id: string;
                     is_first_visit: boolean | null;
                     is_published: boolean | null;
+                    name: string;
                     updated_at: string | null;
                     updated_by: string;
                 };
@@ -489,6 +490,7 @@ export type Database = {
                     id?: string;
                     is_first_visit?: boolean | null;
                     is_published?: boolean | null;
+                    name: string;
                     updated_at?: string | null;
                     updated_by: string;
                 };
@@ -499,6 +501,7 @@ export type Database = {
                     id?: string;
                     is_first_visit?: boolean | null;
                     is_published?: boolean | null;
+                    name?: string;
                     updated_at?: string | null;
                     updated_by?: string;
                 };
