@@ -1,6 +1,6 @@
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
-import logger from "./logger";
+import logger from "../logger";
 
 // Create a new ratelimiter with Redis
 const redis = new Redis({

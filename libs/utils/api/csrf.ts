@@ -4,7 +4,7 @@ import crypto from "node:crypto";
 import { getIronSession } from "iron-session";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import logger from "./logger";
+import logger from "../logger";
 
 // Make sure to set these environment variables
 const CSRF_SECRET =

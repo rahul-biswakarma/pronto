@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import logger from "./libs/utils/logger";
-import { apiRatelimit, ratelimit } from "./libs/utils/ratelimit";
+
+import { apiRatelimit, ratelimit } from "./libs/utils/api/ratelimit";
 import { updateSession } from "./supabase/utils/middleware";
 
 // Security headers to protect against common attacks

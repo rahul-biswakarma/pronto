@@ -1,9 +1,15 @@
-"use client";
-
 import { OnboardingProvider } from "@/libs/components/onboarding/context";
 import { OnboardingForm } from "@/libs/components/onboarding/onboarding-form";
+import { checkAuthentication } from "@/libs/utils/auth";
+import { redirect } from "next/navigation";
 
-export default function OnboardingPage() {
+export default async function OnboardingPage() {
+    const { authenticated } = await checkAuthentication();
+
+    if (!authenticated) {
+        redirect("/login");
+    }
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
             <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-xl shadow-md">
