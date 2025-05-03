@@ -2,6 +2,7 @@
 performance.mark("app-init");
 
 // Initialize analytics
+// biome-ignore lint/suspicious/noConsole: <explanation>
 console.log("Analytics initialized");
 
 // Set up error tracking

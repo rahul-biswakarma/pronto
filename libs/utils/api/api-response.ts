@@ -35,11 +35,12 @@ export function createErrorResponse(
     requestId?: string,
     status = 500,
 ): Response {
-    const errorMessage = message instanceof Error
-        ? message.message
-        : typeof message === "string"
-        ? message
-        : "An unknown error occurred";
+    const errorMessage =
+        message instanceof Error
+            ? message.message
+            : typeof message === "string"
+              ? message
+              : "An unknown error occurred";
 
     if (requestId) {
         logger.error(

@@ -6,19 +6,19 @@ import type { SupabaseClient, User } from "@supabase/supabase-js";
 
 type AuthResult =
     | {
-        authenticated: false;
-        errorResponse: Response;
-        supabase?: never;
-        userId?: never;
-        user?: never;
-    }
+          authenticated: false;
+          errorResponse: Response;
+          supabase?: never;
+          userId?: never;
+          user?: never;
+      }
     | {
-        authenticated: true;
-        userId: string;
-        supabase: SupabaseClient;
-        user: User;
-        errorResponse?: never;
-    };
+          authenticated: true;
+          userId: string;
+          supabase: SupabaseClient;
+          user: User;
+          errorResponse?: never;
+      };
 
 /**
  * Checks if the user is authenticated and returns the user ID.
