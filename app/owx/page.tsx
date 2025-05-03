@@ -15,8 +15,6 @@ const OWXPage = async () => {
         .select("domain, id")
         .eq("user_id", userId);
 
-    console.log(websitesData);
-
     // if (websitesError || !websitesData) {
     //     redirect(ROUTES.Onboarding);
     // }
