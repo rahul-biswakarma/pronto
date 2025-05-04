@@ -1,5 +1,7 @@
-import { createSupabaseServerClient } from "@/supabase/utils/client/server";
-import { supabaseOption } from "@/supabase/utils/config";
+import { CanvasProvider } from "@/libs/components/canvas/contexts/canvas.context";
+import { RouteProvider } from "@/libs/components/canvas/contexts/route.context";
+import Canvas from "@/libs/components/canvas/ui/canvas";
+import { checkAuthentication } from "@/libs/utils/auth";
 import { redirect } from "next/navigation";
 
 export default async function DomainPage({
@@ -8,42 +10,52 @@ export default async function DomainPage({
     params: { domain: string };
 }) {
     const { domain } = params;
-    const supabase = await createSupabaseServerClient(supabaseOption);
+    const { authenticated, supabase } = await checkAuthentication();
+
+    if (!authenticated) {
+        // Redirect to login if not authenticated
+        redirect("/login");
+    }
 
     // Check if the domain exists
-    const { data: website, error } = await supabase
+    const { data: website, error: websiteError } = await supabase
         .from("websites")
         .select("*")
         .eq("domain", domain)
         .single();
 
-    if (error || !website) {
+    if (websiteError || !website) {
         // Redirect to home if domain doesn't exist
         redirect("/");
     }
 
-    return (
-        <div className="min-h-screen p-8">
-            <h1 className="text-3xl font-bold mb-4">Welcome to {domain}</h1>
-            <p className="text-lg">
-                Your website has been created successfully!
-            </p>
+    // Fetch all routes for this website in the server component
+    const { data: routes, error: routesError } = await supabase
+        .from("routes")
+        .select("*")
+        .eq("website_id", website.id);
 
-            {/* You can add more content here based on the website data */}
-            <div className="mt-8 p-4 bg-gray-100 rounded-md">
-                <h2 className="text-xl font-semibold mb-2">Website Details</h2>
-                <p>
-                    <strong>Domain:</strong> {website.domain}
-                </p>
-                <p>
-                    <strong>Created At:</strong>{" "}
-                    {new Date(website.created_at).toLocaleString()}
-                </p>
-                <p>
-                    <strong>Published:</strong>{" "}
-                    {website.is_published ? "Yes" : "No"}
-                </p>
-            </div>
+    if (routesError) {
+        console.error("Error fetching routes:", routesError);
+    }
+
+    return (
+        <div className="min-h-screen flex flex-col">
+            <header className="p-4 bg-white border-b">
+                <h1 className="text-xl font-bold">Website: {domain}</h1>
+            </header>
+
+            <main className="flex-1 relative">
+                <RouteProvider
+                    domain={domain}
+                    initialRoutes={routes || []}
+                    initialWebsiteId={website.id}
+                >
+                    <CanvasProvider>
+                        <Canvas />
+                    </CanvasProvider>
+                </RouteProvider>
+            </main>
         </div>
     );
 }
