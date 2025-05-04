@@ -7,6 +7,7 @@ import { usePan } from "../hooks/use-pan";
 import { useZoom } from "../hooks/use-zoom";
 import { getTransformStyle } from "../utils/transform";
 import CanvasControls from "./canvas-controls";
+import Toolbar from "./toolbar";
 
 export default function Canvas() {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -25,6 +26,9 @@ export default function Canvas() {
         <div className="relative w-full h-full overflow-hidden bg-gray-100">
             {/* Canvas controls */}
             <CanvasControls />
+
+            {/* Toolbar */}
+            <Toolbar />
 
             {/* Loading state */}
             {isLoading && (

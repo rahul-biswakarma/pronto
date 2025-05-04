@@ -33,7 +33,7 @@ type CanvasContextType = {
     error: string | null;
     addEntity: (
         entity: Omit<CanvasEntity, "id" | "created_by">,
-    ) => Promise<void>;
+    ) => Promise<string | null>; // Updated return type
     updateEntity: (id: string, updates: Partial<CanvasEntity>) => Promise<void>;
     deleteEntity: (id: string) => Promise<void>;
     selectEntity: (id: string | null) => void;
@@ -100,10 +100,13 @@ export function CanvasProvider({ children }: { children: ReactNode }) {
             if (insertError) throw insertError;
             if (data) {
                 setEntities((prev) => [...prev, data]);
+                return data.id; // Return the entity ID
             }
+            return null; // Return null if no data
         } catch (err) {
             console.error("Error adding entity:", err);
             setError("Failed to add entity");
+            return null; // Return null on error
         }
     };
 

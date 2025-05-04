@@ -1,4 +1,4 @@
-import { getGeminiClient } from "./ai-client";
+import { getGeminiClient } from "../ai/ai-client";
 
 export const formatPdfData = async (pdfData: string) => {
     const geminiClient = getGeminiClient();

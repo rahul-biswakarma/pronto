@@ -1,4 +1,4 @@
-import { getImageMimeType, getImageTemplateUrl } from "./image-prompts";
+import { getImageMimeType, getImageTemplateUrl } from "../ai/image-utils";
 
 // Define interface for the uploaded file
 interface FileUploadResult {
@@ -9,7 +9,7 @@ interface FileUploadResult {
 /**
  * Generates the proper message format for Gemini API using Vercel AI SDK
  */
-export const htmlGenPromptGemini = async ({
+export const initialWebsiteGenerator = async ({
     content,
     templateId,
     pageType,
@@ -25,10 +25,11 @@ export const htmlGenPromptGemini = async ({
     let imageFile: FileUploadResult | null = null;
     try {
         const imageResponse = await fetch(url);
-        if (!imageResponse.ok)
+        if (!imageResponse.ok) {
             throw new Error(
                 `Failed to fetch image: ${imageResponse.statusText}`,
             );
+        }
 
         const arrayBuffer = await imageResponse.arrayBuffer();
         const base64Data = Buffer.from(arrayBuffer).toString("base64");

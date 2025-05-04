@@ -9,7 +9,8 @@ export default async function DomainPage({
 }: {
     params: { domain: string };
 }) {
-    const { domain } = params;
+    // Await params before destructuring
+    const { domain } = await params;
     const { authenticated, supabase } = await checkAuthentication();
 
     if (!authenticated) {
